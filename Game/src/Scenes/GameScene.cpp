@@ -54,7 +54,7 @@ namespace Dawn
 
 		// PLAYER
 		FPSCameraActor* cameraActor = new FPSCameraActor(this);
-		mPlayer = new Player(this, cameraActor, arena);
+		mPlayer = new Player(this, cameraActor);
 		//mPlayer->SetPosition(glm::vec3(0, 0, 4));
 		Gun* gun = new Gun(this, mPlayer);
 

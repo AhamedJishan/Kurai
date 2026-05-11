@@ -21,9 +21,6 @@ namespace Dawn
 			:Actor(scene)
 			,mDamage(damage)
 		{
-			mCollider = new SphereCollider(this);
-			mCollider->SetIsTrigger(true);
-			mCollider->SetRadius(0.75f);
 			SetScale(glm::vec3(0.5f));
 
 			MeshRenderer::CreateFromModel(this, "Assets/Models/ball/ball.obj");
@@ -34,9 +31,6 @@ namespace Dawn
 				projectileMat->SetDiffuseColor(projectileColor);
 				projectileMat->SetEmissiveColor(projectileColor * 10.0f);
 			}
-
-			mPlayer = player;
-			mArena = player->GetArena();
 
 			mHitParticleDesc.initialBurst = 10;
 			mHitParticleDesc.emissionRate = 0.0f;
@@ -60,30 +54,6 @@ namespace Dawn
 			}
 
 			SetPosition(GetPosition() + GetForward() * mSpeed * deltaTime);
-
-			// Check for collisions
-			EnemyKamikaze* enemy = dynamic_cast<EnemyKamikaze*>(mCollider->CheckCollisions());
-			if (enemy)
-			{
-				SetState(Actor::State::Dead);
-				float enemyHealth = enemy->TakeDamage(mDamage);
-
-				glm::vec3 hitDirection = glm::normalize(mPlayer->GetPosition() - enemy->GetPosition());
-				mHitParticleDesc.directionMin = hitDirection - glm::vec3(2);
-				mHitParticleDesc.directionMax = hitDirection + glm::vec3(2);
-				new ParticleSystem(mScene, mHitParticleDesc, GetPosition());
-
-				Application::Get()->GetAudioSystem()->PlayEvent("event:/gunshot_impact");
-			}
-
-			if (mArena->IsOutOfBounds(GetPosition()))
-			{
-				SetState(Actor::State::Dead);
-
-				mHitParticleDesc.directionMin = glm::vec3(-1.0f, -1.0f, -1.0f);
-				mHitParticleDesc.directionMax = glm::vec3(1.0f, 1.0f, 1.0f);
-				new ParticleSystem(mScene, mHitParticleDesc, GetPosition());
-			}
 		}
 
 	private:
@@ -91,9 +61,7 @@ namespace Dawn
 		float mSpeed = 100.0f;
 		float mDamage = 35.0f;
 
-		SphereCollider* mCollider = nullptr;
 		Player* mPlayer = nullptr;
-		Arena* mArena = nullptr;
 
 		ParticleSystemDesc mHitParticleDesc;
 	};

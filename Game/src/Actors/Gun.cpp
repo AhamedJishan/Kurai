@@ -8,7 +8,6 @@
 #include "Core/Components/MeshRenderer.h"
 #include "Core/Components/Camera.h"
 #include "Core/Components/Audio.h"
-#include "Rendering/Materials/PhongMaterial.h"
 #include "Input/Input.h"
 #include "Physics/Physics.h"
 #include "Player.h"
@@ -104,15 +103,9 @@ namespace Dawn
 		projectilePosition += GetForward() * mProjectileSpawnOffset.z;
 		projectilePosition += GetPosition();
 
-		float finalDmg = mBaseDamage + mBonusDamage * mBonusDmgMultiplier;
-
-		// Spawn projectile
-		for (int i = -mBulletSpread; i <= mBulletSpread; i++)
-		{
-			Projectile* projectile = new Projectile(mScene, mPlayer, finalDmg, glm::vec4(0.85f, 0.10f, 0.04f, 1.0f));
-			projectile->SetPosition(projectilePosition);
-			projectile->SetRotation(glm::angleAxis(glm::radians(-mBulletSpreadAngle * i), glm::vec3(0, 1, 0)) * projectileRotation);
-		}
+		Projectile* projectile = new Projectile(mScene, mPlayer, mBaseDamage, glm::vec4(0.85f, 0.10f, 0.04f, 1.0f));
+		projectile->SetPosition(projectilePosition);
+		projectile->SetRotation(projectileRotation);
 
 		// Muzzle flash
 		mMuzzleFlashDesc.directionMax = GetForward() + glm::vec3(2);
@@ -121,16 +114,6 @@ namespace Dawn
 
 		// Camera Pitch Recoil
 		camera->Recoil();
-	}
-
-	bool Gun::IsSpreadUpgradeable()
-	{
-		return mBulletSpread < mMaxBulletSpread;
-	}
-
-	bool Gun::IsDamageUpgradeable()
-	{
-		return mBonusDmgMultiplier < mMaxDmgMultiplier;
 	}
 
 	glm::vec2 Gun::GetSwayMovementOffset()

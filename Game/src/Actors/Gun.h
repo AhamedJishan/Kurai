@@ -21,12 +21,6 @@ namespace Dawn
 
 		void Fire();
 
-		void IncreaseBulletSpread() { mBulletSpread = (mBulletSpread < mMaxBulletSpread) ? (mBulletSpread + 1) : mMaxBulletSpread; }
-		void IncreaseDamage() { mBonusDmgMultiplier = (mBonusDmgMultiplier < mMaxDmgMultiplier) ? (mBonusDmgMultiplier + 1) : mMaxDmgMultiplier; }
-
-		bool IsSpreadUpgradeable();
-		bool IsDamageUpgradeable();
-
 	private:
 		// Updates 'mSwayMoveOffset' and 'mSwayRotationOffset'
 		void UpdateSwayOffsets(float deltaTime);
@@ -46,13 +40,6 @@ namespace Dawn
 
 		// Damage
 		const float mBaseDamage = 20.0f;
-		const float mBonusDamage = 20.0f;
-		unsigned int mBonusDmgMultiplier = 0;
-		static constexpr unsigned int mMaxDmgMultiplier = 3;
-
-		const float mBulletSpreadAngle = 5.f;
-		const int mMaxBulletSpread = 2;
-		int mBulletSpread = 0;
 
 		const float mFireCooldown = 0.1f;
 		float mTimeSinceLastFire = 0.0f;
