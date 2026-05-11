@@ -1,0 +1,29 @@
+# ===============================
+# Build output
+# ===============================
+bin/
+bin-int/
+
+# ===============================
+# Visual Studio
+# ===============================
+.vs/
+*.sln
+*.slnx
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+
+# ===============================
+# C++ compiler artifacts
+# ===============================
+*.obj
+*.pdb
+*.ilk
+*.exe
+
+# allow this specific folders
+!Engine/vendor/bin/
+!Engine/vendor/bin/**
+!Assets/
+!Assets/**
