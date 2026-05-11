@@ -1,6 +1,6 @@
 -- DAWN
 
-workspace "Dawn"
+workspace "Kurai"
     configurations {"Debug", "Release"}
     architecture "x86_64"
     
@@ -8,5 +8,3 @@ workspace "Dawn"
 
     include "Engine"
     include "Game"
-
-    -- Engine for now, will be Application later
