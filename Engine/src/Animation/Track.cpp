@@ -81,13 +81,26 @@ namespace Dawn
 		if (frame < 0 || frame >= mFrames.size())
 			return T();
 
-		return Cast(&mFrames[frame].mValues);
+		return Cast(&mFrames[frame].mValues[0]);
 	}
 
 	template<typename T, unsigned int N>
 	T Track<T, N>::SampleLinear(float time, bool looping)
 	{
-		return T();
+		unsigned int thisFrame = FrameIndex(time, looping);
+		if (thisFrame < 0 || thisFrame >= mFrames.size() - 1)
+			return T();
+
+		float trackTime = AdjustTimeToFitTrack(time, looping);
+		float thisFrameTime = mFrames[thisFrame].mTime;
+		float deltaFrameTime = mFrames[thisFrame + 1].mTime - thisFrameTime;
+		if (deltaFrameTime < 0.0f)
+			return T();
+
+		float t = (trackTime - thisFrameTime) / deltaFrameTime;
+		T start = Cast(&mFrames[thisFrame].mValues[0]);
+		T end = Cast(&mFrames[thisFrame + 1].mValues[0]);
+		return glm::mix(start, end, t);
 	}
 	
 	template<typename T, unsigned int N>
