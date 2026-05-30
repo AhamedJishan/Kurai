@@ -87,14 +87,14 @@ namespace Dawn
 	template<typename T, unsigned int N>
 	T Track<T, N>::SampleLinear(float time, bool looping)
 	{
-		unsigned int thisFrame = FrameIndex(time, looping);
+		int thisFrame = FrameIndex(time, looping);
 		if (thisFrame < 0 || thisFrame >= mFrames.size() - 1)
 			return T();
 
 		float trackTime = AdjustTimeToFitTrack(time, looping);
 		float thisFrameTime = mFrames[thisFrame].mTime;
 		float deltaFrameTime = mFrames[thisFrame + 1].mTime - thisFrameTime;
-		if (deltaFrameTime < 0.0f)
+		if (deltaFrameTime <= 0.0f)
 			return T();
 
 		float t = (trackTime - thisFrameTime) / deltaFrameTime;
@@ -106,7 +106,30 @@ namespace Dawn
 	template<typename T, unsigned int N>
 	T Track<T, N>::SampleCubic(float time, bool looping)
 	{
-		return T();
+		int thisFrame = FrameIndex(time, looping);
+		if (thisFrame < 0 || thisFrame >= mFrames.size() - 1)
+			return T();
+
+		float trackTime = AdjustTimeToFitTrack(time, looping);
+		float thisFrameTime = mFrames[thisFrame].mTime;
+		float deltaFrameTime = mFrames[thisFrame + 1].mTime - thisFrameTime;
+		if (deltaFrameTime <= 0.0f)
+			return T();
+
+		float t = (trackTime - thisFrameTime) / deltaFrameTime;
+		size_t floatSize = sizeof(float);
+
+		T point1 = Cast(&mFrames[thisFrame].mValues[0]);
+		T slope1;
+		memcpy(&slope1, mFrames[thisFrame].mOut, N * floatSize);
+		slope1 *= deltaFrameTime;
+
+		T point2 = Cast(&mFrames[thisFrame + 1].mValues[0]);
+		T slope2;
+		memcpy(&slope2, mFrames[thisFrame + 1].mIn, N * floatSize);
+		slope2 *= deltaFrameTime;
+
+		return glm::hermite(point1, slope1, point2, slope2, t);
 	}
 	
 	template<typename T, unsigned int N>
