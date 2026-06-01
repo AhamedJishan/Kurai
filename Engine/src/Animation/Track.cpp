@@ -22,13 +22,10 @@ namespace Dawn
 		{
 		case Dawn::Interpolation::Constant:
 			return SampleConstant(time, looping);
-			break;
 		case Dawn::Interpolation::Linear:
 			return SampleLinear(time, looping);
-			break;
 		default:
 			return SampleCubic(time, looping);
-			break;
 		}
 	}
 	
