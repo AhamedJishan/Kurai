@@ -133,7 +133,7 @@ namespace Dawn
 	}
 	
 	template<typename T, unsigned int N>
-	float Track<T, N>::Hermite(float time, const T& p1, const T& s1, const T& p2, const T& s2)
+	T Track<T, N>::Hermite(float time, const T& p1, const T& s1, const T& p2, const T& s2)
 	{
 		return glm::hermite(p1, s1, p2, s2, time);
 	}
@@ -155,6 +155,7 @@ namespace Dawn
 
 			if (time < 0.0f)
 				time += duration;
+			time += startTime;
 		}
 		else
 		{

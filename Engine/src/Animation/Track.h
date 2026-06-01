@@ -31,7 +31,7 @@ namespace Dawn
 		T SampleLinear(float time, bool looping);
 		T SampleCubic(float time, bool looping);
 
-		float Hermite(float time, const T& p1, const T& s1, const T& p2, const T& s2);
+		T Hermite(float time, const T& p1, const T& s1, const T& p2, const T& s2);
 		// returns the last frame right before the requested time
 		int FrameIndex(float time, bool looping);
 		float AdjustTimeToFitTrack(float time, bool looping);
