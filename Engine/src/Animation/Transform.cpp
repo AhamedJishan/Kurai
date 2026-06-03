@@ -24,4 +24,15 @@ namespace Dawn
 
 		return result;
 	}
+
+	glm::mat4 TransformToMat4(const Transform& t)
+	{
+		glm::mat4 result;
+
+		result = glm::scale(glm::mat4(1.0f), t.Scale);
+		result = glm::mat4_cast(t.Rotation) * result;
+		result = glm::translate(glm::mat4(1.0f), t.Position) * result;
+
+		return result;
+	}
 }

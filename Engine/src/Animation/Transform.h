@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
 #include <glm/gtc/quaternion.hpp>
 
 namespace Dawn
@@ -19,4 +20,5 @@ namespace Dawn
 
 	// In a parent-child relation, a is the parent and b is the child
 	Transform Combine(const Transform& a, const Transform& b);
+	glm::mat4 TransformToMat4(const Transform& t);
 }
