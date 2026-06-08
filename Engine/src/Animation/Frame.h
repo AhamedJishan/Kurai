@@ -7,8 +7,6 @@ namespace Dawn
 	{
 	public:
 		float mValue[N];
-		float mInTanget;
-		float mOutTangent;
 		float mTime;
 	};
 
