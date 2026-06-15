@@ -6,7 +6,7 @@ namespace Dawn
 	class Frame
 	{
 	public:
-		float mValue[N];
+		float mValues[N];
 		float mTime;
 	};
 

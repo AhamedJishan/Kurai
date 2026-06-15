@@ -1,5 +1,6 @@
 #include "Track.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/spline.hpp>
 
 namespace Dawn
