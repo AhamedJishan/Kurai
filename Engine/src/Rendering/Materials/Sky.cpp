@@ -1,6 +1,5 @@
 #include "Sky.h"
 
-#include "Core/Assets.h"
 #include "Rendering/Shader.h"
 
 namespace Dawn
@@ -9,16 +8,18 @@ namespace Dawn
 		:mTop(glm::vec3(0))
 		,mHorizon(glm::vec3(0.7f))
 	{
-		mShader = Assets::GetShader("sky");
 	}
 
-	Sky::~Sky()
+	Sky::~Sky() {}
+
+	const char* Sky::GetName() const
 	{
+		return "sky";
 	}
 	
-	void Sky::Apply()
+	void Sky::Apply(const Shader* shader)
 	{
-		mShader->SetVec3("u_TopColor", mTop);
-		mShader->SetVec3("u_HorizonColor", mHorizon);
+		shader->SetVec3("u_TopColor", mTop);
+		shader->SetVec3("u_HorizonColor", mHorizon);
 	}
 }

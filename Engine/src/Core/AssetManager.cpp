@@ -67,13 +67,17 @@ namespace Dawn
         return texture;
     }
 
-    Shader* AssetManager::GetShader(const std::string& shaderName)
+    Shader* AssetManager::GetShader(const std::string& shaderName, bool skinned)
     {
-        auto it = mShaders.find(shaderName);
+        std::string key = shaderName;
+        if (skinned)
+            key += "_skinned";
+
+        auto it = mShaders.find(key);
         if (it != mShaders.end())
             return it->second;
 
-        Shader* shader = CreateShaderByName(shaderName);
+        Shader* shader = CreateShaderByName(shaderName, skinned);
 
         if (!shader)
         {
@@ -81,7 +85,7 @@ namespace Dawn
             return nullptr;
         }
             
-        mShaders[shaderName] = shader;
+        mShaders[key] = shader;
         return shader;
     }
 
@@ -137,11 +141,10 @@ namespace Dawn
         return mMeshes.at(path);
     }
 
-    Shader* AssetManager::CreateShaderByName(const std::string& name)
+    Shader* AssetManager::CreateShaderByName(const std::string& name, bool skinned)
     {
-        Shader* shader = nullptr;
-
-        shader = new Shader("Assets/Shaders/" + name + ".vert", "Assets/Shaders/" + name + ".frag");
+        Shader* shader = 
+            new Shader("Assets/Shaders/" + name + (skinned ? "_skinned" : "") + ".vert", "Assets/Shaders/" + name + ".frag");
 
         if (!shader || !shader->IsValid())
         {

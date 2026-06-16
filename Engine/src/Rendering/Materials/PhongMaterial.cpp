@@ -7,13 +7,13 @@
 
 namespace Dawn
 {
-	PhongMaterial::PhongMaterial()
-	{
-		mShader = Assets::GetShader("phong");
-	}
+	PhongMaterial::PhongMaterial() {}
 
-	PhongMaterial::~PhongMaterial()
+	PhongMaterial::~PhongMaterial() {}
+
+	const char* PhongMaterial::GetName() const
 	{
+		return "phong";
 	}
 
 	PhongMaterial* PhongMaterial::CreateFromRaw(const RawMaterial* rawMaterial)
@@ -61,49 +61,49 @@ namespace Dawn
 		return phongMaterial;
 	}
 	
-	void PhongMaterial::Apply()
+	void PhongMaterial::Apply(const Shader* shader)
 	{
 		// Renderer would bind Shader
 
 		if (mDiffuseMap)
 		{
 			mDiffuseMap->Bind(0);
-			mShader->SetInt("u_DiffuseTexture", 0);
-			mShader->SetBool("u_HasDiffuseMap", true);
+			shader->SetInt("u_DiffuseTexture", 0);
+			shader->SetBool("u_HasDiffuseMap", true);
 		}
 		else
-			mShader->SetBool("u_HasDiffuseMap", false);
+			shader->SetBool("u_HasDiffuseMap", false);
 
 		if (mSpecularMap)
 		{
 			mSpecularMap->Bind(1);
-			mShader->SetInt("u_SpecularTexture", 1);
-			mShader->SetBool("u_HasSpecularMap", true);
+			shader->SetInt("u_SpecularTexture", 1);
+			shader->SetBool("u_HasSpecularMap", true);
 		}
 		else
-			mShader->SetBool("u_HasSpecularMap", false);
+			shader->SetBool("u_HasSpecularMap", false);
 
 		if (mNormalMap)
 		{
 			mNormalMap->Bind(2);
-			mShader->SetInt("u_NormalTexture", 2);
-			mShader->SetBool("u_HasNormalMap", true);
+			shader->SetInt("u_NormalTexture", 2);
+			shader->SetBool("u_HasNormalMap", true);
 		}
 		else
-			mShader->SetBool("u_HasNormalMap", false);
+			shader->SetBool("u_HasNormalMap", false);
 
 		if (mEmissiveMap)
 		{
 			mEmissiveMap->Bind(3);
-			mShader->SetInt("u_EmissiveTexture", 3);
-			mShader->SetBool("u_HasEmissiveMap", true);
+			shader->SetInt("u_EmissiveTexture", 3);
+			shader->SetBool("u_HasEmissiveMap", true);
 		}
 		else
-			mShader->SetBool("u_HasEmissiveMap", false);
+			shader->SetBool("u_HasEmissiveMap", false);
 
-		mShader->SetVec3("u_DiffuseColor", mDiffuseColor);
-		mShader->SetVec3("u_SpecularColor", mSpecularColor);
-		mShader->SetVec3("u_EmissiveColor", mEmissiveColor);
-		mShader->SetFloat("u_Shininess", mShininess);
+		shader->SetVec3("u_DiffuseColor", mDiffuseColor);
+		shader->SetVec3("u_SpecularColor", mSpecularColor);
+		shader->SetVec3("u_EmissiveColor", mEmissiveColor);
+		shader->SetFloat("u_Shininess", mShininess);
 	}
 }

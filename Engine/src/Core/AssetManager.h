@@ -19,12 +19,12 @@ namespace Dawn
 		~AssetManager();
 
 		Texture* GetTexture(const std::string& filePath);
-		Shader* GetShader(const std::string& shaderName);
+		Shader* GetShader(const std::string& shaderName, bool skinned);
 		RawModel* GetRawModel(const std::string& path);
 		const std::vector<Mesh*>& GetMeshes(const std::string& path);
 
 	private:
-		Shader* CreateShaderByName(const std::string& name);
+		Shader* CreateShaderByName(const std::string& name, bool skinned);
 
 	private:
 		std::unordered_map<std::string, Texture*> mTextures;

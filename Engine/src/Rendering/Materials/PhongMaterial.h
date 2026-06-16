@@ -8,6 +8,7 @@ namespace Dawn
 	// Forward declaration
 	class Texture;
 	class RawMaterial;
+	class Shader;
 
 	class PhongMaterial : public Material 
 	{
@@ -17,7 +18,8 @@ namespace Dawn
 
 		static PhongMaterial* CreateFromRaw(const RawMaterial* rawMaterial);
 
-		void Apply() override;
+		void Apply(const Shader* shader) override;
+		const char* GetName() const override;
 
 		Texture* GetDiffuseMap() { return mDiffuseMap; }
 		Texture* GetSpecularMap() { return mSpecularMap; }

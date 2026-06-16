@@ -19,9 +19,9 @@ namespace Dawn
 			return Application::Get()->GetAssetManager()->GetTexture(filePath);
 		}
 
-		static Shader* GetShader(const std::string& shaderName)
+		static Shader* GetShader(const std::string& shaderName, bool skinned = false)
 		{
-			return Application::Get()->GetAssetManager()->GetShader(shaderName);
+			return Application::Get()->GetAssetManager()->GetShader(shaderName, skinned);
 		}
 
 		static RawModel* GetRawModel(const std::string& path)

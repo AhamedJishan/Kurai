@@ -125,10 +125,11 @@ namespace Dawn
 
 			Material* mat = meshRenderer->GetMaterial();
 			Mesh* mesh = meshRenderer->GetMesh();
-			Shader* shader = mat->GetShader();
+			// TODO: modify for skinned meshes
+			Shader* shader = Assets::GetShader(mat->GetName(), false);
 
 			shader->Bind();
-			mat->Apply();
+			mat->Apply(shader);
 			mesh->Bind();
 
 			shader->SetMat4("u_Model", modelMatrix);

@@ -5,13 +5,17 @@
 
 namespace Dawn
 {
+	// forward declaration
+	class Shader;
+
 	class Sky : public Material
 	{
 	public:
 		Sky();
 		~Sky();
 
-		void Apply() override;
+		void Apply(const Shader* shader) override;
+		const char* GetName() const override;
 
 		void SetTopColor(glm::vec3 color) { mTop = color; }
 		void SetHorizonColor(glm::vec3 color) { mHorizon = color; }

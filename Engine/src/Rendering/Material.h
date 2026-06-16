@@ -2,7 +2,7 @@
 
 namespace Dawn
 {
-	// Forward declaration
+	// forward declaration
 	class Shader;
 
 	class Material
@@ -10,10 +10,7 @@ namespace Dawn
 	public:
 		virtual ~Material() = default;
 
-		virtual void Apply() = 0;
-		virtual Shader* GetShader() const { return mShader; }
-
-	protected:
-		Shader* mShader = nullptr;
+		virtual void Apply(const Shader* shader) = 0;
+		virtual const char* GetName() const = 0;
 	};
 }
