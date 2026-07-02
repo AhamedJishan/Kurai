@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <string>
-#include "Core/Vertex.h"
+#include "Asset/Vertex.h"
 
 namespace Dawn
 {

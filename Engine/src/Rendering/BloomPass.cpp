@@ -5,7 +5,7 @@
 #include "Core/Application.h"
 #include "Core/Scene.h"
 #include "Core/Window.h"
-#include "Core/Assets.h"
+#include "Asset/Assets.h"
 #include "Shader.h"
 
 namespace Dawn

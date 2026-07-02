@@ -29,6 +29,7 @@ namespace Dawn
 		int mRawMaterialIndex;
 
 		std::vector<Vertex> mVertices;
+		std::vector<VertexBoneData> mBoneData;
 		std::vector<unsigned int> mIndices;
 	};
 }

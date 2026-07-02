@@ -1,12 +1,12 @@
 #pragma once
 
 #include <string>
-#include "Application.h"
+#include "Core/Application.h"
 #include "AssetManager.h"
 #include "Rendering/Texture.h"
 #include "Rendering/Shader.h"
 #include "Rendering/Mesh.h"
-#include "Core/RawModel.h"
+#include "RawModel.h"
 
 namespace Dawn
 {

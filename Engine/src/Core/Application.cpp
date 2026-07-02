@@ -7,7 +7,7 @@
 #include "ImGui/ImGuiSystem.h"
 #include "Input/InputSystem.h"
 #include "Audio/AudioSystem.h"
-#include "AssetManager.h"
+#include "Asset/AssetManager.h"
 #include "Scene.h"
 
 namespace Dawn

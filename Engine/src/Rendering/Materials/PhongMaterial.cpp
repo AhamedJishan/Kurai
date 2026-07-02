@@ -1,7 +1,7 @@
 #include "PhongMaterial.h"
 
-#include "Core/Assets.h"
-#include "Core/RawMaterial.h"
+#include "Asset/Assets.h"
+#include "Asset/RawMaterial.h"
 #include "Rendering/Shader.h"
 #include "Rendering/Texture.h"
 

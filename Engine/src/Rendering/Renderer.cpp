@@ -5,7 +5,7 @@
 #include <glad/glad.h>
 #include <glm/mat4x4.hpp>
 #include "Core/Application.h"
-#include "Core/Assets.h"
+#include "Asset/Assets.h"
 #include "Core/Window.h"
 #include "Core/Actor.h"
 #include "Core/Scene.h"

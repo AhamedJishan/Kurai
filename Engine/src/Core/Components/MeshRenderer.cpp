@@ -3,9 +3,9 @@
 #include <vector>
 #include "Core/Actor.h"
 #include "Core/Application.h"
-#include "Core/Assets.h"
-#include "Core/RawMaterial.h"
-#include "Core/RawModel.h"
+#include "Asset/Assets.h"
+#include "Asset/RawMaterial.h"
+#include "Asset/RawModel.h"
 #include "Rendering/Renderer.h"
 #include "Rendering/Mesh.h"
 #include "Rendering/Material.h"
