@@ -17,22 +17,27 @@ namespace Dawn
 	class RawModel
 	{
 	public:
-		RawModel(const std::string& filename);
-		~RawModel();
-
-		bool IsValid() const { return mIsValid; }
+		RawModel() = default;
+		~RawModel()
+		{
+			for (RawMesh* rawMesh : mRawMeshes)
+				delete rawMesh;
+			for (RawMaterial* rawMaterial : mRawMaterials)
+				delete rawMaterial;
+		}
 
 		const std::string& GetDirectory() const { return mDirectory; }
 		const std::vector<RawMesh*>& GetRawMeshes() const { return mRawMeshes; }
 		const std::vector<RawMaterial*>& GetRawMaterials() const { return mRawMaterials; }
 
-	private:
-		bool LoadRawModel(const std::string& filename);
-		RawMesh* GetRawMesh(const aiMesh* aiMesh);
-		RawMaterial* GetRawMaterial(const aiMaterial* aiMat);
+		void SetDirectory(const std::string& directory) { mDirectory = directory; }
+		void AddRawMesh(RawMesh* rawMesh) { mRawMeshes.emplace_back(rawMesh); }
+		void AddRawMaterial(RawMaterial* rawMaterial) { mRawMaterials.emplace_back(rawMaterial); }
+
+		RawModel(const RawModel&) = delete;
+		RawModel& operator=(const RawModel&) = delete;
 
 	private:
-		bool mIsValid;
 		std::string mDirectory;
 
 		std::vector<RawMesh*> mRawMeshes;

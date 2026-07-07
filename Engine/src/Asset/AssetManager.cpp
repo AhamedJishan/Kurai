@@ -8,6 +8,7 @@
 #include "Vertex.h"
 #include "RawModel.h"
 #include "RawMesh.h"
+#include "AssimpImporter.h"
 
 
 namespace Dawn
@@ -95,8 +96,8 @@ namespace Dawn
         if (it != mRawModels.end())
             return it->second;
 
-        RawModel* rawModel = new RawModel(path);
-        if (!rawModel || !rawModel->IsValid())
+        RawModel* rawModel = AssimpImporter::LoadRawModel(path);
+        if (!rawModel)
         {
             delete rawModel;
             return nullptr;
