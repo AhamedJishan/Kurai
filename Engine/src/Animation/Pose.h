@@ -13,13 +13,16 @@ namespace Dawn
 		Pose(const Pose& pose);
 		Pose(unsigned int numJoints);
 
+		// returns index of the joint added
+		int AddJoint(const Transform& localTransform, int parentIndex);
+
 		unsigned int GetSize();
 		void SetSize(unsigned int size);
 
 		int GetParent(unsigned int index);
 		void SetParent(unsigned int index, int parent);
 
-		Transform GetLocalTransform(unsigned int index);
+		const Transform& GetLocalTransform(unsigned int index);
 		void SetLocalTransform(unsigned int index, const Transform& transform);
 
 		Transform GetGlobalTransform(unsigned int index);

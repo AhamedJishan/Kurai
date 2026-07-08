@@ -17,6 +17,13 @@ namespace Dawn
 		SetSize(numJoints);
 	}
 
+	int Pose::AddJoint(const Transform& localTransform, int parentIndex)
+	{
+		mJoints.push_back(localTransform);
+		mParents.push_back(parentIndex);
+		return mJoints.size();
+	}
+
 	unsigned int Pose::GetSize()
 	{
 		return mJoints.size();
@@ -38,7 +45,7 @@ namespace Dawn
 		mParents[index] = parent;
 	}
 
-	Transform Pose::GetLocalTransform(unsigned int index)
+	const Transform& Pose::GetLocalTransform(unsigned int index)
 	{
 		return mJoints[index];
 	}

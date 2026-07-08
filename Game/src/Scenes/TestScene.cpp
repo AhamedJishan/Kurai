@@ -4,10 +4,11 @@
 #include "Actors/Arena.h"
 #include "Actors/Player.h"
 #include "Actors/FPSCameraActor.h"
-#include "Actors/Gun.h"
 #include "Actors/SkyDome.h"
 #include "Core/Components/Camera.h"
 #include "Input/Input.h"
+
+#include <Actors/TestAnimationActor.h>
 
 namespace Dawn
 {
@@ -42,7 +43,6 @@ namespace Dawn
 		FPSCameraActor* cameraActor = new FPSCameraActor(this);
 		mPlayer = new Player(this, cameraActor);
 		//mPlayer->SetPosition(glm::vec3(0, 0, 4));
-		Gun* gun = new Gun(this, mPlayer);
 
 		Camera* cam = cameraActor->GetComponent<Camera>();
 		if (cam)
@@ -50,6 +50,8 @@ namespace Dawn
 			cam->SetFarPlane(1000.0f);	// So that skydome is visible
 			SetActiveCamera(cam);
 		}
+
+		TestAnimationActor* testActor = new TestAnimationActor(this);
 	}
 
 	void TestScene::Update(float deltaTime)

@@ -1,6 +1,8 @@
 #include "AssimpImporter.h"
 
 #include <vector>
+#include <unordered_map>
+#include <glm/mat4x4.hpp>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -8,6 +10,7 @@
 #include "RawModel.h"
 #include "RawMesh.h"
 #include "RawMaterial.h"
+#include <Animation/Skeleton.h>
 
 namespace Dawn:: AssimpImporter
 {
@@ -15,6 +18,7 @@ namespace Dawn:: AssimpImporter
 	{
 		RawMesh* GetRawMesh(const aiMesh* aiMesh);
 		RawMaterial* GetRawMaterial(const aiMaterial* aiMat, const std::string& directory);
+		Skeleton* GetSkeleton(const aiScene* aiScene);
 	}
 
 
@@ -45,6 +49,12 @@ namespace Dawn:: AssimpImporter
 		// Load Materials
 		for (unsigned int i = 0; i < scene->mNumMaterials; i++)
 			rawModel->AddRawMaterial(GetRawMaterial(scene->mMaterials[i], directory));
+
+		// Load Skeleton
+		Skeleton* skeleton = GetSkeleton(scene);
+
+		if (skeleton)
+			rawModel->SetSkeleton(skeleton);
 
 		return rawModel;
 	}
@@ -143,6 +153,87 @@ namespace Dawn:: AssimpImporter
 			}
 
 			return rawMaterial;
+		}
+
+		glm::mat4 AssimpToGlm(const aiMatrix4x4& m)
+		{
+			return glm::mat4(
+				m.a1, m.b1, m.c1, m.d1,
+				m.a2, m.b2, m.c2, m.d2,
+				m.a3, m.b3, m.c3, m.d3,
+				m.a4, m.b4, m.c4, m.d4
+			);
+		}
+		glm::vec3 AssimpToGlm(const aiVector3D& v)
+		{
+			return glm::vec3(v.x, v.y, v.z);
+		}
+		glm::quat AssimpToGlm(const aiQuaternion& q)
+		{
+			return glm::quat(q.w, q.x, q.y, q.z);
+		}
+
+		void ProcessNode(
+			const aiNode* node,
+			Pose& outPose,
+			std::vector<std::string>& outJointNames,
+			std::vector<glm::mat4>& outInvBindPoseMatrices,
+			const std::unordered_map<std::string, glm::mat4>& boneNameToInvBindPoseMap, 
+			int parentIndex)
+		{
+			std::string nodeName = node->mName.C_Str();
+
+			auto it = boneNameToInvBindPoseMap.find(nodeName);
+			if (it != boneNameToInvBindPoseMap.end())
+			{
+				aiVector3D scale;
+				aiVector3D position;
+				aiQuaternion rotation;
+				node->mTransformation.Decompose(scale, rotation, position);
+
+				Transform transform;
+				transform.Scale = AssimpToGlm(scale);
+				transform.Position = AssimpToGlm(position);
+				transform.Rotation = AssimpToGlm(rotation);
+
+				int currentIndex = outPose.AddJoint(transform, parentIndex);
+				outJointNames.push_back(it->first);
+				outInvBindPoseMatrices.push_back(it->second);
+
+				parentIndex = currentIndex;
+			}
+
+			for (unsigned int i = 0; i < node->mNumChildren; i++)
+				ProcessNode(node->mChildren[i], outPose, outJointNames, outInvBindPoseMatrices, boneNameToInvBindPoseMap, parentIndex);
+		}
+
+		Skeleton* GetSkeleton(const aiScene* aiScene)
+		{
+			std::unordered_map<std::string, glm::mat4> boneNameToInvBindPoseMap;
+
+			for (unsigned int i = 0; i < aiScene->mNumMeshes; i++)
+			{
+				for (unsigned int j = 0; j < aiScene->mMeshes[i]->mNumBones; j++)
+				{
+					aiBone* bone = aiScene->mMeshes[i]->mBones[j];
+					std::string boneName = bone->mName.C_Str();
+					glm::mat4 invBindPose = AssimpToGlm(bone->mOffsetMatrix);
+					boneNameToInvBindPoseMap.emplace(boneName, invBindPose);
+				}
+			}
+
+			if (boneNameToInvBindPoseMap.size() == 0)
+				return nullptr;
+
+			Pose bindPose;
+			std::vector<std::string> jointNames;
+			std::vector<glm::mat4> invBindPoseMatrices;
+
+			ProcessNode(aiScene->mRootNode, bindPose, jointNames, invBindPoseMatrices, boneNameToInvBindPoseMap, -1);
+
+			Skeleton* skeleton = new Skeleton(bindPose, invBindPoseMatrices, jointNames);
+
+			return skeleton;
 		}
 	}
 }
