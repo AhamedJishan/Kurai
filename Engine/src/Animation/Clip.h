@@ -22,13 +22,9 @@ namespace Dawn
 		// If a track for a specified joint doesn't exist, than it creates a new one.
 		TransformTrack& operator[](unsigned int joint);
 
-		void RecalculateDuration();
-
 		const std::string& GetName();
 		void SetName(const std::string& name);
 		float GetDuration();
-		float GetStartTime();
-		float GetEndTime();
 		bool GetLooping();
 		void SetLooping(bool isLooping);
 
@@ -38,8 +34,6 @@ namespace Dawn
 	protected:
 		std::vector<TransformTrack> mTracks;
 		std::string mName;
-		float mStartTime;
-		float mEndTime;
 		bool mLooping;
 	};
 }

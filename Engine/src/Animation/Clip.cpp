@@ -5,8 +5,6 @@ namespace Dawn
 	Clip::Clip()
 	{
 		mName = "--UnNamed--";
-		mStartTime = 0.0f;
-		mEndTime = 0.0f;
 		mLooping = true;
 	}
 
@@ -53,33 +51,8 @@ namespace Dawn
 		}
 
 		mTracks.push_back(TransformTrack());
-		mTracks[size - 1].SetId(joint);
-		return mTracks[size - 1];
-	}
-	
-	void Clip::RecalculateDuration()
-	{
-		mStartTime = 0.0f;
-		mEndTime = 0.0f;
-		bool startSet = false;
-		bool endSet = false;
-
-		for (unsigned int i = 0; i < mTracks.size(); i++)
-		{
-			float startTime = mTracks[i].GetStartTime();
-			float endTime = mTracks[i].GetEndTime();
-
-			if (startTime < mStartTime || !startSet)
-			{
-				mStartTime = startTime;
-				startSet = true;
-			}
-			if (endTime > mEndTime || !endSet)
-			{
-				mEndTime = endTime;
-				endSet = true;
-			}
-		}
+		mTracks[mTracks.size() - 1].SetId(joint);
+		return mTracks[mTracks.size() - 1];
 	}
 	
 	const std::string& Clip::GetName()
@@ -94,17 +67,20 @@ namespace Dawn
 	
 	float Clip::GetDuration()
 	{
-		return mEndTime - mStartTime;
-	}
-	
-	float Clip::GetStartTime()
-	{
-		return mStartTime;
-	}
-	
-	float Clip::GetEndTime()
-	{
-		return mEndTime;
+		float endTime = 0.0f;
+		bool endSet = false;
+
+		for (unsigned int i = 0; i < mTracks.size(); i++)
+		{
+			float endTime = mTracks[i].GetEndTime();
+
+			if (endTime > endTime || !endSet)
+			{
+				endTime = endTime;
+				endSet = true;
+			}
+		}
+		return endTime;
 	}
 	
 	bool Clip::GetLooping()
@@ -121,21 +97,22 @@ namespace Dawn
 	{
 		if (mLooping)
 		{
-			float duration = mEndTime - mStartTime;
+			float duration = GetDuration();
 			if (duration < 0.0f)
 				return 0.0f;
 
-			inTime = fmodf(inTime - mStartTime, duration);
+			inTime = fmodf(inTime, duration);
 			if (inTime < 0.0f)
 				inTime += duration;
-			inTime += mStartTime;
 		}
 		else
 		{
-			if (inTime < mStartTime)
-				return mStartTime;
-			if (inTime > mEndTime)
-				return mEndTime;
+			float duration = GetDuration();
+
+			if (inTime < 0.0f)
+				return 0.0f;
+			if (inTime > duration)
+				return duration;
 		}
 
 		return inTime;

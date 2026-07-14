@@ -11,6 +11,7 @@
 #include "RawMesh.h"
 #include "RawMaterial.h"
 #include <Animation/Skeleton.h>
+#include <Animation/Clip.h>
 
 namespace Dawn:: AssimpImporter
 {
@@ -18,6 +19,7 @@ namespace Dawn:: AssimpImporter
 	{
 		RawMesh* GetRawMesh(const aiMesh* aiMesh);
 		RawMaterial* GetRawMaterial(const aiMaterial* aiMat, const std::string& directory);
+		Clip* GetAnimationClip(const aiAnimation* aiAnimation, const Skeleton* skeleton);
 		Skeleton* GetSkeleton(const aiScene* aiScene);
 	}
 
@@ -52,6 +54,10 @@ namespace Dawn:: AssimpImporter
 
 		// Load Skeleton
 		Skeleton* skeleton = GetSkeleton(scene);
+
+		// Load Animation Clips
+		for (unsigned int i = 0; i < scene->mNumAnimations; i++)
+			rawModel->AddAnimationClip(GetAnimationClip(scene->mAnimations[i], skeleton));
 
 		if (skeleton)
 			rawModel->SetSkeleton(skeleton);
@@ -155,6 +161,90 @@ namespace Dawn:: AssimpImporter
 			return rawMaterial;
 		}
 
+		Interpolation AssimpToInterpolation(aiAnimInterpolation aiInterpolation)
+		{
+			Interpolation interpolation;
+			switch (aiInterpolation)
+			{
+			case aiAnimInterpolation_Step:
+				interpolation = Interpolation::Constant;
+				break;
+			case aiAnimInterpolation_Linear:
+				interpolation = Interpolation::Linear;
+				break;
+			default:
+				LOG_WARN("Unsupported Assimp interpolation type. Falling back to linear.");
+				interpolation = Interpolation::Linear;
+				break;
+			}
+
+			return interpolation;
+		}
+
+		Clip* GetAnimationClip(const aiAnimation* aiAnimation, const Skeleton* skeleton)
+		{
+			Clip* clip = new Clip();
+			clip->SetName(aiAnimation->mName.C_Str());
+			float ticksPerSecond  = static_cast<float>(aiAnimation->mTicksPerSecond);
+			ticksPerSecond = (ticksPerSecond == 0.0f) ? 25.0f : ticksPerSecond;
+
+			for (unsigned int channelIndex = 0; channelIndex < aiAnimation->mNumChannels; channelIndex++)
+			{
+				const aiNodeAnim* track = aiAnimation->mChannels[channelIndex];
+				int jointId = skeleton->GetJointId(track->mNodeName.C_Str());
+
+				TransformTrack transformTrack = (*clip)[jointId];
+				// Position track
+				transformTrack.GetPositionTrack().SetSize(track->mNumPositionKeys);
+				for (unsigned int i = 0; i < track->mNumPositionKeys; i++)
+				{
+					float timeInTicks = static_cast<float>(track->mPositionKeys[i].mTime);
+
+					aiAnimInterpolation aiInterpolation = track->mPositionKeys[i].mInterpolation;
+					transformTrack.GetPositionTrack().SetInterpolation(AssimpToInterpolation(aiInterpolation));
+
+					aiVector3D aiVec3 = track->mPositionKeys[i].mValue;
+					transformTrack.GetPositionTrack()[i].mTime = timeInTicks / ticksPerSecond;
+					transformTrack.GetPositionTrack()[i].mValues[0] = aiVec3.x;
+					transformTrack.GetPositionTrack()[i].mValues[1] = aiVec3.y;
+					transformTrack.GetPositionTrack()[i].mValues[2] = aiVec3.z;
+				}
+				// Scale track
+				transformTrack.GetScaleTrack().SetSize(track->mNumScalingKeys);
+				for (unsigned int i = 0; i < track->mNumScalingKeys; i++)
+				{
+					float timeInTicks = static_cast<float>(track->mScalingKeys[i].mTime);
+
+					aiAnimInterpolation aiInterpolation = track->mScalingKeys[i].mInterpolation;
+					transformTrack.GetScaleTrack().SetInterpolation(AssimpToInterpolation(aiInterpolation));
+
+					aiVector3D aiVec3 = track->mScalingKeys[i].mValue;
+					transformTrack.GetScaleTrack()[i].mTime = timeInTicks / ticksPerSecond;
+					transformTrack.GetScaleTrack()[i].mValues[0] = aiVec3.x;
+					transformTrack.GetScaleTrack()[i].mValues[1] = aiVec3.y;
+					transformTrack.GetScaleTrack()[i].mValues[2] = aiVec3.z;
+				}
+				// Rotation track
+				transformTrack.GetRotationTrack().SetSize(track->mNumRotationKeys);
+				for (unsigned int i = 0; i < track->mNumRotationKeys; i++)
+				{
+					float timeInTicks = static_cast<float>(track->mRotationKeys[i].mTime);
+
+					aiAnimInterpolation aiInterpolation = track->mRotationKeys[i].mInterpolation;
+					transformTrack.GetRotationTrack().SetInterpolation(AssimpToInterpolation(aiInterpolation));
+
+					aiQuaternion aiQuat = track->mRotationKeys[i].mValue;
+					transformTrack.GetRotationTrack()[i].mTime = timeInTicks / ticksPerSecond;
+					transformTrack.GetRotationTrack()[i].mValues[0] = aiQuat.w;
+					transformTrack.GetRotationTrack()[i].mValues[1] = aiQuat.x;
+					transformTrack.GetRotationTrack()[i].mValues[2] = aiQuat.y;
+					transformTrack.GetRotationTrack()[i].mValues[3] = aiQuat.z;
+				}
+			}
+
+			return clip;
+		}
+
 		glm::mat4 AssimpToGlm(const aiMatrix4x4& m)
 		{
 			return glm::mat4(
@@ -176,6 +266,7 @@ namespace Dawn:: AssimpImporter
 		void ProcessNode(
 			const aiNode* node,
 			Pose& outPose,
+			std::vector<int>& outParents,
 			std::vector<std::string>& outJointNames,
 			std::vector<glm::mat4>& outInvBindPoseMatrices,
 			const std::unordered_map<std::string, glm::mat4>& boneNameToInvBindPoseMap, 
@@ -196,7 +287,8 @@ namespace Dawn:: AssimpImporter
 				transform.Position = AssimpToGlm(position);
 				transform.Rotation = AssimpToGlm(rotation);
 
-				int currentIndex = outPose.AddJoint(transform, parentIndex);
+				int currentIndex = outPose.AddJoint(transform);
+				outParents.push_back(parentIndex);
 				outJointNames.push_back(it->first);
 				outInvBindPoseMatrices.push_back(it->second);
 
@@ -204,7 +296,7 @@ namespace Dawn:: AssimpImporter
 			}
 
 			for (unsigned int i = 0; i < node->mNumChildren; i++)
-				ProcessNode(node->mChildren[i], outPose, outJointNames, outInvBindPoseMatrices, boneNameToInvBindPoseMap, parentIndex);
+				ProcessNode(node->mChildren[i], outPose, outParents, outJointNames, outInvBindPoseMatrices, boneNameToInvBindPoseMap, parentIndex);
 		}
 
 		Skeleton* GetSkeleton(const aiScene* aiScene)
@@ -226,12 +318,13 @@ namespace Dawn:: AssimpImporter
 				return nullptr;
 
 			Pose bindPose;
+			std::vector<int> parents;
 			std::vector<std::string> jointNames;
 			std::vector<glm::mat4> invBindPoseMatrices;
 
-			ProcessNode(aiScene->mRootNode, bindPose, jointNames, invBindPoseMatrices, boneNameToInvBindPoseMap, -1);
+			ProcessNode(aiScene->mRootNode, bindPose, parents, jointNames, invBindPoseMatrices, boneNameToInvBindPoseMap, -1);
 
-			Skeleton* skeleton = new Skeleton(bindPose, invBindPoseMatrices, jointNames);
+			Skeleton* skeleton = new Skeleton(bindPose, parents, jointNames, invBindPoseMatrices);
 
 			return skeleton;
 		}

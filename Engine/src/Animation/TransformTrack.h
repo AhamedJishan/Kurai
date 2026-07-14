@@ -11,7 +11,6 @@ namespace Dawn
 		TransformTrack();
 
 		void SetId(unsigned int id);
-
 		unsigned int GetId();
 		Vec3Track& GetScaleTrack();
 		Vec3Track& GetPositionTrack();
