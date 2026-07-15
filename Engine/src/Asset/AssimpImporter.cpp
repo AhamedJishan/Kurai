@@ -2,6 +2,8 @@
 
 #include <vector>
 #include <unordered_map>
+#include <glm/vec3.hpp>
+#include <glm/vec2.hpp>
 #include <glm/mat4x4.hpp>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -68,9 +70,31 @@ namespace Dawn:: AssimpImporter
 
 	namespace
 	{
+		glm::mat4 AssimpToGlm(const aiMatrix4x4& m)
+		{
+			return glm::mat4(
+				m.a1, m.b1, m.c1, m.d1,
+				m.a2, m.b2, m.c2, m.d2,
+				m.a3, m.b3, m.c3, m.d3,
+				m.a4, m.b4, m.c4, m.d4
+			);
+		}
+		glm::vec2 AssimpToGlm(const aiVector2D& v)
+		{
+			return glm::vec2(v.x, v.y);
+		}
+		glm::vec3 AssimpToGlm(const aiVector3D& v)
+		{
+			return glm::vec3(v.x, v.y, v.z);
+		}
+		glm::quat AssimpToGlm(const aiQuaternion& q)
+		{
+			return glm::quat(q.w, q.x, q.y, q.z);
+		}
+
 		RawMesh* GetRawMesh(const aiMesh* aiMesh, Skeleton* skeleton)
 		{
-			const std::string& name = aiMesh->mName.C_Str();
+			const std::string name = aiMesh->mName.C_Str();
 			int materialIndex = aiMesh->mMaterialIndex;
 			std::vector<Vertex> vertices;
 			std::vector<unsigned int> indices;
@@ -81,23 +105,15 @@ namespace Dawn:: AssimpImporter
 			for (unsigned int i = 0; i < aiMesh->mNumVertices; i++)
 			{
 				Vertex vertex;
-				vertex.Position.x = aiMesh->mVertices[i].x;
-				vertex.Position.y = aiMesh->mVertices[i].y;
-				vertex.Position.z = aiMesh->mVertices[i].z;
 
-				vertex.Normal.x = aiMesh->mNormals[i].x;
-				vertex.Normal.y = aiMesh->mNormals[i].y;
-				vertex.Normal.z = aiMesh->mNormals[i].z;
+				vertex.Position = AssimpToGlm(aiMesh->mVertices[i]);
+				vertex.Normal = AssimpToGlm(aiMesh->mNormals[i]);
+				vertex.Tangent = AssimpToGlm(aiMesh->mTangents[i]);
 
 				if (aiMesh->HasTextureCoords(0))
 				{
-					vertex.TexCoord.x = aiMesh->mTextureCoords[0][i].x;
-					vertex.TexCoord.y = aiMesh->mTextureCoords[0][i].y;
+					vertex.TexCoord = AssimpToGlm(aiMesh->mTextureCoords[0][i]);
 				}
-
-				vertex.Tangent.x = aiMesh->mTangents[i].x;
-				vertex.Tangent.y = aiMesh->mTangents[i].y;
-				vertex.Tangent.z = aiMesh->mTangents[i].z;
 
 				vertices.emplace_back(vertex);
 			}
@@ -272,24 +288,6 @@ namespace Dawn:: AssimpImporter
 			}
 
 			return clip;
-		}
-
-		glm::mat4 AssimpToGlm(const aiMatrix4x4& m)
-		{
-			return glm::mat4(
-				m.a1, m.b1, m.c1, m.d1,
-				m.a2, m.b2, m.c2, m.d2,
-				m.a3, m.b3, m.c3, m.d3,
-				m.a4, m.b4, m.c4, m.d4
-			);
-		}
-		glm::vec3 AssimpToGlm(const aiVector3D& v)
-		{
-			return glm::vec3(v.x, v.y, v.z);
-		}
-		glm::quat AssimpToGlm(const aiQuaternion& q)
-		{
-			return glm::quat(q.w, q.x, q.y, q.z);
 		}
 
 		void ProcessNode(
