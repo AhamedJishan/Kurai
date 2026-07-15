@@ -17,7 +17,7 @@ namespace Dawn:: AssimpImporter
 {
 	namespace
 	{
-		RawMesh* GetRawMesh(const aiMesh* aiMesh);
+		RawMesh* GetRawMesh(const aiMesh* aiMesh, Skeleton* skeleton);
 		RawMaterial* GetRawMaterial(const aiMaterial* aiMat, const std::string& directory);
 		Clip* GetAnimationClip(const aiAnimation* aiAnimation, const Skeleton* skeleton);
 		Skeleton* GetSkeleton(const aiScene* aiScene);
@@ -34,7 +34,8 @@ namespace Dawn:: AssimpImporter
 			aiProcess_JoinIdenticalVertices |
 			aiProcess_GenSmoothNormals |
 			aiProcess_CalcTangentSpace |
-			aiProcess_Triangulate);
+			aiProcess_Triangulate |
+			aiProcess_LimitBoneWeights);
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
 			LOG_ERROR("Assimp error: %s", importer.GetErrorString());
@@ -44,23 +45,22 @@ namespace Dawn:: AssimpImporter
 		RawModel* rawModel = new RawModel();
 		rawModel->SetDirectory(directory);
 
-		// Load Meshes
-		for (unsigned int i = 0; i < scene->mNumMeshes; i++)
-			rawModel->AddRawMesh(GetRawMesh(scene->mMeshes[i]));
-
-		// Load Materials
-		for (unsigned int i = 0; i < scene->mNumMaterials; i++)
-			rawModel->AddRawMaterial(GetRawMaterial(scene->mMaterials[i], directory));
-
 		// Load Skeleton
 		Skeleton* skeleton = GetSkeleton(scene);
+		if (skeleton)
+			rawModel->SetSkeleton(skeleton);
 
 		// Load Animation Clips
 		for (unsigned int i = 0; i < scene->mNumAnimations; i++)
 			rawModel->AddAnimationClip(GetAnimationClip(scene->mAnimations[i], skeleton));
 
-		if (skeleton)
-			rawModel->SetSkeleton(skeleton);
+		// Load Meshes
+		for (unsigned int i = 0; i < scene->mNumMeshes; i++)
+			rawModel->AddRawMesh(GetRawMesh(scene->mMeshes[i], skeleton));
+
+		// Load Materials
+		for (unsigned int i = 0; i < scene->mNumMaterials; i++)
+			rawModel->AddRawMaterial(GetRawMaterial(scene->mMaterials[i], directory));
 
 		return rawModel;
 	}
@@ -68,13 +68,15 @@ namespace Dawn:: AssimpImporter
 
 	namespace
 	{
-		RawMesh* GetRawMesh(const aiMesh* aiMesh)
+		RawMesh* GetRawMesh(const aiMesh* aiMesh, Skeleton* skeleton)
 		{
 			const std::string& name = aiMesh->mName.C_Str();
 			int materialIndex = aiMesh->mMaterialIndex;
 			std::vector<Vertex> vertices;
 			std::vector<unsigned int> indices;
+			std::vector<VertexSkinData> skinDatas;
 
+			// --- VERTICES ---
 			vertices.reserve(aiMesh->mNumVertices);
 			for (unsigned int i = 0; i < aiMesh->mNumVertices; i++)
 			{
@@ -99,7 +101,7 @@ namespace Dawn:: AssimpImporter
 
 				vertices.emplace_back(vertex);
 			}
-
+			// --- INDICES ---
 			indices.reserve(aiMesh->mNumFaces * 3);
 			for (unsigned int i = 0; i < aiMesh->mNumFaces; i++)
 			{
@@ -109,8 +111,32 @@ namespace Dawn:: AssimpImporter
 					indices.emplace_back(aiFace.mIndices[j]);
 				}
 			}
+			// --- VERTEX SKIN DATA ---
+			if (skeleton)
+			{
+				skinDatas.resize(vertices.size());
+				for (unsigned int aiBoneIndex = 0; aiBoneIndex < aiMesh->mNumBones; aiBoneIndex++)
+				{
+					const aiBone* bone = aiMesh->mBones[aiBoneIndex];
 
-			return new RawMesh(name, std::move(vertices), std::move(indices), materialIndex);
+					std::string jointName = bone->mName.C_Str();
+					int jointId = skeleton->GetJointId(jointName);
+
+					unsigned int numWeights = bone->mNumWeights;
+					for (unsigned int i = 0; i < numWeights; i++)
+					{
+						unsigned int vertexId = bone->mWeights[i].mVertexId;
+						float weight = static_cast<float>( bone->mWeights[i].mWeight );
+
+						if (vertexId >= vertices.size())
+							LOG_ERROR("Mesh '%s' vertexId '%d' is greater than vertex count '%d'", aiMesh->mName, vertexId, vertices.size());
+
+						skinDatas[vertexId].AddWeight(jointId, weight);
+					}
+				}
+			}
+
+			return new RawMesh(name, materialIndex, std::move(vertices), std::move(indices), std::move(skinDatas));
 		}
 
 		RawMaterial* GetRawMaterial(const aiMaterial* aiMat, const std::string& directory)
@@ -183,6 +209,9 @@ namespace Dawn:: AssimpImporter
 
 		Clip* GetAnimationClip(const aiAnimation* aiAnimation, const Skeleton* skeleton)
 		{
+			if (!skeleton)
+				return nullptr;
+
 			Clip* clip = new Clip();
 			clip->SetName(aiAnimation->mName.C_Str());
 			float ticksPerSecond  = static_cast<float>(aiAnimation->mTicksPerSecond);

@@ -11,11 +11,12 @@ namespace Dawn
 	class RawMesh
 	{
 	public:
-		RawMesh(const std::string& name, std::vector<Vertex> vertices, std::vector<unsigned int> indices, int rawMaterialIndex)
+		RawMesh(const std::string& name, int rawMaterialIndex, std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<VertexSkinData> skinData)
 			:mName(name)
 			,mRawMaterialIndex(rawMaterialIndex)
 			,mVertices(std::move(vertices))
 			,mIndices(std::move(indices))
+			,mSkinData(std::move(skinData))
 		{
 		}
 
