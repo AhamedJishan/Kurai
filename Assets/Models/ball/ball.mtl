@@ -1,12 +1,3 @@
-# Blender 4.4.3 MTL File: 'None'
-# www.blender.org
-
-newmtl Material
-Ns 250.000000
-Ka 1.000000 1.000000 1.000000
-Ks 0.500000 0.500000 0.500000
-Ke 22.000000 19.000000 0.700000
-Ni 1.450000
-d 1.000000
-illum 2
-map_Kd Plaster1K_albedo.png
+version https://git-lfs.github.com/spec/v1
+oid sha256:8fcb2f56842927fe8f6bc7c468932b7707f6947c0c5a834dafebdfe545858496
+size 232
