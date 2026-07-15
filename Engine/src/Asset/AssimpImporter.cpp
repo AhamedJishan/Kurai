@@ -145,7 +145,10 @@ namespace Dawn:: AssimpImporter
 						float weight = static_cast<float>( bone->mWeights[i].mWeight );
 
 						if (vertexId >= vertices.size())
+						{
 							LOG_ERROR("Mesh '%s' vertexId '%d' is greater than vertex count '%d'", aiMesh->mName, vertexId, vertices.size());
+							continue;
+						}
 
 						skinDatas[vertexId].AddWeight(jointId, weight);
 					}

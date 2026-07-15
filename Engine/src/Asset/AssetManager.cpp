@@ -126,14 +126,9 @@ namespace Dawn
 
         std::vector<Mesh*> meshes;
         meshes.reserve(rawMeshes.size());
-        for (size_t i = 0; i < rawMeshes.size(); i++)
+        for (RawMesh* rawMesh : rawMeshes)
         {
-            const std::string& name = rawMeshes[i]->GetName();
-            const std::vector<Vertex>& vertices = rawMeshes[i]->GetVertices();
-            const std::vector<unsigned int>& indices = rawMeshes[i]->GetIndices();
-            unsigned int rawMaterialIndex = rawMeshes[i]->GetRawMaterialIndex();
-            Mesh* mesh = new Mesh(name, vertices, indices, rawMaterialIndex);
-
+            Mesh* mesh = new Mesh(rawMesh);
             meshes.emplace_back(mesh);
         }
 

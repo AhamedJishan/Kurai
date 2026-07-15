@@ -2,16 +2,17 @@
 #include "Utils/Log.h"
 
 #include <glad/glad.h>
+#include <Asset/RawMesh.h>
 
 namespace Dawn
 {
-	Mesh::Mesh(const std::string& name, const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, unsigned int rawMaterialIndex)
+	Mesh::Mesh(RawMesh* rawMesh)
 	{
-		mName = name;
-		mRawMaterialIndex = rawMaterialIndex;
-		mIndexCount = static_cast<unsigned int>(indices.size());
+		mName = rawMesh->GetName();
+		mRawMaterialIndex = rawMesh->GetRawMaterialIndex();
+		mIndexCount = static_cast<unsigned int>(rawMesh->GetIndices().size());
 
-		SetupMesh(vertices, indices);
+		SetupMesh(rawMesh->GetVertices(), rawMesh->GetIndices());
 	}
 
 	Mesh::~Mesh()

@@ -6,10 +6,13 @@
 
 namespace Dawn
 {
+	// Forward declarations
+	class RawMesh;
+
 	class Mesh
 	{
 	public:
-		Mesh(const std::string& name, const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, unsigned int rawMaterialIndex);
+		Mesh(RawMesh* rawMesh);
 		~Mesh();
 
 		void Bind() const;
