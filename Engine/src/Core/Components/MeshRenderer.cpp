@@ -29,13 +29,13 @@ namespace Dawn
 		// Mesh will be deleted by AssetManager
 	}
 
-	void MeshRenderer::CreateFromModel(Actor* owner, const std::string& path)
+	void MeshRenderer::CreateFromModel(Actor* owner, const std::string& path, bool requestSkinning)
 	{
 		RawModel* rawModel = Assets::GetRawModel(path);
 		if (!rawModel)
 			return;
 
-		const std::vector<Mesh*>& meshes = Assets::GetMeshes(path);
+		const std::vector<Mesh*>& meshes = Assets::GetMeshes(path, requestSkinning);
 		const std::vector<RawMaterial*>& rawMaterials = rawModel->GetRawMaterials();
 
 		for (Mesh* mesh : meshes)

@@ -24,6 +24,7 @@ namespace Dawn
 		const std::string& GetName() const { return mName; }
 		int GetRawMaterialIndex() const { return mRawMaterialIndex; }
 		bool HasSkinData() const { return mHasSkinData; }
+		const std::vector<VertexSkinData>& GetSkinData() const { return mSkinData; }
 		const std::vector<Vertex>& GetVertices() const { return mVertices; }
 		const std::vector<unsigned int>& GetIndices() const { return mIndices; }
 

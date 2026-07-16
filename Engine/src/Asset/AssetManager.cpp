@@ -35,13 +35,20 @@ namespace Dawn
         mRawModels.clear();
         LOG_INFO("Destroyed all RawModels");
 
-        for (auto& it : mMeshes)
+        for (auto& it : mStaticMeshes)
         {
             for (Mesh* mesh : it.second)
                 if (mesh)
                     delete mesh;
         }
-        mMeshes.clear();
+        mStaticMeshes.clear();
+        for (auto& it : mSkinnedMeshes)
+        {
+            for (Mesh* mesh : it.second)
+                if (mesh)
+                    delete mesh;
+        }
+        mSkinnedMeshes.clear();
         LOG_INFO("Destroyed all Meshes");
     }
 
@@ -108,18 +115,20 @@ namespace Dawn
         return rawModel;
     }
 
-    const std::vector<Mesh*>& AssetManager::GetMeshes(const std::string& path)
+    const std::vector<Mesh*>& AssetManager::GetMeshes(const std::string& path, bool requestSkinning)
     {
-        auto it = mMeshes.find(path);
-        if (it != mMeshes.end())
+        std::unordered_map<std::string, std::vector<Mesh*>>& meshCache = requestSkinning ? mSkinnedMeshes : mStaticMeshes;
+
+        auto it = meshCache.find(path);
+        if (it != meshCache.end())
             return it->second;
 
         RawModel* rawModel = GetRawModel(path);
         if (!rawModel)
         {
             // cache an empty result
-            mMeshes.emplace(path, std::vector<Mesh*>{});
-            return mMeshes.at(path);
+            meshCache.emplace(path, std::vector<Mesh*>{});
+            return meshCache.at(path);
         }
 
         const std::vector<RawMesh*>& rawMeshes = rawModel->GetRawMeshes();
@@ -128,13 +137,14 @@ namespace Dawn
         meshes.reserve(rawMeshes.size());
         for (RawMesh* rawMesh : rawMeshes)
         {
-            Mesh* mesh = new Mesh(rawMesh);
-            meshes.emplace_back(mesh);
+            MeshType meshType = (requestSkinning && rawMesh->HasSkinData()) ? MeshType::Skinned : MeshType::Static;
+
+            meshes.emplace_back(new Mesh(rawMesh, meshType));
         }
 
-        mMeshes.emplace(path, std::move(meshes));
+        meshCache.emplace(path, std::move(meshes));
 
-        return mMeshes.at(path);
+        return meshCache.at(path);
     }
 
     Shader* AssetManager::CreateShaderByName(const std::string& name, bool skinned)

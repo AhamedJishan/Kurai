@@ -16,10 +16,9 @@ namespace Dawn
 		MeshRenderer(Actor* owner, Mesh* mesh, Material* material, unsigned int updateOrder = 100);
 		~MeshRenderer();
 
-		static void CreateFromModel(Actor* owner, const std::string& path);
+		static void CreateFromModel(Actor* owner, const std::string& path, bool requestSkinning = false);
 
 		Mesh* GetMesh() const { return mMesh; }
-
 		Material* GetMaterial() const { return mMaterial; }
 		void SetMaterial(Material* material) { delete mMaterial; mMaterial = material; }
 

@@ -29,9 +29,9 @@ namespace Dawn
 			return Application::Get()->GetAssetManager()->GetRawModel(path);
 		}
 
-		static const std::vector<Mesh*>& GetMeshes(const std::string& path)
+		static const std::vector<Mesh*>& GetMeshes(const std::string& path, bool requestSkinning = false)
 		{
-			return Application::Get()->GetAssetManager()->GetMeshes(path);
+			return Application::Get()->GetAssetManager()->GetMeshes(path, requestSkinning);
 		}
 	};
 }

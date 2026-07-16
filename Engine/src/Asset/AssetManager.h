@@ -21,7 +21,7 @@ namespace Dawn
 		Texture* GetTexture(const std::string& filePath);
 		Shader* GetShader(const std::string& shaderName, bool skinned);
 		RawModel* GetRawModel(const std::string& path);
-		const std::vector<Mesh*>& GetMeshes(const std::string& path);
+		const std::vector<Mesh*>& GetMeshes(const std::string& path, bool requestSkinning);
 
 	private:
 		Shader* CreateShaderByName(const std::string& name, bool skinned);
@@ -30,6 +30,9 @@ namespace Dawn
 		std::unordered_map<std::string, Texture*> mTextures;
 		std::unordered_map<std::string, Shader*> mShaders;
 		std::unordered_map<std::string, RawModel*> mRawModels;
-		std::unordered_map<std::string, std::vector<Mesh*>> mMeshes;
+		std::unordered_map<std::string, std::vector<Mesh*>> mStaticMeshes;
+		// Cache of meshes created for skinned requests. 
+		// Individual meshes may still be static if the corresponding RawMesh has no skin data.
+		std::unordered_map<std::string, std::vector<Mesh*>> mSkinnedMeshes;
 	};
 }
