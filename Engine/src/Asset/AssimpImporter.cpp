@@ -128,10 +128,13 @@ namespace Dawn:: AssimpImporter
 				}
 			}
 			// --- VERTEX SKIN DATA ---
-			if (skeleton)
+			unsigned int numBones = aiMesh->mNumBones;
+			bool hasSkinData = skeleton && numBones > 0;
+			if (hasSkinData)
 			{
+				hasSkinData = true;
 				skinDatas.resize(vertices.size());
-				for (unsigned int aiBoneIndex = 0; aiBoneIndex < aiMesh->mNumBones; aiBoneIndex++)
+				for (unsigned int aiBoneIndex = 0; aiBoneIndex < numBones; aiBoneIndex++)
 				{
 					const aiBone* bone = aiMesh->mBones[aiBoneIndex];
 
@@ -155,7 +158,7 @@ namespace Dawn:: AssimpImporter
 				}
 			}
 
-			return new RawMesh(name, materialIndex, std::move(vertices), std::move(indices), std::move(skinDatas));
+			return new RawMesh(name, materialIndex, std::move(vertices), std::move(indices), std::move(skinDatas), hasSkinData);
 		}
 
 		RawMaterial* GetRawMaterial(const aiMaterial* aiMat, const std::string& directory)
