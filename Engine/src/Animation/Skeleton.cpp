@@ -47,7 +47,7 @@ namespace Dawn
 		return mJointNames;
 	}
 	
-	const std::vector<glm::mat4> Skeleton::GetInvBindPoseMatrices() const
+	const std::vector<glm::mat4>& Skeleton::GetInvBindPoseMatrices() const
 	{
 		return mInvBindPoseMatrices;
 	}

@@ -19,6 +19,7 @@ namespace Dawn
 		unsigned int GetSize();
 		void SetSize(unsigned int size);
 
+		std::vector<glm::mat4> GetLocalTransformMatrices();
 		const Transform& GetLocalTransform(unsigned int index);
 		void SetLocalTransform(unsigned int index, const Transform& transform);
 

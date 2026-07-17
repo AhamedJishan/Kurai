@@ -23,7 +23,7 @@ namespace Dawn
 		mTracks[index].SetId(id);
 	}
 	
-	float Clip::Sample(Pose & outPose, float time)
+	float Clip::Sample(Pose& outPose, float time)
 	{
 		if (GetDuration() == 0.0f)
 			return 0.0f;
