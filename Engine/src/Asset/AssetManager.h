@@ -11,6 +11,8 @@ namespace Dawn
 	class Shader;
 	class RawModel;
 	class Mesh;
+	class Skeleton;
+	class Clip;
 
 	class AssetManager
 	{
@@ -21,6 +23,8 @@ namespace Dawn
 		Texture* GetTexture(const std::string& filePath);
 		Shader* GetShader(const std::string& shaderName, bool skinned);
 		RawModel* GetRawModel(const std::string& path);
+		Skeleton* GetSkeleton(const std::string& path);
+		Clip* GetAnimationClip(const std::string& path);
 		const std::vector<Mesh*>& GetMeshes(const std::string& path, bool requestSkinning);
 
 	private:

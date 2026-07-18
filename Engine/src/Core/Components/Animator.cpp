@@ -24,11 +24,13 @@ namespace Dawn
 		Pose animatedPose = mSkeleton->GetBindPose();	// giving bind pose as default pose
 		mActiveClip->Sample(animatedPose, mPlaybackTime);
 
-		const std::vector<glm::mat4> globalTransforms = BuildGlobalTransforms(animatedPose.GetLocalTransformMatrices());
+		const std::vector<glm::mat4> localTransforms = animatedPose.GetLocalTransformMatrices();
+		const std::vector<glm::mat4> globalTransforms = BuildGlobalTransforms(localTransforms);
 		const std::vector<glm::mat4>& invBindPoseMatrices = mSkeleton->GetInvBindPoseMatrices();
 
+		mMatrixPalette.resize(globalTransforms.size(), glm::mat4(1.0f));
 		for (size_t i = 0; i < globalTransforms.size(); i++)
-			mMatrixPalette[i] = globalTransforms[i] * invBindPoseMatrices[i];	// mMatrixPalette was already resized when skeleton was set
+			mMatrixPalette[i] = mSkeleton->GetRootGlobalInvMatrix() * globalTransforms[i] * invBindPoseMatrices[i];
 
 		mPlaybackTime += deltaTime;
 	}
@@ -40,12 +42,15 @@ namespace Dawn
 
 		auto it = mAnimations.find(clipName);
 		if (it == mAnimations.end())
+		{
+			LOG_WARN("Couldn't find a clip named '%s'", clipName.c_str());
 			return;
+		}
 
 		mActiveClip = it->second;
 	}
 
-	void Animator::SetSkeleton(Skeleton* skeleton)
+	void Animator::SetSkeleton(const Skeleton* skeleton)
 	{
 		if (!skeleton)
 		{

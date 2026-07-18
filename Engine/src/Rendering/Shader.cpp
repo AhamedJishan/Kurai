@@ -204,4 +204,11 @@ namespace Dawn
 		if (location != -1)
 			glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 	}
+
+	void Shader::SetMat4s(const std::string& name, const std::vector<glm::mat4>& values) const
+	{
+		int location = GetUniformLocation(name);
+		if (location != -1 && values.size() != 0)
+			glUniformMatrix4fv(location, values.size(), GL_FALSE, glm::value_ptr(values[0]));
+	}
 }

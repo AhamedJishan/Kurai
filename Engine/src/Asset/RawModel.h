@@ -28,9 +28,9 @@ namespace Dawn
 				delete rawMaterial;
 		}
 
-		const Skeleton* GetSkeleton() const { return mSkeleton; }
+		Skeleton* GetSkeleton() const { return mSkeleton; }
 		const std::string& GetDirectory() const { return mDirectory; }
-		const std::vector<Clip*>& GetAnimationClips() { return mClips; }
+		const std::vector<Clip*>& GetAnimationClips() const { return mClips; }
 		const std::vector<RawMesh*>& GetRawMeshes() const { return mRawMeshes; }
 		const std::vector<RawMaterial*>& GetRawMaterials() const { return mRawMaterials; }
 

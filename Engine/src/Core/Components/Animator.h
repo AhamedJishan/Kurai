@@ -23,7 +23,7 @@ namespace Dawn
 
 		void Play(const std::string& clipName);
 
-		void SetSkeleton(Skeleton* skeleton);
+		void SetSkeleton(const Skeleton* skeleton);
 		void AddClip(const std::string& clipName, Clip* clip) { mAnimations.emplace(clipName, clip); }
 
 		const std::vector<glm::mat4>& GetMatrixPalette() const { return mMatrixPalette; }
@@ -32,7 +32,7 @@ namespace Dawn
 		std::vector<glm::mat4> BuildGlobalTransforms(const std::vector<glm::mat4>& localTransforms);
 
 	private:
-		Skeleton* mSkeleton = nullptr;
+		const Skeleton* mSkeleton = nullptr;
 		std::unordered_map<std::string, Clip*> mAnimations;
 		std::vector<glm::mat4> mMatrixPalette;
 

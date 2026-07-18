@@ -27,6 +27,7 @@ namespace Dawn
 		void SetVec3s(const std::string& name, const glm::vec3* values, int count) const;
 		void SetVec4s(const std::string& name, const glm::vec4* values, int count) const;
 		void SetMat4(const std::string& name, const glm::mat4& value) const;
+		void SetMat4s(const std::string& name, const std::vector<glm::mat4>& values) const;
 
 	private:
 		bool LoadProgram(unsigned int vertexShaderId, unsigned int fragmentShaderId);

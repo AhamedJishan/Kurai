@@ -109,15 +109,15 @@ namespace Dawn
 	{
 		Transform result = ref;
 
-		if (mScale.GetSize() > 1)
+		if (mScale.GetSize() > 0)
 			result.Scale = mScale.Sample(time, looping);
 
-		if (mRotation.GetSize() > 1)
+		if (mRotation.GetSize() > 0)
 			result.Rotation = mRotation.Sample(time, looping);
 
-		if (mPosition.GetSize() > 1)
+		if (mPosition.GetSize() > 0)
 			result.Position = mPosition.Sample(time, looping);
 
-		return Transform();
+		return result;
 	}
 }

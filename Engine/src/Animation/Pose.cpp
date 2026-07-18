@@ -20,7 +20,7 @@ namespace Dawn
 	int Pose::AddJoint(const Transform& localTransform)
 	{
 		mJoints.push_back(localTransform);
-		return mJoints.size();
+		return mJoints.size() - 1;
 	}
 
 	unsigned int Pose::GetSize()

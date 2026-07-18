@@ -7,6 +7,8 @@
 #include "Rendering/Shader.h"
 #include "Rendering/Mesh.h"
 #include "RawModel.h"
+#include <Animation/Skeleton.h>
+#include <Animation/Clip.h>
 
 namespace Dawn
 {
@@ -32,6 +34,16 @@ namespace Dawn
 		static const std::vector<Mesh*>& GetMeshes(const std::string& path, bool requestSkinning = false)
 		{
 			return Application::Get()->GetAssetManager()->GetMeshes(path, requestSkinning);
+		}
+
+		static Skeleton* GetSkeleton(const std::string& path)
+		{
+			return Application::Get()->GetAssetManager()->GetSkeleton(path);
+		}
+
+		static Clip* GetAnimationClip(const std::string& path)
+		{
+			return Application::Get()->GetAssetManager()->GetAnimationClip(path);
 		}
 	};
 }

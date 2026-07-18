@@ -11,12 +11,15 @@
 #include "Core/Scene.h"
 #include "Core/Components/Camera.h"
 #include "Core/Components/MeshRenderer.h"
+#include <Core/Components/Animator.h>
 #include "HDRFramebuffer.h"
 #include "BloomPass.h"
 #include "Shader.h"
 #include "Material.h"
 #include "Mesh.h"
 #include "ParticleSystem.h"
+
+#include <iostream>
 
 namespace Dawn
 {
@@ -125,9 +128,11 @@ namespace Dawn
 
 			Material* mat = meshRenderer->GetMaterial();
 			Mesh* mesh = meshRenderer->GetMesh();
+			MeshType meshType = mesh->GetMeshType();
 			// TODO: modify for skinned meshes
-			Shader* shader = Assets::GetShader(mat->GetName(), false);
 
+			Shader* shader = Assets::GetShader(mat->GetName(), meshType == MeshType::Skinned);
+			
 			shader->Bind();
 			mat->Apply(shader);
 			mesh->Bind();
@@ -135,6 +140,12 @@ namespace Dawn
 			shader->SetMat4("u_Model", modelMatrix);
 			shader->SetMat4("u_View", viewMatrix);
 			shader->SetMat4("u_Projection", projectionMatrix);
+
+			if (meshType == MeshType::Skinned)
+			{
+				Animator* animator = meshRenderer->GetOwner()->GetComponent<Animator>();
+				shader->SetMat4s("u_MatrixPalette", animator->GetMatrixPalette());
+			}
 
 			shader->SetFloat("u_FogDensity", environmentSettings.fogDensity);
 			shader->SetVec3("u_FogColor", environmentSettings.fogColor);

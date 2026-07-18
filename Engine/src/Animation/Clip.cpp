@@ -72,11 +72,11 @@ namespace Dawn
 
 		for (unsigned int i = 0; i < mTracks.size(); i++)
 		{
-			float endTime = mTracks[i].GetEndTime();
+			float newEndTime = mTracks[i].GetEndTime();
 
-			if (endTime > endTime || !endSet)
+			if (newEndTime > endTime || !endSet)
 			{
-				endTime = endTime;
+				endTime = newEndTime;
 				endSet = true;
 			}
 		}

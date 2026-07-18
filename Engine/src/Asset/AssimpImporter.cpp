@@ -244,7 +244,10 @@ namespace Dawn:: AssimpImporter
 				const aiNodeAnim* track = aiAnimation->mChannels[channelIndex];
 				int jointId = skeleton->GetJointId(track->mNodeName.C_Str());
 
-				TransformTrack transformTrack = (*clip)[jointId];
+				if (jointId == -1)
+					continue;
+
+				TransformTrack& transformTrack = (*clip)[jointId];
 				// Position track
 				transformTrack.GetPositionTrack().SetSize(track->mNumPositionKeys);
 				for (unsigned int i = 0; i < track->mNumPositionKeys; i++)
@@ -350,6 +353,8 @@ namespace Dawn:: AssimpImporter
 			if (boneNameToInvBindPoseMap.size() == 0)
 				return nullptr;
 
+			glm::mat4 globalRootNodeInvMat = glm::inverse(AssimpToGlm(aiScene->mRootNode->mTransformation));
+
 			Pose bindPose;
 			std::vector<int> parents;
 			std::vector<std::string> jointNames;
@@ -357,7 +362,7 @@ namespace Dawn:: AssimpImporter
 
 			ProcessNode(aiScene->mRootNode, bindPose, parents, jointNames, invBindPoseMatrices, boneNameToInvBindPoseMap, -1);
 
-			Skeleton* skeleton = new Skeleton(bindPose, parents, jointNames, invBindPoseMatrices);
+			Skeleton* skeleton = new Skeleton(bindPose, parents, jointNames, invBindPoseMatrices, globalRootNodeInvMat);
 
 			return skeleton;
 		}

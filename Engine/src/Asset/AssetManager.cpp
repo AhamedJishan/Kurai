@@ -5,6 +5,8 @@
 #include "Rendering/Texture.h"
 #include "Rendering/Shader.h"
 #include "Rendering/Mesh.h"
+#include <Animation/Clip.h>
+#include <Animation/Skeleton.h>
 #include "Vertex.h"
 #include "RawModel.h"
 #include "RawMesh.h"
@@ -89,7 +91,7 @@ namespace Dawn
 
         if (!shader)
         {
-            LOG_ERROR("'%s' shader doesn't exist", shaderName.c_str());
+            LOG_ERROR("'%s' shader doesn't exist", key.c_str());
             return nullptr;
         }
             
@@ -115,6 +117,28 @@ namespace Dawn
         return rawModel;
     }
 
+    Skeleton* AssetManager::GetSkeleton(const std::string& path)
+    {
+        RawModel* rawModel = GetRawModel(path);
+        Skeleton* skeleton = rawModel->GetSkeleton();
+
+        if (!skeleton)
+            LOG_ERROR("'%s' doesn't have a skeleton", path.c_str());
+
+        return skeleton;
+    }
+
+    Clip* AssetManager::GetAnimationClip(const std::string& path)
+    {
+        const RawModel* rawModel = GetRawModel(path);
+        const std::vector<Clip*>& clips = rawModel->GetAnimationClips();
+
+        if (clips.size() == 0)
+            LOG_ERROR("'%s' doesn't have any animation clips", path.c_str());
+
+        return clips[0];
+    }
+
     const std::vector<Mesh*>& AssetManager::GetMeshes(const std::string& path, bool requestSkinning)
     {
         std::unordered_map<std::string, std::vector<Mesh*>>& meshCache = requestSkinning ? mSkinnedMeshes : mStaticMeshes;
@@ -123,7 +147,7 @@ namespace Dawn
         if (it != meshCache.end())
             return it->second;
 
-        RawModel* rawModel = GetRawModel(path);
+        const RawModel* rawModel = GetRawModel(path);
         if (!rawModel)
         {
             // cache an empty result

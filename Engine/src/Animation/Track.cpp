@@ -187,7 +187,7 @@ namespace Dawn
 	template<>
 	glm::quat Track<glm::quat, 4>::Cast(float* value)
 	{
-		glm::quat q(value[3], value[0], value[1], value[2]);
+		glm::quat q(value[0], value[1], value[2], value[3]);
 		return glm::normalize(q);
 	}
 }
