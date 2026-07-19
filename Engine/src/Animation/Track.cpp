@@ -1,7 +1,7 @@
 #include "Track.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/spline.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 namespace Dawn
 {
@@ -96,7 +96,8 @@ namespace Dawn
 		float t = (trackTime - thisFrameTime) / deltaFrameTime;
 		T start = Cast(&mFrames[thisFrame].mValues[0]);
 		T end = Cast(&mFrames[thisFrame + 1].mValues[0]);
-		return glm::mix(start, end, t);
+
+		return InterpolateLinear(start, end, t);
 	}
 
 	template<typename T, unsigned int N>

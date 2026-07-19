@@ -26,7 +26,7 @@ namespace Dawn
 
 			animator->Play("Test");
 
-			SetScale(glm::vec3(0.01f));
+			SetScale(glm::vec3(0.015f));
 		}
 	};
 }
