@@ -21,32 +21,32 @@ namespace Dawn
 	void Player::Update(float deltaTime)
 	{
 		// sync camera pos
-		mCamera->SetPosition(GetPosition() + mCameraOffset);
+		mCamera->GetTransform().Position = GetTransform().Position + mCameraOffset;
 
 		float yaw = mCamera->GetYaw();
-		SetRotation(glm::angleAxis(glm::radians(yaw), glm::vec3(0, 1, 0)));
+		GetTransform().Rotation = glm::angleAxis(glm::radians(yaw), glm::vec3(0, 1, 0));
 
 		// WASD movement
 		glm::vec3 moveDir = glm::vec3(0);
 
-		if (Input::GetKey(Key::W)) moveDir += GetForward();
-		if (Input::GetKey(Key::S)) moveDir -= GetForward();
-		if (Input::GetKey(Key::A)) moveDir -= GetRight();
-		if (Input::GetKey(Key::D)) moveDir += GetRight();
+		if (Input::GetKey(Key::W)) moveDir += GetTransform().GetForward();
+		if (Input::GetKey(Key::S)) moveDir -= GetTransform().GetForward();
+		if (Input::GetKey(Key::A)) moveDir -= GetTransform().GetRight();
+		if (Input::GetKey(Key::D)) moveDir += GetTransform().GetRight();
 
 		if (glm::length(moveDir) > 0.0001f)
 			moveDir = glm::normalize(moveDir);
 
-		SetPosition(GetPosition() + moveDir * mSpeed * deltaTime);
+		GetTransform().Position += moveDir * mSpeed * deltaTime;
 	}
 
 	glm::vec3 Player::GetGunPosition()
 	{
-		glm::vec3 gunPos = mCamera->GetPosition();
+		glm::vec3 gunPos = mCamera->GetTransform().Position;
 
-		gunPos += mCamera->GetUp() * mGunOffset.y;
-		gunPos += mCamera->GetRight() * mGunOffset.x;
-		gunPos += mCamera->GetForward() * mGunOffset.z;
+		gunPos += mCamera->GetTransform().GetUp() * mGunOffset.y;
+		gunPos += mCamera->GetTransform().GetRight() * mGunOffset.x;
+		gunPos += mCamera->GetTransform().GetForward() * mGunOffset.z;
 
 		return gunPos;
 	}

@@ -35,7 +35,7 @@ namespace Dawn
 				iter = mEvents3D.erase(iter);
 			else
 			{
-				iter->Set3DAttributes(mOwner->GetWorldTransform());
+				iter->Set3DAttributes(mOwner->GetTransform().ToMatrix());
 				++iter;
 			}
 		}
@@ -47,7 +47,7 @@ namespace Dawn
 		if (event.Is3D())
 		{
 			mEvents3D.emplace_back(event);
-			event.Set3DAttributes(mOwner->GetWorldTransform());
+			event.Set3DAttributes(mOwner->GetTransform().ToMatrix());
 		}
 		else
 			mEvents2D.emplace_back(event);

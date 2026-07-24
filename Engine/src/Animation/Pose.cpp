@@ -38,7 +38,7 @@ namespace Dawn
 		std::vector<glm::mat4> retMatrices(mJoints.size());
 
 		for (unsigned int i = 0; i < mJoints.size(); i++)
-			retMatrices[i] = TransformToMat4(mJoints[i]);
+			retMatrices[i] = mJoints[i].ToMatrix();
 
 		return retMatrices;
 	}

@@ -19,9 +19,9 @@ namespace Dawn
 
 	glm::mat4 Camera::GetView() const
 	{
-		glm::vec3 position = mOwner->GetPosition();
-		glm::vec3 forward  = mOwner->GetForward();
-		glm::vec3 up = mOwner->GetUp();
+		glm::vec3 position = mOwner->GetTransform().Position;
+		glm::vec3 forward  = mOwner->GetTransform().GetForward();
+		glm::vec3 up = mOwner->GetTransform().GetUp();
 
 		return glm::lookAt(position, position + forward, up);
 	}

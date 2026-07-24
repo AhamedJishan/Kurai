@@ -38,7 +38,7 @@ namespace Dawn
 	Physics::Sphere SphereCollider::GetWorldSphere() const
 	{
 		Physics::Sphere sphere;
-		sphere.center = mOwner->GetPosition() + mOffset;
+		sphere.center = mOwner->GetTransform().Position + mOffset;
 		sphere.radius = mRadius;
 
 		return sphere;

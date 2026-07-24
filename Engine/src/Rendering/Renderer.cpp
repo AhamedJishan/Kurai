@@ -124,7 +124,7 @@ namespace Dawn
 
 		for (MeshRenderer* meshRenderer : mMeshRenderers)
 		{
-			glm::mat4 modelMatrix = meshRenderer->GetOwner()->GetWorldTransform();
+			glm::mat4 modelMatrix = meshRenderer->GetOwner()->GetTransform().ToMatrix();
 
 			Material* mat = meshRenderer->GetMaterial();
 			Mesh* mesh = meshRenderer->GetMesh();
@@ -149,7 +149,7 @@ namespace Dawn
 
 			shader->SetFloat("u_FogDensity", environmentSettings.fogDensity);
 			shader->SetVec3("u_FogColor", environmentSettings.fogColor);
-			shader->SetVec3("u_CameraPosition", cam->GetOwner()->GetPosition());
+			shader->SetVec3("u_CameraPosition", cam->GetOwner()->GetTransform().Position);
 			shader->SetVec3("u_AmbientColor", environmentSettings.ambientColor);
 			shader->SetVec3("u_DirectionalLightColor", environmentSettings.directionalLight.color);
 			shader->SetVec3("u_DirectionalLightDirection", environmentSettings.directionalLight.direction);

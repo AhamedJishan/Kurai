@@ -60,18 +60,4 @@ namespace Dawn
 		else
 			LOG_WARN("Tried to remove component that doesn't exist");
 	}
-
-	glm::mat4 Actor::GetWorldTransform() const
-	{
-		glm::mat4 worldTransform;
-		worldTransform = glm::translate(glm::mat4(1), mPosition);
-		worldTransform = worldTransform * glm::mat4_cast(mRotation);
-		worldTransform = worldTransform * glm::scale(glm::mat4(1), mScale);
-		return worldTransform;
-	}
-	
-	void Actor::Rotate(float angle, const glm::vec3& axisOfRotation)
-	{
-		mRotation = glm::normalize(mRotation * glm::angleAxis(angle, axisOfRotation));
-	}
 }

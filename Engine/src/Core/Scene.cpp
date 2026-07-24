@@ -107,17 +107,19 @@ namespace Dawn
 					continue;
 
 				glm::vec3 directionAtoB = glm::normalize(diffB_A);
+				Transform transformA = a->GetOwner()->GetTransform();
+				Transform transformB = b->GetOwner()->GetTransform();
 
 				if (aIsDynamic && bIsDynamic)
 				{
 					float factorA = radiusA / radiiSum;
-					a->GetOwner()->SetPosition(a->GetOwner()->GetPosition() - directionAtoB * factorA * overlap);
-					b->GetOwner()->SetPosition(b->GetOwner()->GetPosition() + directionAtoB * (1.0f - factorA) * overlap);
+					transformA.Position -= directionAtoB * factorA * overlap;
+					transformB.Position += directionAtoB * (1.0f - factorA) * overlap;
 				}
 				else if (aIsDynamic)
-					a->GetOwner()->SetPosition(a->GetOwner()->GetPosition() - directionAtoB * overlap);
+					transformA.Position -= directionAtoB * overlap;
 				else
-					b->GetOwner()->SetPosition(b->GetOwner()->GetPosition() + directionAtoB * overlap);
+					transformB.Position += directionAtoB * overlap;
 			}
 		}
 	}

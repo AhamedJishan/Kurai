@@ -37,7 +37,7 @@ namespace Dawn
 			glm::quat yawRotation	= glm::angleAxis(glm::radians(mYaw),		glm::vec3(0, 1, 0));
 			glm::quat pitchRotation = glm::angleAxis(glm::radians(finalPitch),	glm::vec3(1, 0, 0));
 
-			mOwner->SetRotation(yawRotation * pitchRotation);
+			mOwner->GetTransform().Rotation = yawRotation * pitchRotation;
 		}
 
 		void Recoil()
