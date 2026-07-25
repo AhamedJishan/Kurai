@@ -25,18 +25,7 @@ namespace Dawn
 		void Run();
 		void Quit() { mIsRunning = false; }
 
-		template<typename T>
-		void LoadScene()
-		{
-			static_assert(std::is_base_of<Scene, T>::value, "T must inherit from Scene!");
-
-			if (mPendingScene)
-				delete mPendingScene;
-
-			T* newScene = new T();
-
-			mPendingScene = newScene;
-		}
+		// TODO: LoadScene()
 
 
 		static Application* Get() { return sInstance; }

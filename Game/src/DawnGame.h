@@ -1,16 +1,15 @@
 #pragma once
 
 #include "Core/Game.h"
-#include <imgui/imgui.h>
 
 namespace Dawn
 {
 	class DawnGame : public Game
 	{
 	public:
-		DawnGame();
-		~DawnGame();
+		DawnGame() {}
+		~DawnGame() {}
 
-		void Start() override;
+		void Start() override {}
 	};
 }

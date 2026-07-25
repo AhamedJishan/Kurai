@@ -17,9 +17,6 @@
 #include "Shader.h"
 #include "Material.h"
 #include "Mesh.h"
-#include "ParticleSystem.h"
-
-#include <iostream>
 
 namespace Dawn
 {

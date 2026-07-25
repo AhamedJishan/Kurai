@@ -92,32 +92,16 @@ namespace Dawn
 		mInputSystem->Update();
 		mAudioSystem->Update();
 
-		if (mPendingScene)
-		{
-			if (mScene) delete mScene;
-
-			mScene = mPendingScene;
-			mPendingScene = nullptr;
-			mScene->Init();
-		}
-
-		if (mScene) 
-		{
+		if (mScene)
 			mScene->Update(deltaTime);
-			mScene->UpdateActors(deltaTime);
-		}
 
 		mAudioSystem->Update();
 	}
 
 	void Application::GenerateOutput()
 	{
-		mRenderer->Draw();
-
-		mImGuiSystem->BeginFrame();
-		if (mScene) mScene->ImGuiRender();
-		mImGuiSystem->EndFrame();
-
+		if (mScene)
+			mRenderer->Draw();
 		mWindow->SwapBuffers();
 	}
 }

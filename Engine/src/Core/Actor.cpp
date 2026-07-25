@@ -2,44 +2,30 @@
 #include "Utils/Log.h"
 
 #include <algorithm>
-#include <glm/gtc/matrix_transform.hpp>
 #include "Component.h"
-#include "Scene.h"
 
 namespace Dawn
 {
-	Actor::Actor(Scene* scene)
+	Actor::Actor(const std::string& name)
+		:mName(name)
 	{
-		if (!scene)
-		{
-			LOG_ERROR("Invalid scene passed to the Actor");
-			return;
-		}
-
-		mScene = scene;
-		mScene->AddActor(this);
 	}
 
 	Actor::~Actor()
 	{
-		if (mScene)
-			mScene->RemoveActor(this);
-
 		// Actor deletes Component
 		// ~Component() removes itself from Actor::mComponents
 		while (!mComponents.empty())
 			delete mComponents.back();
 	}
 
-	void Actor::UpdateActor(float deltaTime)
+	void Actor::Update(float deltaTime)
 	{
 		if (mState == State::Paused || mState == State::Dead)
 			return;
 
 		for (Component* component : mComponents)
 			component->Update(deltaTime);
-
-		Update(deltaTime);
 	}
 
 	void Actor::AddComponent(Component* component)

@@ -1,10 +1,6 @@
 #include "Scene.h"
 
-#include <algorithm>
 #include "Actor.h"
-#include "Physics/Physics.h"
-#include "Components/SphereCollider.h"
-#include "Rendering/ParticleSystem.h"
 
 namespace Dawn
 {
@@ -13,17 +9,18 @@ namespace Dawn
 		// TODO: Load the scene from the filepath. To be done when/if Serialization is implemented
 	}
 
-	// Relies on Actor::~Actor() to call Scene::RemoveActor()
 	Scene::~Scene()
 	{
-		while (!mActors.empty())
-			delete mActors.back();
+		for (Actor* actor : mActors)
+			delete actor;
+		mActors.clear();
 
-		while (!mPendingActors.empty())
-			delete mPendingActors.back();
+		for (Actor* actor : mPendingActors)
+			delete actor;
+		mPendingActors.clear();
 	}
-	
-	void Scene::UpdateActors(float deltaTime)
+
+	void Scene::Update(float deltaTime)
 	{
 		if (mIsPaused)
 			return;
@@ -31,7 +28,7 @@ namespace Dawn
 		// Update Actors
 		mUpdatingActors = true;
 		for (Actor* actor : mActors)
-			actor->UpdateActor(deltaTime);
+			actor->Update(deltaTime);
 		mUpdatingActors = false;
 
 		// Move pending actors to mActors
@@ -50,39 +47,16 @@ namespace Dawn
 			delete actor;					// Actor::~Actor() calls Scene::RemoveActor() to remove itself from mActors
 		deadActors.clear();
 	}
-	
-	void Scene::AddActor(Actor* actor)
+
+	Actor* Scene::CreateActor(const std::string& name)
 	{
+		Actor* actor = new Actor(name);
+
 		if (mUpdatingActors)
 			mPendingActors.emplace_back(actor);
 		else
 			mActors.emplace_back(actor);
-	}
-	
-	// Called by Actor::~Actor()
-	// Removes the actor from both active and pending lists.
-	void Scene::RemoveActor(Actor* actor)
-	{
-		auto it = std::find(mActors.begin(), mActors.end(), actor);
-		if (it != mActors.end())
-			mActors.erase(it);
 
-		it = std::find(mPendingActors.begin(), mPendingActors.end(), actor);
-		if (it != mPendingActors.end())
-			mPendingActors.erase(it);
-
-	}
-
-	bool Scene::ContainsActor(Actor* actor)
-	{
-		auto it = std::find(mActors.begin(), mActors.end(), actor);
-		if (it != mActors.end())
-			return true;
-
-		it = std::find(mPendingActors.begin(), mPendingActors.end(), actor);
-		if (it != mPendingActors.end())
-			return true;
-
-		return false;
+		return actor;
 	}
 }

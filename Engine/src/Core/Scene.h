@@ -33,32 +33,19 @@ namespace Dawn
 
 	class Scene
 	{
-	private:
-		friend class Application;
-		void UpdateActors(float deltaTime);
-
-		friend class Actor;
-		void AddActor(Actor* actor);
-		void RemoveActor(Actor* actor);
-
 	public:
 		Scene();
-		virtual ~Scene();
+		~Scene();
 
-		// Scenes can implement this to populate the Scene with Actors
-		virtual void Init() {}
-		virtual void Update(float deltaTime) {}
-		virtual void ImGuiRender() {}
+		void Update(float deltaTime);
 
-
-		bool ContainsActor(Actor* actor);
+		Actor* CreateActor(const std::string& name = "Actor");
+		// TODO: DeleteActor()
 
 		void SetPaused(bool value) { mIsPaused = value; }
 		bool IsPaused() const { return mIsPaused; }
 
-		void SetEnvironmentSettings(const EnvironmentSettings& settings) { mEnvironmentSettings = settings; }
 		EnvironmentSettings& GetEnvironmentSettings() { return mEnvironmentSettings; }
-		const EnvironmentSettings& GetEnvironmentSettings() const { return mEnvironmentSettings; }
 
 		void SetActiveCamera(Camera* camera) { mActiveCamera = camera; }
 		Camera* GetActiveCamera() const { return mActiveCamera; }

@@ -1,16 +1,14 @@
 #pragma once
 
 #include <vector>
+#include <string>
 #include "Transform.h"
 
 namespace Dawn
 {
 	// Forward declaration
 	class Component;
-	class Scene;
 
-	// Base class for all scene objects.
-	// Owns transform state and a set of Components.
 	class Actor
 	{
 	public:
@@ -21,16 +19,13 @@ namespace Dawn
 			Dead
 		};
 
-		Actor(class Scene* scene);
-		virtual ~Actor();
-
-		// To be called by Scene
-		void UpdateActor(float deltaTime);
+		~Actor();
 
 		Transform& GetTransform() { return mTransform; }
-		Scene* GetScene() const { return mScene; }
 		State GetState() const { return mState; }
-		void SetState (State state)	{ mState = state; }
+		void SetState(State state) { mState = state; }
+		const std::string& GetName() const { return mName; }
+		void SetName(const std::string& name) { mName = name; }
 
 		// Component managment
 		void AddComponent(Component* component);
@@ -57,14 +52,17 @@ namespace Dawn
 			return resultList;
 		}
 
-	protected:
-		// To be implemented by custom Actor
-		virtual void Update(float deltaTime) {}
+	private:
+		friend class Scene;
+		Actor(const std::string& name);	// Only scene is capable of creating actors
 
-	protected:
-		Scene* mScene = nullptr;
-		State mState = State::Active;
+		// To be called by Scene
+		void Update(float deltaTime);
+
+	private:
+		std::string mName;
 		Transform mTransform;
+		State mState = State::Active;
 
 		std::vector<Component*> mComponents;
 	};
