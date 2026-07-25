@@ -7,8 +7,8 @@
 
 namespace Dawn
 {
-	Animator::Animator(Actor* owner, int updateOrder)
-		:Component(owner, updateOrder)
+	Animator::Animator(Actor* owner)
+		:Component(owner)
 	{
 	}
 	

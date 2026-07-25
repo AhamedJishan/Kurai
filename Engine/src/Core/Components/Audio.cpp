@@ -7,8 +7,8 @@
 
 namespace Dawn
 {
-	Audio::Audio(Actor* owner, int updateOrder)
-		:Component(owner, updateOrder)
+	Audio::Audio(Actor* owner)
+		:Component(owner)
 	{
 	}
 

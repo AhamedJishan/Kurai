@@ -2,25 +2,27 @@
 
 namespace Dawn
 {
-	// Base class for all Actor-attached components.
-	// Components are owned by their Actor and are updated in order.
+	// NOTE:
+	// Every Component subclass should provide a constructor of the form:
+	//
+	//     ComponentName(Actor* owner);
+	//
+	// The engine assumes this when creating Components through
+	// Actor::AddComponent<T>() and during scene deserialization.
 	class Component
 	{
 	public:
-
-		// Creates a component and attaches it to the given Actor.
-		// Ownership is transferred to the Actor.
-		Component(class Actor* owner, unsigned int updateOrder = 100);
 		virtual ~Component();
 
 		virtual void Update(float deltaTime) {}
 
 		class Actor* GetOwner() const { return mOwner; }
-		unsigned int GetUpdateOrder() const { return mUpdateOrder; }
 
 	protected:
-		unsigned int mUpdateOrder;
+		friend class Actor;
+		Component(class Actor* owner);
 
+	protected:
 		class Actor* mOwner;
 	};
 }

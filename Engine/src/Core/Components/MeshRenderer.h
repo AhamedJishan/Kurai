@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include "Core/Component.h"
 
 namespace Dawn
@@ -13,17 +14,22 @@ namespace Dawn
 	class MeshRenderer : public Component
 	{
 	public:
-		MeshRenderer(Actor* owner, Mesh* mesh, Material* material, unsigned int updateOrder = 100);
 		~MeshRenderer();
 
-		static void CreateFromModel(Actor* owner, const std::string& path, bool requestSkinning = false);
+		void SetModel(const std::string& modelPath, bool requestSkinning = false);
+		const std::string& GetModelPath() const { return mModelPath; }
 
-		Mesh* GetMesh() const { return mMesh; }
-		Material* GetMaterial() const { return mMaterial; }
-		void SetMaterial(Material* material) { delete mMaterial; mMaterial = material; }
+		const std::vector<Mesh*>& GetMeshes() const { return mMeshes; }
+		const std::vector<Material*>& GetMaterials() const { return mMaterials; }
 
 	private:
-		Mesh* mMesh;
-		Material* mMaterial;
+		MeshRenderer(Actor* owner);
+
+	private:
+		bool mIsSkinned = false;
+		std::string mModelPath;
+
+		std::vector<Mesh*> mMeshes;
+		std::vector<Material*> mMaterials;
 	};
 }

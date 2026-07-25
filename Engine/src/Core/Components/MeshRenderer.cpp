@@ -13,10 +13,8 @@
 
 namespace Dawn
 {
-	MeshRenderer::MeshRenderer(Actor* owner, Mesh* mesh, Material* material, unsigned int updateOrder)
-		:Component(owner, updateOrder)
-		,mMesh(mesh)
-		,mMaterial(material)
+	MeshRenderer::MeshRenderer(Actor* owner)
+		:Component(owner)
 	{
 		Application::Get()->GetRenderer()->AddMeshRenderer(this);
 	}
@@ -24,29 +22,34 @@ namespace Dawn
 	MeshRenderer::~MeshRenderer()
 	{
 		Application::Get()->GetRenderer()->RemoveMeshRenderer(this);
-
-		delete mMaterial;
-		// Mesh will be deleted by AssetManager
+		
+		for (Material* mat : mMaterials)
+			delete mat;
+		mMaterials.clear();
 	}
 
-	void MeshRenderer::CreateFromModel(Actor* owner, const std::string& path, bool requestSkinning)
+	void MeshRenderer::SetModel(const std::string& modelPath, bool requestSkinning)
 	{
-		RawModel* rawModel = Assets::GetRawModel(path);
+		RawModel* rawModel = Assets::GetRawModel(modelPath);
 		if (!rawModel)
 			return;
 
-		const std::vector<Mesh*>& meshes = Assets::GetMeshes(path, requestSkinning);
+		mModelPath = modelPath;
+		mIsSkinned = requestSkinning;
+
+		if (mMaterials.size() > 0)
+		{
+			for (Material* mat : mMaterials)
+				delete mat;
+			mMaterials.clear();
+		}
+
+		const std::vector<Mesh*>& meshes = Assets::GetMeshes(modelPath, requestSkinning);
 		const std::vector<RawMaterial*>& rawMaterials = rawModel->GetRawMaterials();
 
-		for (Mesh* mesh : meshes)
-		{
-			int index = mesh->GetRawMaterialIndex();
-			if (index < 0 || index >= rawMaterials.size())
-				continue;
-
-			PhongMaterial* phongMat = PhongMaterial::CreateFromRaw(rawMaterials[index]);
-
-			new MeshRenderer(owner, mesh, phongMat);
-		}
+		mMeshes = meshes;
+		mMaterials.reserve(rawMaterials.size());
+		for (RawMaterial* rawMaterial : rawMaterials)
+			mMaterials.push_back(PhongMaterial::CreateFromRaw(rawMaterial));
 	}
 }

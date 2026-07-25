@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <type_traits>
 #include "Transform.h"
 
 namespace Dawn
@@ -27,9 +28,18 @@ namespace Dawn
 		const std::string& GetName() const { return mName; }
 		void SetName(const std::string& name) { mName = name; }
 
-		// Component managment
-		void AddComponent(Component* component);
-		void RemoveComponent(Component* component);
+		// --- COMPONENT MANAGEMENT ---
+		template<typename T>
+		Component* AddComponent()
+		{
+			static_assert(std::is_base_of_v<Component, T>, "Not a component");
+			static_assert(std::is_constructible_v<T, Actor*>, "Component type must provide a constructor of the form T(Actor* owner).");
+
+			T* component = new T(this);
+			mComponents.push_back(component);
+			return component;
+		}
+
 		template<typename T>
 		T* GetComponent() const
 		{
@@ -40,6 +50,7 @@ namespace Dawn
 			}
 			return nullptr;
 		}
+
 		template<typename T>
 		std::vector<T*> GetComponents() const
 		{
@@ -51,6 +62,7 @@ namespace Dawn
 			}
 			return resultList;
 		}
+		// ----------------------------
 
 	private:
 		friend class Scene;

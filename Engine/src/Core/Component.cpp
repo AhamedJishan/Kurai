@@ -5,22 +5,17 @@
 
 namespace Dawn
 {
-	Component::Component(Actor* owner, unsigned int updateOrder)
+	Component::Component(Actor* owner)
 		:mOwner(owner)
-		,mUpdateOrder(updateOrder)
 	{
 		if (!mOwner)
 		{
-			LOG_ERROR("Component created with null owner");
+			LOG_ERROR("Component created without an owner");
 			return;
 		}
-
-		mOwner->AddComponent(this);
 	}
 
 	Component::~Component()
 	{
-		if (mOwner)
-			mOwner->RemoveComponent(this);
 	}
 }

@@ -7,8 +7,8 @@
 
 namespace Dawn
 {
-	Camera::Camera(Actor* owner, unsigned int updateOrder)
-		:Component(owner, updateOrder)
+	Camera::Camera(Actor* owner)
+		:Component(owner)
 	{
 	}
 

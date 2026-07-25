@@ -14,13 +14,15 @@ namespace Dawn
 	class Audio : public Component
 	{
 	public:
-		Audio(Actor* owner, int updateOrder = 200);
 		~Audio();
 
 		void Update(float deltaTime) override;
 
 		SoundEvent PlayEvent(const std::string& name);
 		void StopAllEvents();
+
+	protected:
+		Audio(Actor* owner);
 
 	private:
 		std::vector<SoundEvent> mEvents2D;

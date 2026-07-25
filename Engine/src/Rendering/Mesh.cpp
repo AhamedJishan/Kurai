@@ -10,7 +10,7 @@ namespace Dawn
 	{
 		mName = rawMesh->GetName();
 		mMeshType = meshType;
-		mRawMaterialIndex = rawMesh->GetRawMaterialIndex();
+		mMaterialIndex = rawMesh->GetRawMaterialIndex();
 		mIndexCount = static_cast<unsigned int>(rawMesh->GetIndices().size());
 
 		if (mMeshType == MeshType::Skinned && !rawMesh->HasSkinData())

@@ -16,7 +16,6 @@ namespace Dawn
 	class Animator : public Component
 	{
 	public:
-		Animator(Actor* owner, int updateOrder = 100);
 		~Animator();
 
 		void Update(float deltaTime) override;
@@ -28,7 +27,9 @@ namespace Dawn
 
 		const std::vector<glm::mat4>& GetMatrixPalette() const { return mMatrixPalette; }
 
-	private:
+	protected:
+		Animator(Actor* owner);
+
 		std::vector<glm::mat4> BuildGlobalTransforms(const std::vector<glm::mat4>& localTransforms);
 
 	private:

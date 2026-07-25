@@ -85,14 +85,7 @@ namespace Dawn
 
 	void Renderer::AddMeshRenderer(MeshRenderer* meshRenderer)
 	{
-		unsigned int updateOrder = meshRenderer->GetUpdateOrder();
-
-		auto it = mMeshRenderers.begin();
-		for (; it != mMeshRenderers.end(); it++)
-			if ((*it)->GetUpdateOrder() > updateOrder)
-				break;
-
-		mMeshRenderers.insert(it, meshRenderer);
+		mMeshRenderers.push_back(meshRenderer);
 	}
 	
 	void Renderer::RemoveMeshRenderer(MeshRenderer* meshRenderer)
@@ -115,38 +108,41 @@ namespace Dawn
 
 		for (MeshRenderer* meshRenderer : mMeshRenderers)
 		{
-			glm::mat4 modelMatrix = meshRenderer->GetOwner()->GetTransform().ToMatrix();
-
-			Material* mat = meshRenderer->GetMaterial();
-			Mesh* mesh = meshRenderer->GetMesh();
-			MeshType meshType = mesh->GetMeshType();
-			// TODO: modify for skinned meshes
-
-			Shader* shader = Assets::GetShader(mat->GetName(), meshType == MeshType::Skinned);
-			
-			shader->Bind();
-			mat->Apply(shader);
-			mesh->Bind();
-
-			shader->SetMat4("u_Model", modelMatrix);
-			shader->SetMat4("u_View", viewMatrix);
-			shader->SetMat4("u_Projection", projectionMatrix);
-
-			if (meshType == MeshType::Skinned)
+			const std::vector<Mesh*>& meshes = meshRenderer->GetMeshes();
+			const std::vector<Material*>& materials = meshRenderer->GetMaterials();
+			for (Mesh* mesh : meshes)
 			{
-				Animator* animator = meshRenderer->GetOwner()->GetComponent<Animator>();
-				shader->SetMat4s("u_MatrixPalette", animator->GetMatrixPalette());
+				glm::mat4 modelMatrix = meshRenderer->GetOwner()->GetTransform().ToMatrix();
+
+				Material* mat = materials[mesh->GetMaterialIndex()];
+				MeshType meshType = mesh->GetMeshType();
+
+				Shader* shader = Assets::GetShader(mat->GetName(), meshType == MeshType::Skinned);
+
+				shader->Bind();
+				mat->Apply(shader);
+				mesh->Bind();
+
+				shader->SetMat4("u_Model", modelMatrix);
+				shader->SetMat4("u_View", viewMatrix);
+				shader->SetMat4("u_Projection", projectionMatrix);
+
+				if (meshType == MeshType::Skinned)
+				{
+					Animator* animator = meshRenderer->GetOwner()->GetComponent<Animator>();
+					shader->SetMat4s("u_MatrixPalette", animator->GetMatrixPalette());
+				}
+
+				shader->SetFloat("u_FogDensity", environmentSettings.fogDensity);
+				shader->SetVec3("u_FogColor", environmentSettings.fogColor);
+				shader->SetVec3("u_CameraPosition", cam->GetOwner()->GetTransform().Position);
+				shader->SetVec3("u_AmbientColor", environmentSettings.ambientColor);
+				shader->SetVec3("u_DirectionalLightColor", environmentSettings.directionalLight.color);
+				shader->SetVec3("u_DirectionalLightDirection", environmentSettings.directionalLight.direction);
+				shader->SetFloat("u_DirectionalLightIntensity", environmentSettings.directionalLight.intensity);
+
+				glDrawElements(GL_TRIANGLES, mesh->GetIndexCount(), GL_UNSIGNED_INT, NULL);
 			}
-
-			shader->SetFloat("u_FogDensity", environmentSettings.fogDensity);
-			shader->SetVec3("u_FogColor", environmentSettings.fogColor);
-			shader->SetVec3("u_CameraPosition", cam->GetOwner()->GetTransform().Position);
-			shader->SetVec3("u_AmbientColor", environmentSettings.ambientColor);
-			shader->SetVec3("u_DirectionalLightColor", environmentSettings.directionalLight.color);
-			shader->SetVec3("u_DirectionalLightDirection", environmentSettings.directionalLight.direction);
-			shader->SetFloat("u_DirectionalLightIntensity", environmentSettings.directionalLight.intensity);
-
-			glDrawElements(GL_TRIANGLES, mesh->GetIndexCount(), GL_UNSIGNED_INT, NULL);
 		}
 	}
 

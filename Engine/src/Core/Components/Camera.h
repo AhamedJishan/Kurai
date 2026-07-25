@@ -11,8 +11,6 @@ namespace Dawn
 	class Camera : public Component
 	{
 	public:
-		Camera(Actor* owner, unsigned int updateOrder = 100);
-
 		void Update(float deltaTime) override;
 
 		glm::mat4 GetView() const;
@@ -29,6 +27,9 @@ namespace Dawn
 		float GetFOV() const { return mFOV; }
 		float GetNear() const { return mNear; }
 		float GetFar() const { return mFar; }
+
+	protected:
+		Camera(Actor* owner);
 
 	protected:
 		// in degrees

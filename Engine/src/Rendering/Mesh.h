@@ -22,7 +22,7 @@ namespace Dawn
 		const std::string& GetName() const { return mName; }
 		MeshType GetMeshType() const { return mMeshType; }
 		unsigned int GetIndexCount() const { return mIndexCount; }
-		unsigned int GetRawMaterialIndex() const { return mRawMaterialIndex; }
+		unsigned int GetMaterialIndex() const { return mMaterialIndex; }
 
 	private:
 		void SetupMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::vector<VertexSkinData>& skinData);
@@ -32,7 +32,7 @@ namespace Dawn
 		MeshType mMeshType;
 
 		unsigned int mIndexCount = 0;
-		unsigned int mRawMaterialIndex;
+		unsigned int mMaterialIndex;
 
 		unsigned int mVAO = 0;
 		unsigned int mEBO = 0;
