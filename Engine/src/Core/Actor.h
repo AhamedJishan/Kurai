@@ -27,6 +27,11 @@ namespace Dawn
 		// To be called by Scene
 		void UpdateActor(float deltaTime);
 
+		Transform& GetTransform() { return mTransform; }
+		Scene* GetScene() const { return mScene; }
+		State GetState() const { return mState; }
+		void SetState (State state)	{ mState = state; }
+
 		// Component managment
 		void AddComponent(Component* component);
 		void RemoveComponent(Component* component);
@@ -51,11 +56,6 @@ namespace Dawn
 			}
 			return resultList;
 		}
-
-		Transform& GetTransform() { return mTransform; }
-		Scene* GetScene() const { return mScene; }
-		State GetState() const { return mState; }
-		void SetState (State state)	{ mState = state; }
 
 	protected:
 		// To be implemented by custom Actor

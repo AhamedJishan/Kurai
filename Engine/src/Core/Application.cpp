@@ -105,7 +105,6 @@ namespace Dawn
 		{
 			mScene->Update(deltaTime);
 			mScene->UpdateActors(deltaTime);
-			mScene->ResolveCollisions();
 		}
 
 		mAudioSystem->Update();

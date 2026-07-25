@@ -33,8 +33,6 @@ namespace Dawn
 		glDeleteBuffers(1, &mQuadVBO);
 
 		if (mHDRFrameBuffer) delete mHDRFrameBuffer;
-
-		ParticleSystem::Shutdown();
 	}
 	
 	bool Renderer::Init()
@@ -52,10 +50,6 @@ namespace Dawn
 
 		InitQuad();
 		mPostProcessShader = Assets::GetShader("post_process");
-
-		// INIT ParticleSystem
-		ParticleSystem::Init();
-		mParticleShader = Assets::GetShader("particle");
 
 		return true;
 	}
@@ -156,14 +150,6 @@ namespace Dawn
 			shader->SetFloat("u_DirectionalLightIntensity", environmentSettings.directionalLight.intensity);
 
 			glDrawElements(GL_TRIANGLES, mesh->GetIndexCount(), GL_UNSIGNED_INT, NULL);
-		}
-
-		mParticleShader->Bind();
-		mParticleShader->SetMat4("u_View", viewMatrix);
-		mParticleShader->SetMat4("u_Projection", projectionMatrix);
-		for (ParticleSystem* particleSystem : Application::Get()->GetScene()->GetParticleSystems())
-		{
-			particleSystem->Render(mParticleShader);
 		}
 	}
 

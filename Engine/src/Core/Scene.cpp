@@ -21,9 +21,6 @@ namespace Dawn
 
 		while (!mPendingActors.empty())
 			delete mPendingActors.back();
-
-		while (!mParticleSystems.empty())
-			delete mParticleSystems.back();
 	}
 	
 	void Scene::UpdateActors(float deltaTime)
@@ -52,76 +49,6 @@ namespace Dawn
 		for (Actor* actor : deadActors)
 			delete actor;					// Actor::~Actor() calls Scene::RemoveActor() to remove itself from mActors
 		deadActors.clear();
-
-		// Particle System
-		std::vector<ParticleSystem*> psToBeDeleted;
-		for (ParticleSystem* particle : mParticleSystems)
-		{
-			particle->Update(deltaTime);
-			if (particle->IsStopped())
-				psToBeDeleted.push_back(particle);
-		}
-		for (ParticleSystem* particle : psToBeDeleted)
-			delete particle;
-	}
-
-	void Scene::ResolveCollisions()
-	{
-		unsigned int numColliders = mColliders.size();
-
-		if (numColliders < 2) return;
-
-		for (unsigned int i = 0; i < numColliders - 1; i++)
-		{
-			SphereCollider* a = mColliders[i];
-
-			if (a->IsTrigger())
-				continue;
-
-			for (unsigned int j = i + 1; j < numColliders; j++)
-			{
-				Physics::Sphere aSphere = a->GetWorldSphere();
-
-				SphereCollider* b = mColliders[j];
-				Physics::Sphere bSphere = b->GetWorldSphere();
-				
-				if (b->IsTrigger())
-					continue;
-
-				glm::vec3 diffB_A = bSphere.center - aSphere.center;
-				diffB_A.y = 0;	// lock on y axis
-
-				float distance = glm::length(diffB_A);
-				float radiusA = aSphere.radius;
-				float radiusB = bSphere.radius;
-				float radiiSum = radiusA + radiusB;
-				float overlap = radiiSum - distance;
-
-				if (distance >= radiiSum || distance <= 0.0001f)
-					continue;
-
-				bool aIsDynamic = a->IsDynamic();
-				bool bIsDynamic = b->IsDynamic();
-
-				if (!aIsDynamic && !bIsDynamic)
-					continue;
-
-				glm::vec3 directionAtoB = glm::normalize(diffB_A);
-				Transform transformA = a->GetOwner()->GetTransform();
-				Transform transformB = b->GetOwner()->GetTransform();
-
-				if (aIsDynamic && bIsDynamic)
-				{
-					float factorA = radiusA / radiiSum;
-					transformA.Position -= directionAtoB * factorA * overlap;
-					transformB.Position += directionAtoB * (1.0f - factorA) * overlap;
-				}
-				else if (aIsDynamic)
-					transformA.Position -= directionAtoB * overlap;
-				else
-					transformB.Position += directionAtoB * overlap;
-			}
-		}
 	}
 	
 	void Scene::AddActor(Actor* actor)
@@ -157,53 +84,5 @@ namespace Dawn
 			return true;
 
 		return false;
-	}
-
-	void Scene::AddSphereCollider(SphereCollider* collider)
-	{
-		mColliders.emplace_back(collider);
-	}
-	// Called by SphereCollider::~SphereCollider()
-	// Removes the SphereCollider from the list.
-	void Scene::RemoveSphereCollider(SphereCollider* collider)
-	{
-		auto it = std::find(mColliders.begin(), mColliders.end(), collider);
-		if (it != mColliders.end())
-			mColliders.erase(it);
-	}
-
-	void Scene::AddParticleSystem(ParticleSystem* particleSystem)
-	{
-		mParticleSystems.push_back(particleSystem);
-	}
-
-	void Scene::RemoveParticleSystem(ParticleSystem* particleSystem)
-	{
-		auto it = std::find(mParticleSystems.begin(), mParticleSystems.end(), particleSystem);
-		if (it != mParticleSystems.end())
-			mParticleSystems.erase(it);
-	}
-
-	bool Scene::RayCast(const Physics::Ray& ray, float maxDistance, RaycastHit& outHitInfo)
-	{
-		float closestT = maxDistance;
-		bool hit = false;
-		outHitInfo.actor = nullptr;
-
-		for (SphereCollider* sphereCollider : mColliders)
-		{
-			Physics::Sphere sphere = sphereCollider->GetWorldSphere();
-
-			float t = 0.0f;
-			if (Physics::Intersects(ray, sphere, t) && t < closestT)
-			{
-				closestT =  t;
-				hit = true;
-				outHitInfo.actor = sphereCollider->GetOwner();
-				outHitInfo.position = ray.origin + ray.direction * t;
-			}
-		}
-
-		return hit;
 	}
 }

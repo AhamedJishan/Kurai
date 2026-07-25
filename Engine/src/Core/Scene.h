@@ -9,20 +9,7 @@ namespace Dawn
 	// Forward Declarations;
 	class Actor;
 	class Camera;
-	class SphereCollider;
 	class Application;
-	class ParticleSystem;
-	namespace Physics
-	{
-		struct Ray;
-		struct Sphere;
-	}
-
-	struct RaycastHit
-	{
-		Actor* actor;
-		glm::vec3 position;
-	};
 
 	struct EnvironmentSettings
 	{
@@ -49,19 +36,10 @@ namespace Dawn
 	private:
 		friend class Application;
 		void UpdateActors(float deltaTime);
-		void ResolveCollisions();
 
 		friend class Actor;
 		void AddActor(Actor* actor);
 		void RemoveActor(Actor* actor);
-
-		friend class SphereCollider;
-		void AddSphereCollider(SphereCollider* collider);
-		void RemoveSphereCollider(SphereCollider* collider);
-
-		friend class ParticleSystem;
-		void AddParticleSystem(ParticleSystem* particleSystem);
-		void RemoveParticleSystem(ParticleSystem* particleSystem);
 
 	public:
 		Scene();
@@ -84,11 +62,6 @@ namespace Dawn
 
 		void SetActiveCamera(Camera* camera) { mActiveCamera = camera; }
 		Camera* GetActiveCamera() const { return mActiveCamera; }
-		const std::vector<ParticleSystem*>& GetParticleSystems() const { return mParticleSystems; }
-
-		// Physics Utilities
-		const std::vector<SphereCollider*>& GetColliderList() const { return mColliders; }
-		bool RayCast(const Physics::Ray& ray, float maxDistance, RaycastHit& outHitInfo);
 
 	private:
 		bool mUpdatingActors = false;
@@ -99,10 +72,6 @@ namespace Dawn
 
 		std::vector<Actor*> mActors;
 		std::vector<Actor*> mPendingActors;
-
-		std::vector<SphereCollider*> mColliders;
-
-		std::vector<ParticleSystem*> mParticleSystems;
 
 		EnvironmentSettings mEnvironmentSettings;
 	};
