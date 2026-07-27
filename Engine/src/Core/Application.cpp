@@ -1,7 +1,6 @@
 #include "Application.h"
 #include "Utils/Log.h"
 
-#include "Game.h"
 #include "Window.h"
 #include "Rendering/Renderer.h"
 #include "ImGui/ImGuiSystem.h"
@@ -60,15 +59,14 @@ namespace Dawn
 		sInstance = nullptr;
 	}
 
-	void Application::LoadGame(Game* game)
-	{
-		mGame = game;
-	}
+	// TODO:
+	//void Application::LoadScene(const std::string& scenePath)
+	//{
+
+	//}
 
 	void Application::Run()
 	{
-		if (mGame) mGame->Start();
-
 		while (mIsRunning)
 		{
 			Update();

@@ -1,11 +1,10 @@
 #pragma once
 
-#include <type_traits>
+#include <string>
 
 namespace Dawn
 {
 	// Forward declarations
-	class Game;
 	class Scene;
 	class Window;
 	class Renderer;
@@ -20,13 +19,10 @@ namespace Dawn
 		Application(struct WindowConfig windowConfig);
 		virtual ~Application();
 
-		void LoadGame(Game* game);
+		// TODO: void LoadScene(const std::string& scenePath);
 
 		void Run();
 		void Quit() { mIsRunning = false; }
-
-		// TODO: LoadScene()
-
 
 		static Application* Get() { return sInstance; }
 
@@ -44,7 +40,6 @@ namespace Dawn
 	private:
 		static Application* sInstance;
 
-		Game* mGame = nullptr;
 		Scene* mScene = nullptr;
 		Scene* mPendingScene = nullptr;
 

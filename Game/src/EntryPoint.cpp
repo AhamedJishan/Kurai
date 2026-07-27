@@ -2,7 +2,6 @@
 
 #include "Core/Application.h"
 #include "Core/Window.h"
-#include "DawnGame.h"
 
 int main(int argc, char** argv)
 {
@@ -12,10 +11,8 @@ int main(int argc, char** argv)
 	config.Width = 1080;
 	config.Height = 720;
 
-	Dawn::DawnGame dawn;
-
 	Dawn::Application app(config);
-	app.LoadGame(&dawn);
+	// TODO: app.LoadScene("Assets/Scene/scene.scene");
 	app.Run();
 
 	return 0;
