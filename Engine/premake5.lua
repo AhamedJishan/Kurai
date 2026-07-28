@@ -27,6 +27,12 @@ project "Engine"
         "assimp",
         "fmod_vc",
         "fmodstudio_vc"
+        -- YAML is linked at the bottom
+    }
+
+    defines
+    {
+        "YAML_CPP_STATIC_DEFINE"
     }
 
     files {
@@ -38,7 +44,15 @@ project "Engine"
     filter "configurations:Debug"
         defines "DEBUG"
         symbols "On"
+
+        links {
+            "yaml-cppd"
+        }
     
     filter "configurations:Release"
         defines "RELEASE"
         optimize "On"
+
+        links {
+            "yaml-cpp"
+        }

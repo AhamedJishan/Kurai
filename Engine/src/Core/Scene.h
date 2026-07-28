@@ -51,9 +51,9 @@ namespace Dawn
 		Camera* GetActiveCamera() const { return mActiveCamera; }
 
 	private:
-		bool mUpdatingActors = false;
 		// if true, actors won't get updated
 		bool mIsPaused = false;
+		bool mUpdatingActors = false;
 
 		Camera* mActiveCamera = nullptr;
 

@@ -7,13 +7,13 @@
 #include "Input/InputSystem.h"
 #include "Audio/AudioSystem.h"
 #include "Asset/AssetManager.h"
+#include "SceneSerializer.h"
 #include "Scene.h"
 
 namespace Dawn
 {
 	Application* Application::sInstance = nullptr;
 
-	// TODO: Application takes in init parameters like screen size
 	Application::Application(WindowConfig windowConfig)
 		:mIsRunning(true)
 		,mTime(0.0)
@@ -59,11 +59,15 @@ namespace Dawn
 		sInstance = nullptr;
 	}
 
-	// TODO:
-	//void Application::LoadScene(const std::string& scenePath)
-	//{
+	
+	void Application::LoadScene(const std::string& sceneName)
+	{
+		std::string scenePath = "Assets/Scenes/" + sceneName + ".scene";
 
-	//}
+		Scene* loadedScene = SceneSerializer::Load(scenePath);
+		if (loadedScene)
+			mPendingScene = loadedScene;
+	}
 
 	void Application::Run()
 	{
@@ -86,6 +90,13 @@ namespace Dawn
 		mTime = currentTime;
 		// Prevent large deltaTime jumps
 		deltaTime = deltaTime > 0.05 ? 0.05 : deltaTime;
+
+		if (mPendingScene)
+		{
+			delete mScene;
+			mScene = mPendingScene;
+			mPendingScene = nullptr;
+		}
 
 		mInputSystem->Update();
 		mAudioSystem->Update();

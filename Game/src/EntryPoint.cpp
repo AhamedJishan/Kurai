@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 	config.Height = 720;
 
 	Dawn::Application app(config);
-	// TODO: app.LoadScene("Assets/Scene/scene.scene");
+	app.LoadScene("TestScene");
 	app.Run();
 
 	return 0;

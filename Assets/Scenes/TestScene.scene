@@ -1,0 +1,19 @@
+EnvironmentSettings:
+  DirectionalLight:
+    Direction: [-1.0, -1.0, -1.0]
+    Color: [1.0, 1.0, 1.0]
+    Intensity: 1.0
+  AmbientColor: [0.2, 0.2, 0.2]
+  FogColor: [1.0, 1.0, 1.0]
+  FogDensity: 0.1
+  BloomRadius: 1.0
+  BloomStrength: 0.01
+
+Actors:
+  - Name: TestActor
+    State: Active
+    Transform: 
+      Scale: [1.0, 1.0, 1.0]
+      Position: [0.0, 0.0, 0.0]
+      Rotation: [1.0, 0.0, 0.0, 0.0]
+    # TODO: Components list

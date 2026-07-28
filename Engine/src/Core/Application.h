@@ -19,7 +19,7 @@ namespace Dawn
 		Application(struct WindowConfig windowConfig);
 		virtual ~Application();
 
-		// TODO: void LoadScene(const std::string& scenePath);
+		void LoadScene(const std::string& sceneName);
 
 		void Run();
 		void Quit() { mIsRunning = false; }
