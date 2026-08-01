@@ -21,8 +21,8 @@ namespace Dawn:: AssimpImporter
 	{
 		RawMesh* GetRawMesh(const aiMesh* aiMesh, Skeleton* skeleton);
 		RawMaterial* GetRawMaterial(const aiMaterial* aiMat, const std::string& directory);
-		Clip* GetAnimationClip(const aiAnimation* aiAnimation, const Skeleton* skeleton);
-		Skeleton* GetSkeleton(const aiScene* aiScene);
+		Clip* GetAnimationClip(const std::string& assetPath, const aiAnimation* aiAnimation, const Skeleton* skeleton);
+		Skeleton* GetSkeleton(const std::string& assetPath, const aiScene* aiScene);
 	}
 
 
@@ -48,13 +48,13 @@ namespace Dawn:: AssimpImporter
 		rawModel->SetDirectory(directory);
 
 		// Load Skeleton
-		Skeleton* skeleton = GetSkeleton(scene);
+		Skeleton* skeleton = GetSkeleton(filename, scene);
 		if (skeleton)
 			rawModel->SetSkeleton(skeleton);
 
 		// Load Animation Clips
 		for (unsigned int i = 0; i < scene->mNumAnimations; i++)
-			rawModel->AddAnimationClip(GetAnimationClip(scene->mAnimations[i], skeleton));
+			rawModel->AddAnimationClip(GetAnimationClip(filename, scene->mAnimations[i], skeleton));
 
 		// Load Meshes
 		for (unsigned int i = 0; i < scene->mNumMeshes; i++)
@@ -229,12 +229,13 @@ namespace Dawn:: AssimpImporter
 			return interpolation;
 		}
 
-		Clip* GetAnimationClip(const aiAnimation* aiAnimation, const Skeleton* skeleton)
+		Clip* GetAnimationClip(const std::string& assetPath, const aiAnimation* aiAnimation, const Skeleton* skeleton)
 		{
 			if (!skeleton)
 				return nullptr;
 
 			Clip* clip = new Clip();
+			clip->SetAssetPath(assetPath);
 			clip->SetName(aiAnimation->mName.C_Str());
 			float ticksPerSecond  = static_cast<float>(aiAnimation->mTicksPerSecond);
 			ticksPerSecond = (ticksPerSecond == 0.0f) ? 25.0f : ticksPerSecond;
@@ -335,7 +336,7 @@ namespace Dawn:: AssimpImporter
 				ProcessNode(node->mChildren[i], outPose, outParents, outJointNames, outInvBindPoseMatrices, boneNameToInvBindPoseMap, parentIndex);
 		}
 
-		Skeleton* GetSkeleton(const aiScene* aiScene)
+		Skeleton* GetSkeleton(const std::string& assetPath, const aiScene* aiScene)
 		{
 			std::unordered_map<std::string, glm::mat4> boneNameToInvBindPoseMap;
 
@@ -362,7 +363,7 @@ namespace Dawn:: AssimpImporter
 
 			ProcessNode(aiScene->mRootNode, bindPose, parents, jointNames, invBindPoseMatrices, boneNameToInvBindPoseMap, -1);
 
-			Skeleton* skeleton = new Skeleton(bindPose, parents, jointNames, invBindPoseMatrices, globalRootNodeInvMat);
+			Skeleton* skeleton = new Skeleton(assetPath, bindPose, parents, jointNames, invBindPoseMatrices, globalRootNodeInvMat);
 
 			return skeleton;
 		}

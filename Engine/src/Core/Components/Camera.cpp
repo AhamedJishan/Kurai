@@ -1,5 +1,6 @@
 #include "Camera.h"
 
+#include <yaml-cpp/yaml.h>
 #include "Core/Actor.h"
 #include <Core/Application.h>
 #include <Core/Window.h>
@@ -7,6 +8,20 @@
 
 namespace Dawn
 {
+	void Camera::Serialize(YAML::Node& node) const
+	{
+		node["FOV"] = mFOV;
+		node["Near"] = mNear;
+		node["Far"] = mFar;
+	}
+
+	void Camera::Deserialize(const YAML::Node & node)
+	{
+		SetFOV(node["FOV"].as<float>());
+		SetNearPlane(node["Near"].as<float>());
+		SetFarPlane(node["Far"].as<float>());
+	}
+
 	Camera::Camera(Actor* owner)
 		:Component(owner)
 	{

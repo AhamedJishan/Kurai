@@ -28,6 +28,9 @@ namespace Dawn
 		float GetNear() const { return mNear; }
 		float GetFar() const { return mFar; }
 
+		void Serialize(YAML::Node& node) const override;
+		void Deserialize(const YAML::Node& node) override;
+
 	protected:
 		Camera(Actor* owner);
 

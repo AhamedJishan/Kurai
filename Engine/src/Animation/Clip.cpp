@@ -55,16 +55,6 @@ namespace Dawn
 		return mTracks[mTracks.size() - 1];
 	}
 	
-	const std::string& Clip::GetName()
-	{
-		return mName;
-	}
-	
-	void Clip::SetName(const std::string& name)
-	{
-		mName = name;
-	}
-	
 	float Clip::GetDuration()
 	{
 		float endTime = 0.0f;
@@ -81,16 +71,6 @@ namespace Dawn
 			}
 		}
 		return endTime;
-	}
-	
-	bool Clip::GetLooping()
-	{
-		return mLooping;
-	}
-	
-	void Clip::SetLooping(bool isLooping)
-	{
-		mLooping = isLooping;
 	}
 	
 	float Clip::AdjustTimeToFitRange(float inTime)

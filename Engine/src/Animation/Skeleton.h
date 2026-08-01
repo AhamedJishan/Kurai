@@ -10,12 +10,14 @@ namespace Dawn
 	class Skeleton
 	{
 	public:
-		Skeleton(const Pose& bindPose, 
+		Skeleton(const std::string& assetPath,
+				const Pose& bindPose, 
 				const std::vector<int>& parents,
 				const std::vector<std::string>& jointNames,
 				const std::vector<glm::mat4>& invBindPoseMatrices,
 				const glm::mat4& globalRootInvMat);
 
+		const std::string& GetAssetPath() const { return mAssetPath; }
 		const Pose& GetBindPose() const;
 		int GetNumBones() const { return mJointNames.size(); }
 		int GetParent(unsigned int index) const;
@@ -27,6 +29,7 @@ namespace Dawn
 		const glm::mat4& GetRootGlobalInvMatrix() const { return mGlobalRootInvMat; }
 
 	protected:
+		std::string mAssetPath;
 		Pose mBindPose;
 		std::vector<int> mParents;
 		std::vector<std::string> mJointNames;

@@ -1,6 +1,6 @@
 #include "MeshRenderer.h"
 
-#include <vector>
+#include <yaml-cpp/yaml.h>
 #include "Core/Actor.h"
 #include "Core/Application.h"
 #include "Asset/Assets.h"
@@ -13,6 +13,17 @@
 
 namespace Dawn
 {
+	void MeshRenderer::Serialize(YAML::Node& node) const
+	{
+		node["IsSkinned"] = mIsSkinned;
+		node["ModelPath"] = mModelPath;
+	}
+	
+	void MeshRenderer::Deserialize(const YAML::Node & node)
+	{
+		SetModel(node["ModelPath"].as<std::string>(), node["IsSkinned"].as<bool>());
+	}
+
 	MeshRenderer::MeshRenderer(Actor* owner)
 		:Component(owner)
 	{

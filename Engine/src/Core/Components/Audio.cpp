@@ -1,5 +1,6 @@
 #include "Audio.h"
 
+#include <yaml-cpp/yaml.h>
 #include "Audio/SoundEvent.h"
 #include "Core/Actor.h"
 #include "Core/Application.h"
@@ -7,6 +8,23 @@
 
 namespace Dawn
 {
+
+	void Audio::Serialize(YAML::Node& node) const
+	{
+		for (const SoundEvent& soundEvent : mEvents2D)
+			node["Events2D"].push_back(soundEvent.GetName());
+		for (const SoundEvent& soundEvent : mEvents3D)
+			node["Events3D"].push_back(soundEvent.GetName());
+	}
+
+	void Audio::Deserialize(const YAML::Node& node)
+	{
+		for (const YAML::Node& eventNode : node["Events2D"])
+			PlayEvent(eventNode.as<std::string>());
+		for (const YAML::Node& eventNode : node["Events3D"])
+			PlayEvent(eventNode.as<std::string>());
+	}
+
 	Audio::Audio(Actor* owner)
 		:Component(owner)
 	{
@@ -57,10 +75,10 @@ namespace Dawn
 	
 	void Audio::StopAllEvents()
 	{
-		for (SoundEvent event : mEvents2D)
+		for (SoundEvent& event : mEvents2D)
 			event.Stop();
 
-		for (SoundEvent event : mEvents3D)
+		for (SoundEvent& event : mEvents3D)
 			event.Stop();
 
 		mEvents2D.clear();

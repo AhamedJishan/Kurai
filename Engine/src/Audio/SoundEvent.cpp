@@ -5,9 +5,10 @@
 
 namespace Dawn
 {
-	SoundEvent::SoundEvent(AudioSystem* system, unsigned int id)
+	SoundEvent::SoundEvent(AudioSystem* system, unsigned int id, const std::string& name)
 		:mSystem(system)
 		,mId(id)
+		,mName(name)
 	{
 	}
 

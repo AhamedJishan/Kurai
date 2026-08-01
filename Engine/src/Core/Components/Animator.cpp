@@ -1,5 +1,7 @@
 #include "Animator.h"
 
+#include <yaml-cpp/yaml.h>
+#include <Asset/Assets.h>
 #include <Animation/Skeleton.h>
 #include <Animation/Clip.h>
 #include <Animation/Pose.h>
@@ -7,6 +9,33 @@
 
 namespace Dawn
 {
+	void Animator::Serialize(YAML::Node& node) const
+	{
+		node["Skeleton"] = mSkeleton->GetAssetPath();
+		node["ActiveClipName"] = mActiveClipName;
+
+		YAML::Node& clipsNode = node["Clips"];
+		for (auto& clipEntry : mClips)
+			clipsNode[clipEntry.first] = clipEntry.second->GetAssetPath();
+	}
+
+	void Animator::Deserialize(const YAML::Node & node)
+	{
+		SetSkeleton(Assets::GetSkeleton(node["Skeleton"].as<std::string>()));
+
+		const YAML::Node& clipsNode = node["Clips"];
+		for (auto it = clipsNode.begin(); it != clipsNode.end(); it++)
+		{
+			std::string clipName = it->first.as<std::string>();
+			std::string clipAssetPath = it->second.as<std::string>();
+
+			Clip* clip = Assets::GetAnimationClip(clipAssetPath);
+			AddClip(clipName, clip);
+		}
+
+		Play(node["ActiveClipName"].as<std::string>());
+	}
+
 	Animator::Animator(Actor* owner)
 		:Component(owner)
 	{
@@ -18,11 +47,11 @@ namespace Dawn
 
 	void Animator::Update(float deltaTime)
 	{
-		if (mActiveClip == nullptr || mSkeleton == nullptr)
+		if (mActiveClipName == "" || mSkeleton == nullptr)
 			return;
 
 		Pose animatedPose = mSkeleton->GetBindPose();	// giving bind pose as default pose
-		mActiveClip->Sample(animatedPose, mPlaybackTime);
+		mClips[mActiveClipName]->Sample(animatedPose, mPlaybackTime);
 
 		const std::vector<glm::mat4> localTransforms = animatedPose.GetLocalTransformMatrices();
 		const std::vector<glm::mat4> globalTransforms = BuildGlobalTransforms(localTransforms);
@@ -37,17 +66,17 @@ namespace Dawn
 
 	void Animator::Play(const std::string& clipName)
 	{
-		mActiveClip = nullptr;
+		mActiveClipName = "";
 		mPlaybackTime = 0.0f;
 
-		auto it = mAnimations.find(clipName);
-		if (it == mAnimations.end())
+		auto it = mClips.find(clipName);
+		if (it == mClips.end())
 		{
 			LOG_WARN("Couldn't find a clip named '%s'", clipName.c_str());
 			return;
 		}
 
-		mActiveClip = it->second;
+		mActiveClipName = clipName;
 	}
 
 	void Animator::SetSkeleton(const Skeleton* skeleton)

@@ -23,9 +23,12 @@ namespace Dawn
 		void Play(const std::string& clipName);
 
 		void SetSkeleton(const Skeleton* skeleton);
-		void AddClip(const std::string& clipName, Clip* clip) { mAnimations.emplace(clipName, clip); }
+		void AddClip(const std::string& clipName, Clip* clip) { mClips.emplace(clipName, clip); }
 
 		const std::vector<glm::mat4>& GetMatrixPalette() const { return mMatrixPalette; }
+
+		void Serialize(YAML::Node& node) const override;
+		void Deserialize(const YAML::Node& node) override;
 
 	protected:
 		Animator(Actor* owner);
@@ -34,10 +37,10 @@ namespace Dawn
 
 	private:
 		const Skeleton* mSkeleton = nullptr;
-		std::unordered_map<std::string, Clip*> mAnimations;
+		std::unordered_map<std::string, Clip*> mClips;
 		std::vector<glm::mat4> mMatrixPalette;
 
-		Clip* mActiveClip = nullptr;
+		std::string mActiveClipName;
 		float mPlaybackTime = 0.0f;
 	};
 }

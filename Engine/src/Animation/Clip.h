@@ -12,6 +12,7 @@ namespace Dawn
 	public:
 		Clip();
 
+		float GetDuration();
 		unsigned int GetSize();
 		unsigned int GetIdAtIndex(unsigned int index);
 		void SetIdAtIndex(unsigned int index, unsigned int id);
@@ -22,18 +23,21 @@ namespace Dawn
 		// If a track for a specified joint doesn't exist, than it creates a new one.
 		TransformTrack& operator[](unsigned int joint);
 
-		const std::string& GetName();
-		void SetName(const std::string& name);
-		float GetDuration();
-		bool GetLooping();
-		void SetLooping(bool isLooping);
+		bool GetLooping() const { return mLooping; }
+		const std::string& GetName() const { return mName; }
+		const std::string& GetAssetPath() const { return mAssetPath; }
+
+		void SetLooping(bool isLooping) { mLooping = isLooping; }
+		void SetName(const std::string& name) { mName = name; }
+		void SetAssetPath(const std::string& assetPath) { mAssetPath = assetPath; }
 
 	protected:
 		float AdjustTimeToFitRange(float inTime);
 
 	protected:
-		std::vector<TransformTrack> mTracks;
-		std::string mName;
 		bool mLooping;
+		std::string mName;
+		std::string mAssetPath;
+		std::vector<TransformTrack> mTracks;
 	};
 }

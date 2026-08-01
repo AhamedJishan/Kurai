@@ -1,5 +1,11 @@
 #pragma once
 
+// Forward Declaration
+namespace YAML
+{
+	class Node;
+}
+
 namespace Dawn
 {
 	// NOTE:
@@ -17,6 +23,9 @@ namespace Dawn
 		virtual void Update(float deltaTime) {}
 
 		class Actor* GetOwner() const { return mOwner; }
+
+		virtual void Serialize(YAML::Node& node) const = 0;
+		virtual void Deserialize(const YAML::Node& node) = 0;
 
 	protected:
 		friend class Actor;

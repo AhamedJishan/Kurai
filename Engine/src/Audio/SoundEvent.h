@@ -33,13 +33,15 @@ namespace Dawn
 		float GetParameter(const std::string& name) const;
 
 		const unsigned int GetId() const { return mId; }
+		const std::string& GetName() const { return mName; }
 
 	private:
 		friend class AudioSystem;
-		SoundEvent(AudioSystem* system, unsigned int id);
+		SoundEvent(AudioSystem* system, unsigned int id, const std::string& name);
 
 	private:
 		AudioSystem* mSystem = nullptr;
 		unsigned int mId;
+		std::string mName;
 	};
 }

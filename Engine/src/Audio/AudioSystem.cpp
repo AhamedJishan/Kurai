@@ -264,7 +264,7 @@ namespace Dawn
 				mEventInstances.emplace(eventId, event);
 			}
 
-			return SoundEvent(this, eventId);
+			return SoundEvent(this, eventId, name);
 		}
 
 		LOG_WARN("Event '%s' is not a part of any loaded audio banks", name.c_str());

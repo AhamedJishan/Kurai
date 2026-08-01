@@ -21,6 +21,9 @@ namespace Dawn
 		SoundEvent PlayEvent(const std::string& name);
 		void StopAllEvents();
 
+		void Serialize(YAML::Node& node) const override;
+		void Deserialize(const YAML::Node& node) override;
+
 	protected:
 		Audio(Actor* owner);
 

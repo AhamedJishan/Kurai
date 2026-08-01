@@ -22,6 +22,9 @@ namespace Dawn
 		const std::vector<Mesh*>& GetMeshes() const { return mMeshes; }
 		const std::vector<Material*>& GetMaterials() const { return mMaterials; }
 
+		void Serialize(YAML::Node& node) const override;
+		void Deserialize(const YAML::Node& node) override;
+
 	private:
 		MeshRenderer(Actor* owner);
 

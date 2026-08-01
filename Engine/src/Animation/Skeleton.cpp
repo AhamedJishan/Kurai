@@ -2,12 +2,14 @@
 
 namespace Dawn
 {
-	Skeleton::Skeleton( const Pose& bindPose,
+	Skeleton::Skeleton( const std::string& assetPath,
+						const Pose& bindPose,
 						const std::vector<int>& parents,
 						const std::vector<std::string>& jointNames,
 						const std::vector<glm::mat4>& invBindPoseMatrices,
 						const glm::mat4& globalRootInvMat)
 	{
+		mAssetPath = assetPath;
 		mBindPose = bindPose;
 		mParents = parents;
 		mJointNames = jointNames;
