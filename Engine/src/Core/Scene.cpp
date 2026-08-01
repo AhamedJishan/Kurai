@@ -59,4 +59,23 @@ namespace Dawn
 
 		return actor;
 	}
+
+	void Scene::DeleteActor(Actor* actor)
+	{
+		auto it = std::find(mActors.begin(), mActors.end(), actor);
+		if (it != mActors.end())
+		{
+			mActors.erase(it);
+			delete actor;
+			return;
+		}
+
+		it = std::find(mPendingActors.begin(), mPendingActors.end(), actor);
+		if (it != mPendingActors.end())
+		{
+			mPendingActors.erase(it);
+			delete actor;
+			return;
+		}
+	}
 }

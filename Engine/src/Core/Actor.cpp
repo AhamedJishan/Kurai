@@ -16,6 +16,16 @@ namespace Dawn
 		mComponents.clear();
 	}
 
+	void Actor::DeleteComponent(Component* component)
+	{
+		auto it = std::find(mComponents.begin(), mComponents.end(), component);
+		if (it != mComponents.end())
+		{
+			mComponents.erase(it);
+			delete component;
+		}
+	}
+
 	void Actor::Update(float deltaTime)
 	{
 		if (mState == State::Paused || mState == State::Dead)

@@ -30,7 +30,7 @@ namespace Dawn
 
 		// --- COMPONENT MANAGEMENT ---
 		template<typename T>
-		Component* AddComponent()
+		T* CreateComponent()
 		{
 			static_assert(std::is_base_of_v<Component, T>, "Not a component");
 			static_assert(std::is_constructible_v<T, Actor*>, "Component type must provide a constructor of the form T(Actor* owner).");
@@ -39,6 +39,8 @@ namespace Dawn
 			mComponents.push_back(component);
 			return component;
 		}
+
+		void DeleteComponent(Component* component);
 
 		template<typename T>
 		T* GetComponent() const

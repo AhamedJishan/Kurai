@@ -40,7 +40,7 @@ namespace Dawn
 		void Update(float deltaTime);
 
 		Actor* CreateActor(const std::string& name = "Actor");
-		// TODO: DeleteActor()
+		void DeleteActor(Actor* actor);
 
 		void SetPaused(bool value) { mIsPaused = value; }
 		bool IsPaused() const { return mIsPaused; }
