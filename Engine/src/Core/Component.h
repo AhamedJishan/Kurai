@@ -18,6 +18,8 @@ namespace Dawn
 	class Component
 	{
 	public:
+		// Each component should be created via actor: actor->CreateComponent<T>()
+		Component(class Actor* owner);
 		virtual ~Component();
 
 		virtual void Update(float deltaTime) {}
@@ -26,10 +28,6 @@ namespace Dawn
 
 		virtual void Serialize(YAML::Node& node) const = 0;
 		virtual void Deserialize(const YAML::Node& node) = 0;
-
-	protected:
-		friend class Actor;
-		Component(class Actor* owner);
 
 	protected:
 		class Actor* mOwner;

@@ -16,6 +16,7 @@ namespace Dawn
 	class Animator : public Component
 	{
 	public:
+		Animator(Actor* owner);
 		~Animator();
 
 		void Update(float deltaTime) override;
@@ -30,9 +31,7 @@ namespace Dawn
 		void Serialize(YAML::Node& node) const override;
 		void Deserialize(const YAML::Node& node) override;
 
-	protected:
-		Animator(Actor* owner);
-
+	private:
 		std::vector<glm::mat4> BuildGlobalTransforms(const std::vector<glm::mat4>& localTransforms);
 
 	private:

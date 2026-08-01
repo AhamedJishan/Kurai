@@ -11,6 +11,8 @@ namespace Dawn
 	class Camera : public Component
 	{
 	public:
+		Camera(Actor* owner);
+
 		void Update(float deltaTime) override;
 
 		glm::mat4 GetView() const;
@@ -30,9 +32,6 @@ namespace Dawn
 
 		void Serialize(YAML::Node& node) const override;
 		void Deserialize(const YAML::Node& node) override;
-
-	protected:
-		Camera(Actor* owner);
 
 	protected:
 		// in degrees

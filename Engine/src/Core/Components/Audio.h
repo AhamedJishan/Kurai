@@ -14,6 +14,7 @@ namespace Dawn
 	class Audio : public Component
 	{
 	public:
+		Audio(Actor* owner);
 		~Audio();
 
 		void Update(float deltaTime) override;
@@ -23,9 +24,6 @@ namespace Dawn
 
 		void Serialize(YAML::Node& node) const override;
 		void Deserialize(const YAML::Node& node) override;
-
-	protected:
-		Audio(Actor* owner);
 
 	private:
 		std::vector<SoundEvent> mEvents2D;

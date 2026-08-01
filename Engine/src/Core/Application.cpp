@@ -9,14 +9,22 @@
 #include "Asset/AssetManager.h"
 #include "SceneSerializer.h"
 #include "Scene.h"
+// --- COMPONENTS ---
+#include "ComponentFactory.h"
+#include "Components/Animator.h"
+#include "Components/Audio.h"
+#include "Components/Camera.h"
+#include "Components/MeshRenderer.h"
+// ------------------
 
 namespace Dawn
 {
 	Application* Application::sInstance = nullptr;
 
-	Application::Application(WindowConfig windowConfig)
+	Application::Application(WindowConfig windowConfig, ComponentFactory* componentFactory)
 		:mIsRunning(true)
 		,mTime(0.0)
+		,mComponentFactory(componentFactory)
 	{
 		if (sInstance)
 		{
@@ -45,16 +53,19 @@ namespace Dawn
 			mIsRunning = false;
 			return;
 		}
+
+		RegisterBuiltInComponents();
 	}
 
 	Application::~Application()
 	{
-		if (mAssetManager)	delete mAssetManager;
-		if (mInputSystem)	delete mInputSystem;
-		if (mImGuiSystem)	delete mImGuiSystem;
-		if (mAudioSystem)	delete mAudioSystem;
-		if (mRenderer)		delete mRenderer;
-		if (mWindow)		delete mWindow;
+		if (mComponentFactory)	delete mComponentFactory;
+		if (mAssetManager)		delete mAssetManager;
+		if (mInputSystem)		delete mInputSystem;
+		if (mImGuiSystem)		delete mImGuiSystem;
+		if (mAudioSystem)		delete mAudioSystem;
+		if (mRenderer)			delete mRenderer;
+		if (mWindow)			delete mWindow;
 
 		sInstance = nullptr;
 	}
@@ -112,5 +123,13 @@ namespace Dawn
 		if (mScene)
 			mRenderer->Draw();
 		mWindow->SwapBuffers();
+	}
+
+	void Application::RegisterBuiltInComponents()
+	{
+		mComponentFactory->Register<Animator>("Animator");
+		mComponentFactory->Register<Audio>("Audio");
+		mComponentFactory->Register<Camera>("Camera");
+		mComponentFactory->Register<MeshRenderer>("MeshRenderer");
 	}
 }

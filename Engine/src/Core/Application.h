@@ -12,11 +12,12 @@ namespace Dawn
 	class ImGuiSystem;
 	class AudioSystem;
 	class AssetManager;
+	class ComponentFactory;
 
 	class Application
 	{
 	public:
-		Application(struct WindowConfig windowConfig);
+		Application(struct WindowConfig windowConfig, ComponentFactory* componentFactory);
 		virtual ~Application();
 
 		void LoadScene(const std::string& sceneName);
@@ -32,10 +33,12 @@ namespace Dawn
 		InputSystem* GetInputSystem() const { return mInputSystem; }
 		AudioSystem* GetAudioSystem() const { return mAudioSystem; }
 		AssetManager* GetAssetManager() const { return mAssetManager; }
+		ComponentFactory* GetComponentFactory() const { return mComponentFactory; }
 
 	private:
 		void Update();
 		void GenerateOutput();
+		void RegisterBuiltInComponents();
 
 	private:
 		static Application* sInstance;
@@ -49,6 +52,7 @@ namespace Dawn
 		ImGuiSystem* mImGuiSystem = nullptr;
 		AudioSystem* mAudioSystem = nullptr;
 		AssetManager* mAssetManager = nullptr;
+		ComponentFactory* mComponentFactory = nullptr;
 
 		bool mIsRunning = false;
 		double mTime = 0.0;

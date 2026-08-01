@@ -2,6 +2,7 @@
 
 #include "Core/Application.h"
 #include "Core/Window.h"
+#include <Core/ComponentFactory.h>
 
 int main(int argc, char** argv)
 {
@@ -11,7 +12,9 @@ int main(int argc, char** argv)
 	config.Width = 1080;
 	config.Height = 720;
 
-	Dawn::Application app(config);
+	Dawn::ComponentFactory* componentFactory = new Dawn::ComponentFactory();
+
+	Dawn::Application app(config, componentFactory);
 	app.LoadScene("TestScene");
 	app.Run();
 

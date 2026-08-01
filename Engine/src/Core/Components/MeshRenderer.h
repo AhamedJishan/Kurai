@@ -14,6 +14,7 @@ namespace Dawn
 	class MeshRenderer : public Component
 	{
 	public:
+		MeshRenderer(Actor* owner);
 		~MeshRenderer();
 
 		void SetModel(const std::string& modelPath, bool requestSkinning = false);
@@ -24,9 +25,6 @@ namespace Dawn
 
 		void Serialize(YAML::Node& node) const override;
 		void Deserialize(const YAML::Node& node) override;
-
-	private:
-		MeshRenderer(Actor* owner);
 
 	private:
 		bool mIsSkinned = false;
