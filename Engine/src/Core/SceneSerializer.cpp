@@ -4,6 +4,9 @@
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <Utils/Log.h>
+#include "Application.h"
+#include "ComponentFactory.h"
+#include "Component.h"
 #include "Scene.h"
 #include "Actor.h"
 #include "Transform.h"
@@ -48,6 +51,17 @@ namespace Dawn
 		dirLight.intensity = dirLightNode["Intensity"].as<float>();
 	}
 
+	void DeserializeComponents(const YAML::Node& componentsNode, Actor* owner)
+	{
+		ComponentFactory* componentFactory = Application::Get()->GetComponentFactory();
+
+		for (const YAML::Node& componentNode : componentsNode)
+		{
+			Component* component = componentFactory->Create(componentNode["Type"].as<std::string>(), owner);
+			component->Deserialize(componentNode);
+		}
+	}
+
 	void DeserializeActors(const YAML::Node& actorsNode, Scene* scene)
 	{
 		for (const YAML::Node& actorNode : actorsNode)
@@ -65,6 +79,8 @@ namespace Dawn
 			if		(actorStateStr == "Active") actor->SetState(Actor::State::Active);
 			else if (actorStateStr == "Paused") actor->SetState(Actor::State::Paused);
 			else								actor->SetState(Actor::State::Dead);
+
+			DeserializeComponents(actorNode["Components"], actor);
 		}
 	}
 
@@ -77,8 +93,6 @@ namespace Dawn
 			Scene* scene = new Scene();
 			DeserializeEnvSettings(sceneFile["EnvironmentSettings"], scene);
 			DeserializeActors(sceneFile["Actors"], scene);
-
-			// TODO: deserialize components
 
 			return scene;
 		}

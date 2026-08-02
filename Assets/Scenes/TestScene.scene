@@ -10,10 +10,15 @@ EnvironmentSettings:
   BloomStrength: 0.01
 
 Actors:
-  - Name: TestActor
+  - Name: CameraActor
     State: Active
     Transform: 
       Scale: [1.0, 1.0, 1.0]
       Position: [0.0, 0.0, 0.0]
       Rotation: [1.0, 0.0, 0.0, 0.0]
-    # TODO: Components list
+    
+    Components:
+      - Type: Camera
+        FOV: 100.0
+        Near: 0.1
+        Far: 1000.0
