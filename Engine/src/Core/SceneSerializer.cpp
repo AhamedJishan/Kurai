@@ -34,6 +34,7 @@ namespace Dawn
 	}
 	// --------------------
 
+	// --- SCENE SERIALIZER Helper ---
 	void DeserializeEnvSettings(const YAML::Node& envSettingsNode, Scene* scene)
 	{
 		EnvironmentSettings& env = scene->GetEnvironmentSettings();
@@ -83,7 +84,9 @@ namespace Dawn
 			DeserializeComponents(actorNode["Components"], actor);
 		}
 	}
+	// -------------------------------
 
+	// --- SCENE SERIALIZER ---
 	Scene* SceneSerializer::Load(const std::string& scenePath)
 	{
 		try
@@ -114,4 +117,86 @@ namespace Dawn
 
 		return nullptr;
 	}
+	// ------------------------
+
+	// --- SERIALIZATION CONTEXT ---
+	void SerializationContext::Register(Actor* actor)
+	{
+		mIdToActorMap.emplace(mNextId, actor);
+		mActorToIdMap.emplace(actor, mNextId);
+		mNextId++;
+	}
+
+	void SerializationContext::Register(unsigned int id, Actor * actor)
+	{
+		mIdToActorMap.emplace(id, actor);
+		mActorToIdMap.emplace(actor, id);
+		if (id >= mNextId)
+			mNextId = id + 1;
+	}
+
+	void SerializationContext::Register(Component * component)
+	{
+		mIdToComponentMap.emplace(mNextId, component);
+		mComponentToIdMap.emplace(component, mNextId);
+		mNextId++;
+
+	}
+
+	void SerializationContext::Register(unsigned int id, Component * component)
+	{
+		mIdToComponentMap.emplace(id, component);
+		mComponentToIdMap.emplace(component, id);
+		if (id >= mNextId)
+			mNextId = id + 1;
+	}
+
+	Actor* SerializationContext::GetActorById(unsigned int id) const
+	{
+		auto it = mIdToActorMap.find(id);
+		if (it == mIdToActorMap.end())
+		{
+			LOG_ERROR("No Actor by the id '%d' exists", id);
+			return nullptr;
+		}
+
+		return it->second;
+	}
+
+	Component* SerializationContext::GetComponentById(unsigned int id) const
+	{
+		auto it = mIdToComponentMap.find(id);
+		if (it == mIdToComponentMap.end())
+		{
+			LOG_ERROR("No Component by the id '%d' exists", id);
+			return nullptr;
+		}
+
+		return it->second;
+	}
+
+	unsigned int SerializationContext::GetIdByActor(Actor* actor) const
+	{
+		auto it = mActorToIdMap.find(actor);
+		if (it == mActorToIdMap.end())
+		{
+			LOG_ERROR("Tried to get id of an unregistered Actor");
+			return 0;
+		}
+
+		return it->second;
+	}
+
+	unsigned int SerializationContext::GetIdByComponent(Component* component) const
+	{
+		auto it = mComponentToIdMap.find(component);
+		if (it == mComponentToIdMap.end())
+		{
+			LOG_ERROR("Tried to get id of an unregistered Component");
+			return 0;
+		}
+
+		return it->second;
+	}
+	// -----------------------------
 }
