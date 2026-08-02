@@ -10,6 +10,7 @@
 #include "Scene.h"
 #include "Actor.h"
 #include "Transform.h"
+#include "Components/Camera.h"
 
 namespace Dawn
 {
@@ -122,6 +123,9 @@ namespace Dawn
 			// Deserialization
 			DeserializeEnvSettings(sceneNode["EnvironmentSettings"], scene);
 			DeserializeActors(sceneNode["Actors"], ctx);
+
+			Camera* camera = static_cast<Camera*>(ctx.GetComponentById(sceneNode["ActiveCamera"].as<unsigned int>()));
+			scene->SetActiveCamera(camera);
 
 			return scene;
 		}

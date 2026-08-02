@@ -1,4 +1,4 @@
-# TODO: ActiveCamera
+ActiveCamera: 2
 
 EnvironmentSettings:
   DirectionalLight:
@@ -6,8 +6,8 @@ EnvironmentSettings:
     Color: [1.0, 1.0, 1.0]
     Intensity: 1.0
   AmbientColor: [0.2, 0.2, 0.2]
-  FogColor: [1.0, 1.0, 1.0]
-  FogDensity: 0.1
+  FogColor: [0.1, 0.1, 0.1]
+  FogDensity: 0.025
   BloomRadius: 1.0
   BloomStrength: 0.01
 
@@ -26,3 +26,17 @@ Actors:
         FOV: 100.0
         Near: 0.1
         Far: 1000.0
+    
+  - Id: 3
+    Name: ArenaActor
+    State: Active
+    Transform: 
+      Scale: [1.0, 1.0, 1.0]
+      Position: [0.0, -2.0, 0.0]
+      Rotation: [1.0, 0.0, 0.0, 0.0]
+    
+    Components:
+      - Id: 4
+        Type: MeshRenderer
+        IsSkinned: false
+        ModelPath: Assets/Models/arena/arena.obj
