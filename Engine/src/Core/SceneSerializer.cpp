@@ -52,36 +52,56 @@ namespace Dawn
 		dirLight.intensity = dirLightNode["Intensity"].as<float>();
 	}
 
-	void DeserializeComponents(const YAML::Node& componentsNode, Actor* owner)
+	void DeserializeComponents(const YAML::Node& componentsNode, SerializationContext& ctx)
 	{
-		ComponentFactory* componentFactory = Application::Get()->GetComponentFactory();
-
 		for (const YAML::Node& componentNode : componentsNode)
 		{
-			Component* component = componentFactory->Create(componentNode["Type"].as<std::string>(), owner);
-			component->Deserialize(componentNode);
+			Component* component = ctx.GetComponentById(componentNode["Id"].as<unsigned int>());
+			component->Deserialize(componentNode, ctx);
 		}
 	}
 
-	void DeserializeActors(const YAML::Node& actorsNode, Scene* scene)
+	void DeserializeActors(const YAML::Node& actorsNode, SerializationContext& ctx)
 	{
 		for (const YAML::Node& actorNode : actorsNode)
 		{
 			const YAML::Node& transformNode = actorNode["Transform"];
-			const std::string& actorStateStr = actorNode["State"].as<std::string>();
+			Actor* actor = ctx.GetActorById(actorNode["Id"].as<unsigned int>());
 
-			Actor* actor = scene->CreateActor(actorNode["Name"].as<std::string>());
 			Transform& transform = actor->GetTransform();
-
 			transform.Scale = ToVec3(transformNode["Scale"]);
 			transform.Position = ToVec3(transformNode["Position"]);
 			transform.Rotation = ToQuat(transformNode["Rotation"]);
 
+			const std::string& actorStateStr = actorNode["State"].as<std::string>();
 			if		(actorStateStr == "Active") actor->SetState(Actor::State::Active);
 			else if (actorStateStr == "Paused") actor->SetState(Actor::State::Paused);
 			else								actor->SetState(Actor::State::Dead);
 
-			DeserializeComponents(actorNode["Components"], actor);
+			DeserializeComponents(actorNode["Components"], ctx);
+		}
+	}
+
+	void CreateComponents(const YAML::Node& componentsNode, SerializationContext& ctx, Actor* owner)
+	{
+		ComponentFactory* componentFactory = Application::Get()->GetComponentFactory();
+		for (const YAML::Node& componentNode : componentsNode)
+		{
+			unsigned int id = componentNode["Id"].as<unsigned int>();
+			Component* component = componentFactory->Create(componentNode["Type"].as<std::string>(), owner);
+			ctx.Register(id, component);
+		}
+	}
+
+	void CreateActors(const YAML::Node& actorsNode, SerializationContext& ctx, Scene* scene)
+	{
+		for (const YAML::Node& actorNode : actorsNode)
+		{
+			unsigned int id = actorNode["Id"].as<unsigned int>();
+			Actor* actor = scene->CreateActor(actorNode["Name"].as<std::string>());
+			ctx.Register(id, actor);
+
+			CreateComponents(actorNode["Components"], ctx, actor);
 		}
 	}
 	// -------------------------------
@@ -91,11 +111,17 @@ namespace Dawn
 	{
 		try
 		{
-			YAML::Node sceneFile = YAML::LoadFile(scenePath);
+			YAML::Node sceneNode = YAML::LoadFile(scenePath);
 
 			Scene* scene = new Scene();
-			DeserializeEnvSettings(sceneFile["EnvironmentSettings"], scene);
-			DeserializeActors(sceneFile["Actors"], scene);
+			SerializationContext ctx;
+
+			// Creation
+			CreateActors(sceneNode["Actors"], ctx, scene);
+
+			// Deserialization
+			DeserializeEnvSettings(sceneNode["EnvironmentSettings"], scene);
+			DeserializeActors(sceneNode["Actors"], ctx);
 
 			return scene;
 		}

@@ -28,8 +28,8 @@ namespace Dawn
 
 		const std::vector<glm::mat4>& GetMatrixPalette() const { return mMatrixPalette; }
 
-		void Serialize(YAML::Node& node) const override;
-		void Deserialize(const YAML::Node& node) override;
+		void Serialize(YAML::Node& node, SerializationContext& serializationContext) const override;
+		void Deserialize(const YAML::Node& node, SerializationContext& serializationContext) override;
 
 	private:
 		std::vector<glm::mat4> BuildGlobalTransforms(const std::vector<glm::mat4>& localTransforms);

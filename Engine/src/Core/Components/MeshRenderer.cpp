@@ -13,13 +13,13 @@
 
 namespace Dawn
 {
-	void MeshRenderer::Serialize(YAML::Node& node) const
+	void MeshRenderer::Serialize(YAML::Node& node, SerializationContext& serializationContext) const
 	{
 		node["IsSkinned"] = mIsSkinned;
 		node["ModelPath"] = mModelPath;
 	}
 	
-	void MeshRenderer::Deserialize(const YAML::Node & node)
+	void MeshRenderer::Deserialize(const YAML::Node & node, SerializationContext& serializationContext)
 	{
 		SetModel(node["ModelPath"].as<std::string>(), node["IsSkinned"].as<bool>());
 	}

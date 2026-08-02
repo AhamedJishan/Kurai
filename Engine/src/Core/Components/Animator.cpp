@@ -9,7 +9,7 @@
 
 namespace Dawn
 {
-	void Animator::Serialize(YAML::Node& node) const
+	void Animator::Serialize(YAML::Node& node, SerializationContext& serializationContext) const
 	{
 		node["Skeleton"] = mSkeleton->GetAssetPath();
 		node["ActiveClipName"] = mActiveClipName;
@@ -19,7 +19,7 @@ namespace Dawn
 			clipsNode[clipEntry.first] = clipEntry.second->GetAssetPath();
 	}
 
-	void Animator::Deserialize(const YAML::Node & node)
+	void Animator::Deserialize(const YAML::Node & node, SerializationContext& serializationContext)
 	{
 		SetSkeleton(Assets::GetSkeleton(node["Skeleton"].as<std::string>()));
 

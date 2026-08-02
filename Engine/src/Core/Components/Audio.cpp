@@ -9,7 +9,7 @@
 namespace Dawn
 {
 
-	void Audio::Serialize(YAML::Node& node) const
+	void Audio::Serialize(YAML::Node& node, SerializationContext& serializationContext) const
 	{
 		for (const SoundEvent& soundEvent : mEvents2D)
 			node["Events2D"].push_back(soundEvent.GetName());
@@ -17,7 +17,7 @@ namespace Dawn
 			node["Events3D"].push_back(soundEvent.GetName());
 	}
 
-	void Audio::Deserialize(const YAML::Node& node)
+	void Audio::Deserialize(const YAML::Node& node, SerializationContext& serializationContext)
 	{
 		for (const YAML::Node& eventNode : node["Events2D"])
 			PlayEvent(eventNode.as<std::string>());

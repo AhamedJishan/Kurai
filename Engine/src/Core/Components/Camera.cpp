@@ -8,14 +8,14 @@
 
 namespace Dawn
 {
-	void Camera::Serialize(YAML::Node& node) const
+	void Camera::Serialize(YAML::Node& node, SerializationContext& serializationContext) const
 	{
 		node["FOV"] = mFOV;
 		node["Near"] = mNear;
 		node["Far"] = mFar;
 	}
 
-	void Camera::Deserialize(const YAML::Node & node)
+	void Camera::Deserialize(const YAML::Node & node, SerializationContext& serializationContext)
 	{
 		SetFOV(node["FOV"].as<float>());
 		SetNearPlane(node["Near"].as<float>());

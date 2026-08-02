@@ -30,8 +30,8 @@ namespace Dawn
 		float GetNear() const { return mNear; }
 		float GetFar() const { return mFar; }
 
-		void Serialize(YAML::Node& node) const override;
-		void Deserialize(const YAML::Node& node) override;
+		void Serialize(YAML::Node& node, SerializationContext& serializationContext) const override;
+		void Deserialize(const YAML::Node& node, SerializationContext& serializationContext) override;
 
 	protected:
 		// in degrees

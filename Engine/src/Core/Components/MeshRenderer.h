@@ -23,8 +23,8 @@ namespace Dawn
 		const std::vector<Mesh*>& GetMeshes() const { return mMeshes; }
 		const std::vector<Material*>& GetMaterials() const { return mMaterials; }
 
-		void Serialize(YAML::Node& node) const override;
-		void Deserialize(const YAML::Node& node) override;
+		void Serialize(YAML::Node& node, SerializationContext& serializationContext) const override;
+		void Deserialize(const YAML::Node& node, SerializationContext& serializationContext) override;
 
 	private:
 		bool mIsSkinned = false;

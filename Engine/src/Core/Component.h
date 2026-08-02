@@ -8,6 +8,9 @@ namespace YAML
 
 namespace Dawn
 {
+	// Forward declarations
+	class SerializationContext;
+
 	// NOTE:
 	// Every Component subclass should provide a constructor of the form:
 	//
@@ -26,8 +29,8 @@ namespace Dawn
 
 		class Actor* GetOwner() const { return mOwner; }
 
-		virtual void Serialize(YAML::Node& node) const = 0;
-		virtual void Deserialize(const YAML::Node& node) = 0;
+		virtual void Serialize(YAML::Node& node, SerializationContext& serializationContext) const = 0;
+		virtual void Deserialize(const YAML::Node& node, SerializationContext& serializationContext) = 0;
 
 	protected:
 		class Actor* mOwner;

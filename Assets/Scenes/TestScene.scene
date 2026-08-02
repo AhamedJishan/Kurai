@@ -1,3 +1,5 @@
+# TODO: ActiveCamera
+
 EnvironmentSettings:
   DirectionalLight:
     Direction: [-1.0, -1.0, -1.0]
@@ -10,7 +12,8 @@ EnvironmentSettings:
   BloomStrength: 0.01
 
 Actors:
-  - Name: CameraActor
+  - Id: 1
+    Name: CameraActor
     State: Active
     Transform: 
       Scale: [1.0, 1.0, 1.0]
@@ -18,7 +21,8 @@ Actors:
       Rotation: [1.0, 0.0, 0.0, 0.0]
     
     Components:
-      - Type: Camera
+      - Id: 2
+        Type: Camera
         FOV: 100.0
         Near: 0.1
         Far: 1000.0
