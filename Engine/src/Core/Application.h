@@ -21,6 +21,7 @@ namespace Dawn
 		virtual ~Application();
 
 		void LoadScene(const std::string& sceneName);
+		void SaveScene(const std::string& sceneName);
 
 		void Run();
 		void Quit() { mIsRunning = false; }

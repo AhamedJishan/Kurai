@@ -39,6 +39,8 @@ namespace Dawn
 
 		void Update(float deltaTime);
 
+		const std::vector<Actor*>& GetActors() const { return mActors; }
+
 		Actor* CreateActor(const std::string& name = "Actor");
 		void DeleteActor(Actor* actor);
 

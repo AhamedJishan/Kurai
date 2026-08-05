@@ -1,5 +1,6 @@
 #include "SceneSerializer.h"
 
+#include <fstream>
 #include <yaml-cpp/yaml.h>
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -33,9 +34,47 @@ namespace Dawn
 			node[3].as<float>()
 		};
 	}
+	YAML::Node ToYaml(const glm::vec3& vec)
+	{
+		YAML::Node vecNode;
+		vecNode.SetStyle(YAML::EmitterStyle::Flow);
+		vecNode.push_back(vec.x);
+		vecNode.push_back(vec.y);
+		vecNode.push_back(vec.z);
+		return vecNode;
+	}
+	YAML::Node ToYaml(const glm::quat& quat)
+	{
+		YAML::Node quatNode;
+		quatNode.SetStyle(YAML::EmitterStyle::Flow);
+		quatNode.push_back(quat.w);
+		quatNode.push_back(quat.x);
+		quatNode.push_back(quat.y);
+		quatNode.push_back(quat.z);
+		return quatNode;
+	}
 	// --------------------
 
 	// --- SCENE SERIALIZER Helper ---
+	YAML::Node SerializeEnvSettings()
+	{
+		YAML::Node envSettingsNode;
+		EnvironmentSettings& env = Application::Get()->GetScene()->GetEnvironmentSettings();
+		EnvironmentSettings::DirectionalLight& dirLight = env.directionalLight;
+
+		YAML::Node dirLightNode = envSettingsNode["DirectionalLight"];
+
+		envSettingsNode["AmbientColor"] = ToYaml(env.ambientColor);
+		envSettingsNode["BloomRadius"] = env.bloomRadius;
+		envSettingsNode["BloomStrength"] = env.bloomStrength;
+		envSettingsNode["FogColor"] = ToYaml(env.fogColor);
+		envSettingsNode["FogDensity"] = env.fogDensity;
+		dirLightNode["Color"] = ToYaml(dirLight.color);
+		dirLightNode["Intensity"] = dirLight.intensity;
+		dirLightNode["Direction"] = ToYaml(dirLight.direction);
+		return envSettingsNode;
+	}
+
 	void DeserializeEnvSettings(const YAML::Node& envSettingsNode, Scene* scene)
 	{
 		EnvironmentSettings& env = scene->GetEnvironmentSettings();
@@ -53,13 +92,52 @@ namespace Dawn
 		dirLight.intensity = dirLightNode["Intensity"].as<float>();
 	}
 
-	void DeserializeComponents(const YAML::Node& componentsNode, SerializationContext& ctx)
+	void BuildSerializationContext(SerializationContext& ctx)
 	{
-		for (const YAML::Node& componentNode : componentsNode)
+		ctx.Clear();
+		for (Actor* actor : Application::Get()->GetScene()->GetActors())
 		{
-			Component* component = ctx.GetComponentById(componentNode["Id"].as<unsigned int>());
-			component->Deserialize(componentNode, ctx);
+			ctx.Register(actor);
+
+			for (Component* component : actor->GetComponents())
+				ctx.Register(component);
 		}
+	}
+
+	YAML::Node SerializeActors(SerializationContext& ctx)
+	{
+		YAML::Node actorsNode;
+		for (Actor* actor : Application::Get()->GetScene()->GetActors())
+		{
+			YAML::Node actorNode;
+			actorNode["Id"] = ctx.GetIdByActor(actor);
+			actorNode["Name"] = actor->GetName();
+
+			Actor::State state = actor->GetState();
+			if		(state == Actor::State::Active) actorNode["State"] = "Active";
+			else if (state == Actor::State::Paused) actorNode["State"] = "Paused";
+			// no need to serialize if the actor is already dead
+
+			YAML::Node transformNode = actorNode["Transform"];
+
+			Transform& transform = actor->GetTransform();
+			transformNode["Scale"] = ToYaml(transform.Scale);
+			transformNode["Position"] = ToYaml(transform.Position);
+			transformNode["Rotation"] = ToYaml(transform.Rotation);
+
+			YAML::Node componentsNode = actorNode["Components"];
+			for (Component* component : actor->GetComponents())
+			{
+				YAML::Node componentNode;
+				componentNode["Id"] = ctx.GetIdByComponent(component);
+				componentNode["Type"] = Application::Get()->GetComponentFactory()->GetComponentName(component);
+				component->Serialize(componentNode, ctx);
+				componentsNode.push_back(componentNode);
+			}
+
+			actorsNode.push_back(actorNode);
+		}
+		return actorsNode;
 	}
 
 	void DeserializeActors(const YAML::Node& actorsNode, SerializationContext& ctx)
@@ -77,9 +155,15 @@ namespace Dawn
 			const std::string& actorStateStr = actorNode["State"].as<std::string>();
 			if		(actorStateStr == "Active") actor->SetState(Actor::State::Active);
 			else if (actorStateStr == "Paused") actor->SetState(Actor::State::Paused);
-			else								actor->SetState(Actor::State::Dead);
+			else if (actorStateStr == "Dead")	actor->SetState(Actor::State::Dead);
+			else LOG_ERROR("Actor '%s' has invalid state '%s'", actor->GetName().c_str(), actorStateStr.c_str());
 
-			DeserializeComponents(actorNode["Components"], ctx);
+			const YAML::Node& componentsNode = actorNode["Components"];
+			for (const YAML::Node& componentNode : componentsNode)
+			{
+				Component* component = ctx.GetComponentById(componentNode["Id"].as<unsigned int>());
+				component->Deserialize(componentNode, ctx);
+			}
 		}
 	}
 
@@ -124,8 +208,12 @@ namespace Dawn
 			DeserializeEnvSettings(sceneNode["EnvironmentSettings"], scene);
 			DeserializeActors(sceneNode["Actors"], ctx);
 
-			Camera* camera = static_cast<Camera*>(ctx.GetComponentById(sceneNode["ActiveCamera"].as<unsigned int>()));
-			scene->SetActiveCamera(camera);
+			unsigned int cameraId = sceneNode["ActiveCamera"].as<unsigned int>();
+			if (cameraId != 0)
+			{
+				Camera* camera = static_cast<Camera*>(ctx.GetComponentById(cameraId));
+				scene->SetActiveCamera(camera);
+			}
 
 			return scene;
 		}
@@ -147,9 +235,43 @@ namespace Dawn
 
 		return nullptr;
 	}
+
+	void SceneSerializer::Save(const std::string& scenePath)
+	{
+		std::ofstream sceneFile(scenePath);
+		if (!sceneFile)
+		{
+			LOG_ERROR("Failed to open '%s' for saving scene!", scenePath.c_str());
+			return;
+		}
+
+		YAML::Node sceneNode;
+
+		SerializationContext ctx;
+		BuildSerializationContext(ctx);
+		
+		Camera* camera = Application::Get()->GetScene()->GetActiveCamera();
+		unsigned int cameraId = 0;
+		if (camera) cameraId = ctx.GetIdByComponent(camera);
+
+		sceneNode["ActiveCamera"] = cameraId;
+		sceneNode["EnvironmentSettings"] = SerializeEnvSettings();
+		sceneNode["Actors"] = SerializeActors(ctx);
+
+		sceneFile << sceneNode;
+	}
 	// ------------------------
 
 	// --- SERIALIZATION CONTEXT ---
+	void SerializationContext::Clear()
+	{
+		mNextId = 1;
+		mActorToIdMap.clear();
+		mIdToActorMap.clear();
+		mComponentToIdMap.clear();
+		mIdToComponentMap.clear();
+	}
+
 	void SerializationContext::Register(Actor* actor)
 	{
 		mIdToActorMap.emplace(mNextId, actor);
@@ -183,6 +305,12 @@ namespace Dawn
 
 	Actor* SerializationContext::GetActorById(unsigned int id) const
 	{
+		if (id == 0)
+		{
+			LOG_ERROR("Tried to resolve a null Actor reference (ID 0).");
+			return nullptr;
+		}
+
 		auto it = mIdToActorMap.find(id);
 		if (it == mIdToActorMap.end())
 		{
@@ -195,6 +323,12 @@ namespace Dawn
 
 	Component* SerializationContext::GetComponentById(unsigned int id) const
 	{
+		if (id == 0)
+		{
+			LOG_ERROR("Tried to resolve a null Component reference (ID 0).");
+			return nullptr;
+		}
+
 		auto it = mIdToComponentMap.find(id);
 		if (it == mIdToComponentMap.end())
 		{

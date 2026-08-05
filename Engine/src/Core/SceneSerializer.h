@@ -13,12 +13,14 @@ namespace Dawn
 	namespace SceneSerializer
 	{
 		Scene* Load(const std::string& scenePath);
-		// TODO: Save();
+		void Save(const std::string& scenePath);
 	}
 
 	class SerializationContext
 	{
 	public:
+		void Clear();
+
 		void Register(Actor* actor);					// While Serializing
 		void Register(unsigned int id, Actor* actor);	// While Deserializing
 

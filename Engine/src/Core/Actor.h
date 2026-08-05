@@ -64,6 +64,8 @@ namespace Dawn
 			}
 			return resultList;
 		}
+
+		const std::vector<Component*>& GetComponents() const { return mComponents; }
 		// ----------------------------
 
 	private:

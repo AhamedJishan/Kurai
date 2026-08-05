@@ -80,6 +80,12 @@ namespace Dawn
 			mPendingScene = loadedScene;
 	}
 
+	void Application::SaveScene(const std::string& sceneName)
+	{
+		std::string scenePath = "Assets/Scenes/" + sceneName + ".scene";
+		SceneSerializer::Save(scenePath);
+	}
+
 	void Application::Run()
 	{
 		while (mIsRunning)
