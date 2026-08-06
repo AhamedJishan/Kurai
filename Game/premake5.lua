@@ -15,16 +15,16 @@ project "Game"
     includedirs {
         "src/",
         "../Engine/src",
-
         "../Engine/vendor/include",
-
-        "../Engine/src/Vendor/"
+        "../Engine/src/Vendor/",
+        "../Editor/src"
     }
 
     --libdirs { }
 
     links {
-        "Engine"
+        "Engine",
+        "Editor"
     }
 
     files {

@@ -7,4 +7,5 @@ workspace "Kurai"
     startproject "Game"
 
     include "Engine"
+    include "Editor"
     include "Game"

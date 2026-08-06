@@ -3,6 +3,7 @@
 #include "Core/Application.h"
 #include "Core/Window.h"
 #include <Core/ComponentFactory.h>
+#include <Editor.h>
 
 int main(int argc, char** argv)
 {
@@ -15,6 +16,8 @@ int main(int argc, char** argv)
 	Dawn::ComponentFactory* componentFactory = new Dawn::ComponentFactory();
 
 	Dawn::Application app(config, componentFactory);
+
+	app.PushLayer(new Dawn::Editor());
 	app.LoadScene("TestScene");
 	app.Run();
 
