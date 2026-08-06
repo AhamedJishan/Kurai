@@ -9,6 +9,7 @@
 #include "Asset/AssetManager.h"
 #include "SceneSerializer.h"
 #include "Scene.h"
+#include "Layer.h"
 // --- COMPONENTS ---
 #include "ComponentFactory.h"
 #include "Components/Animator.h"
@@ -95,6 +96,23 @@ namespace Dawn
 		}
 	}
 
+	void Application::PushLayer(Layer* layer)
+	{
+		mLayerStack.emplace_back(layer);
+		layer->OnAttach();
+	}
+
+	void Application::PopLayer()
+	{
+		if (mLayerStack.empty())
+			return;
+
+		Layer* layer = mLayerStack.back();
+		layer->OnDetach();
+		mLayerStack.pop_back();
+		delete layer;
+	}
+
 	void Application::Update()
 	{
 		mWindow->PollEvents();
@@ -116,10 +134,12 @@ namespace Dawn
 		}
 
 		mInputSystem->Update();
-		mAudioSystem->Update();
 
 		if (mScene)
 			mScene->Update(deltaTime);
+
+		for (Layer* layer : mLayerStack)
+			layer->OnUpdate(deltaTime);
 
 		mAudioSystem->Update();
 	}
@@ -128,6 +148,12 @@ namespace Dawn
 	{
 		if (mScene)
 			mRenderer->Draw();
+
+		mImGuiSystem->BeginFrame();
+		for (Layer* layer : mLayerStack)
+			layer->OnImGuiRender();
+		mImGuiSystem->EndFrame();
+
 		mWindow->SwapBuffers();
 	}
 

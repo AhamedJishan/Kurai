@@ -1,11 +1,13 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace Dawn
 {
 	// Forward declarations
 	class Scene;
+	class Layer;
 	class Window;
 	class Renderer;
 	class InputSystem;
@@ -36,6 +38,9 @@ namespace Dawn
 		AssetManager* GetAssetManager() const { return mAssetManager; }
 		ComponentFactory* GetComponentFactory() const { return mComponentFactory; }
 
+		void PushLayer(Layer* layer);
+		void PopLayer();
+
 	private:
 		void Update();
 		void GenerateOutput();
@@ -46,6 +51,8 @@ namespace Dawn
 
 		Scene* mScene = nullptr;
 		Scene* mPendingScene = nullptr;
+
+		std::vector<Layer*> mLayerStack;
 
 		Window* mWindow = nullptr;
 		Renderer* mRenderer = nullptr;
