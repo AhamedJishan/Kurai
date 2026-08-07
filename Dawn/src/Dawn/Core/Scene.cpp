@@ -44,7 +44,7 @@ namespace Dawn
 
 		// Delete dead actors
 		for (Actor* actor : deadActors)
-			delete actor;					// Actor::~Actor() calls Scene::RemoveActor() to remove itself from mActors
+			DeleteActor(actor);					// Actor::~Actor() calls Scene::RemoveActor() to remove itself from mActors
 		deadActors.clear();
 	}
 
@@ -58,6 +58,11 @@ namespace Dawn
 			mActors.emplace_back(actor);
 
 		return actor;
+	}
+
+	void Scene::DestroyActor(Actor* actor)
+	{
+		actor->SetState(Actor::State::Dead);
 	}
 
 	void Scene::DeleteActor(Actor* actor)

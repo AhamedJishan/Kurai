@@ -42,7 +42,7 @@ namespace Dawn
 		const std::vector<Actor*>& GetActors() const { return mActors; }
 
 		Actor* CreateActor(const std::string& name = "Actor");
-		void DeleteActor(Actor* actor);
+		void DestroyActor(Actor* actor);
 
 		void SetPaused(bool value) { mIsPaused = value; }
 		bool IsPaused() const { return mIsPaused; }
@@ -51,6 +51,9 @@ namespace Dawn
 
 		void SetActiveCamera(Camera* camera) { mActiveCamera = camera; }
 		Camera* GetActiveCamera() const { return mActiveCamera; }
+
+	private:
+		void DeleteActor(Actor* actor);
 
 	private:
 		// if true, actors won't get updated
