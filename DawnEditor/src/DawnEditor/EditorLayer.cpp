@@ -1,6 +1,7 @@
 #include "EditorLayer.h"
 
 #include <imgui/imgui.h>
+#include "Theme.h"
 #include "DockSpace.h"
 #include "Hierarchy.h"
 #include "Viewport.h"
@@ -16,6 +17,8 @@ namespace Dawn
 	{
 		//ImGui::ShowDemoWindow();
 
+		Editor::ApplyTheme();
+
 		Editor::BeginDockSpace();
 
 		Editor::BeginHierarchy();
@@ -28,6 +31,8 @@ namespace Dawn
 		Editor::EndInspector();
 		
 		Editor::EndDockSpace();
+
+		Editor::ResetTheme();
 	}
 
 }
