@@ -3,7 +3,7 @@
 
 namespace Dawn
 {
-	class Editor : public Layer
+	class EditorLayer : public Layer
 	{
 		void OnAttach() override;
 		void OnDetach() override;
