@@ -1,7 +1,13 @@
 #pragma once
 
-namespace Dawn::Editor
+namespace Dawn
 {
-	void BeginHierarchy();
-	void EndHierarchy();
+	// Forward declarations
+	class Actor;
+
+	namespace Editor
+	{
+		void BeginHierarchy(Actor*& selectedActor);
+		void EndHierarchy();
+	}
 }

@@ -21,7 +21,7 @@ namespace Dawn
 
 		Editor::BeginDockSpace();
 
-		Editor::BeginHierarchy();
+		Editor::BeginHierarchy(mSelectedActor);
 		Editor::EndHierarchy();
 
 		Editor::BeginViewport();
