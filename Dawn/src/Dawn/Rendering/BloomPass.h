@@ -30,7 +30,7 @@ namespace Dawn
 		void Shutdown();
 
 		void Downsample(unsigned int hdrTexture, unsigned int quadVAO);
-		void Upsample(unsigned int quadVAO, float bloomRadius);
+		void Upsample(unsigned int quadVAO);
 
 	private:
 		unsigned int mFBO = 0;

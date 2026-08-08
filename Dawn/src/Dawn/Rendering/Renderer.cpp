@@ -62,7 +62,7 @@ namespace Dawn
 		DrawScene();
 
 		// --- BLOOM PASS ---
-		mBloomPass->Render(mHDRFrameBuffer->GetHDRTextureId(), mQuadVAO, 2.0f);
+		mBloomPass->Render(mHDRFrameBuffer->GetHDRTextureId(), mQuadVAO);
 
 		// --- POST PROCESS QUAD TO SCREEN ---
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

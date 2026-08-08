@@ -94,7 +94,7 @@ namespace Dawn
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		Downsample(hdrTexture, quadVAO);
-		Upsample(quadVAO, bloomRadius);
+		Upsample(quadVAO);
 
 		glViewport(0, 0, mSourceWidth, mSourceHeight);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -127,7 +127,7 @@ namespace Dawn
 		}
 	}
 
-	void BloomPass::Upsample(unsigned int quadVAO, float bloomRadius)
+	void BloomPass::Upsample(unsigned int quadVAO)
 	{
 		mUpsampleShader->Bind();
 		mUpsampleShader->SetFloat("u_BloomRadius", Application::Get()->GetScene()->GetEnvironmentSettings().bloomRadius);
