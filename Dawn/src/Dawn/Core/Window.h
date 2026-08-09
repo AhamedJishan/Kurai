@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <memory>
+#include <vector>
 
 // Forward declaration
 struct GLFWwindow;
@@ -31,7 +32,7 @@ namespace Dawn
 		void PollEvents();
 		void SwapBuffers();
 
-		void SetFrameBufferSizeCallback(FrameBufferSizeCallbackFn callback) { mFrameBufferSizeCallback = callback; }
+		void AddFrameBufferSizeCallback(FrameBufferSizeCallbackFn callback) { mFrameBufferSizeCallbacks.push_back(std::move(callback)); }
 		void GetFrameBufferSize(int& width, int& height) const;
 
 		double GetTime();
@@ -46,7 +47,7 @@ namespace Dawn
 	private:
 		WindowConfig mWindowConfig;
 		GLFWwindow* mWindow = nullptr;
-		FrameBufferSizeCallbackFn mFrameBufferSizeCallback;
+		std::vector<FrameBufferSizeCallbackFn> mFrameBufferSizeCallbacks;
 
 		std::unique_ptr<class Image> mIcon = nullptr;
 	};

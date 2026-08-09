@@ -117,7 +117,7 @@ namespace Dawn
 	{
 		Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow));
 
-		if (window->mFrameBufferSizeCallback)
-			window->mFrameBufferSizeCallback(width, height);
+		for(FrameBufferSizeCallbackFn& callback : window->mFrameBufferSizeCallbacks)
+			callback(width, height);
 	}
 }
