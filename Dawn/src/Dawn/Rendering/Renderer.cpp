@@ -12,11 +12,12 @@
 #include "Dawn/Core/Components/Camera.h"
 #include "Dawn/Core/Components/MeshRenderer.h"
 #include <Dawn/Core/Components/Animator.h>
-#include "HDRFramebuffer.h"
+#include "RenderTarget.h"
 #include "BloomPass.h"
 #include "Shader.h"
 #include "Material.h"
 #include "Mesh.h"
+#include "Texture.h"
 
 namespace Dawn
 {
@@ -29,20 +30,25 @@ namespace Dawn
 		glDeleteVertexArrays(1, &mQuadVAO);
 		glDeleteBuffers(1, &mQuadVBO);
 
-		if (mHDRFrameBuffer) delete mHDRFrameBuffer;
+		if (mHdrRenderTarget) delete mHdrRenderTarget;
 	}
 	
 	bool Renderer::Init()
 	{
 		// Assumes a valid Opengl context is already initialised
 		// which was done in Window::Init()
+		Window* appWindow = Application::Get()->GetWindow();
 		int x, y;
-		Application::Get()->GetWindow()->GetFrameBufferSize(x, y);
+		appWindow->GetFrameBufferSize(x, y);
 		glViewport(0, 0, x, y);
 
-		Application::Get()->GetWindow()->SetFrameBufferSizeCallback([this](int width, int height) { glViewport(0, 0, width, height);});
+		appWindow->AddFrameBufferSizeCallback([this](int width, int height) { glViewport(0, 0, width, height);});
 
-		mHDRFrameBuffer = new HDRFramebuffer();
+		mHdrRenderTarget = new RenderTarget();
+		mHdrColorTexture = new Texture(appWindow->GetWidth(), appWindow->GetHeight(), TextureFormat::RGBA16F);
+		mHdrDepthTexture = new Texture(appWindow->GetWidth(), appWindow->GetHeight(), TextureFormat::Depth24);
+		appWindow->AddFrameBufferSizeCallback([this](int width, int height) { mHdrColorTexture->SetSize(width, height); mHdrDepthTexture->SetSize(width, height);});
+		
 		mBloomPass = new BloomPass(6);
 
 		InitQuad();
@@ -53,16 +59,18 @@ namespace Dawn
 	
 	void Renderer::Draw()
 	{
-		// --- HDR FRAMEBUFFER RENDER PASS --- 
-		mHDRFrameBuffer->BindFrameBuffer();
+		// --- HDR RENDER PASS --- 
+		mHdrRenderTarget->Bind(mHdrColorTexture, mHdrDepthTexture);
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendEquation(GL_FUNC_ADD);
 		DrawScene();
 
 		// --- BLOOM PASS ---
-		mBloomPass->Render(mHDRFrameBuffer->GetHDRTextureId(), mQuadVAO);
+		mBloomPass->Render(mHdrColorTexture->GetId(), mQuadVAO);
 
 		// --- POST PROCESS QUAD TO SCREEN ---
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -72,7 +80,7 @@ namespace Dawn
 		glDisable(GL_BLEND);
 		mPostProcessShader->Bind();
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, mHDRFrameBuffer->GetHDRTextureId());
+		glBindTexture(GL_TEXTURE_2D, mHdrColorTexture->GetId());
 		mPostProcessShader->SetInt("u_HDRTexture", 0);
 
 		glActiveTexture(GL_TEXTURE1);

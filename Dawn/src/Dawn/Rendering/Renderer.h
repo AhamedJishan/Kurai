@@ -6,10 +6,11 @@
 namespace Dawn
 {
 	// Forward declaration
-	class HDRFramebuffer;
+	class RenderTarget;
 	class BloomPass;
 	class MeshRenderer;
 	class Shader;
+	class Texture;
 
 	class Renderer
 	{
@@ -33,8 +34,12 @@ namespace Dawn
 
 	private:
 		std::vector<MeshRenderer*> mMeshRenderers;
-		HDRFramebuffer* mHDRFrameBuffer = nullptr;
+		//HDRFramebuffer* mHDRFrameBuffer = nullptr;
 		BloomPass* mBloomPass = nullptr;
+
+		RenderTarget* mHdrRenderTarget = nullptr;
+		Texture* mHdrColorTexture = nullptr;
+		Texture* mHdrDepthTexture = nullptr;
 
 		unsigned int mQuadVAO = 0, mQuadVBO = 0;
 		Shader* mPostProcessShader = nullptr;
