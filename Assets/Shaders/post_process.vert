@@ -19,15 +19,9 @@ void main()
     vec3 ndcPosition = a_Position;
 
     if (srcAspectRatio > dstAspectRatio)
-    {
-        float diffFactor = dstAspectRatio / srcAspectRatio;
-        ndcPosition.y *= diffFactor;
-    }
+        ndcPosition.y *= dstAspectRatio / srcAspectRatio;
     else if (dstAspectRatio > srcAspectRatio)
-    {
-        float diffFactor = srcAspectRatio / dstAspectRatio;
-        ndcPosition.x *= diffFactor;
-    }
+        ndcPosition.x *= srcAspectRatio / dstAspectRatio;
 
     gl_Position =  vec4(ndcPosition, 1.0);
 

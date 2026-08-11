@@ -60,8 +60,6 @@ namespace Dawn
 		mHdrColorTexture->SetSize(mResolution.x, mResolution.y);
 		mHdrDepthTexture->SetSize(mResolution.x, mResolution.y);
 
-		glViewport(0, 0, mResolution.x, mResolution.y);
-
 		if (mOutputColorTexture)
 			mOutputColorTexture->SetSize(mResolution.x, mResolution.y);
 	}
@@ -124,7 +122,7 @@ namespace Dawn
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_BLEND);
 		DrawQuad();
-
+		
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
@@ -147,7 +145,7 @@ namespace Dawn
 			return;
 
 		glm::mat4 viewMatrix = cam->GetView();
-		glm::mat4 projectionMatrix = glm::perspectiveFov(cam->GetFOV(), mResolution.x, mResolution.y, cam->GetNear(), cam->GetFar());
+		glm::mat4 projectionMatrix = glm::perspectiveFov(glm::radians(cam->GetFOV()), mResolution.x, mResolution.y, cam->GetNear(), cam->GetFar());
 
 		const EnvironmentSettings& environmentSettings = Application::Get()->GetScene()->GetEnvironmentSettings();
 

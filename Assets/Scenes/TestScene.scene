@@ -23,7 +23,7 @@ Actors:
     Components:
       - Id: 2
         Type: Camera
-        FOV: 100.0
+        FOV: 90.0
         Near: 0.1
         Far: 1000.0
     

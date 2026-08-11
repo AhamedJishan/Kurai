@@ -27,7 +27,7 @@ namespace Dawn
 			cursor.y += (availRegionSize.y - imageSize.y) * 0.5f;
 			ImGui::SetCursorPos(cursor);
 
-			ImGui::Image((ImTextureID)(intptr_t)(viewportTexture->GetId()), imageSize);
+			ImGui::Image((ImTextureID)(intptr_t)(viewportTexture->GetId()), imageSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 		}
 
 		void EndViewport()

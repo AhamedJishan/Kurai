@@ -53,7 +53,7 @@ namespace Dawn
 		float ndcZ = depth * 2.0f - 1.0f;
 		glm::vec4 clipPos(ndcX, ndcY, ndcZ, 1.0f);
 
-		glm::mat4 projection = glm::perspectiveFov(mFOV, renderResolution.x, renderResolution.y, mNear, mFar);
+		glm::mat4 projection = glm::perspectiveFov(glm::radians(mFOV), renderResolution.x, renderResolution.y, mNear, mFar);
 		glm::mat4 invViewProjection = glm::inverse(projection * GetView());
 
 		glm::vec4 worldPos = invViewProjection * clipPos;
