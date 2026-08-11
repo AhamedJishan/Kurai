@@ -9,7 +9,6 @@
 #include "SceneSerializer.h"
 #include "Scene.h"
 #include "Layer.h"
-#include "Window.h"
 // --- COMPONENTS ---
 #include "ComponentFactory.h"
 #include "Components/Animator.h"
@@ -22,7 +21,7 @@ namespace Dawn
 {
 	Application* Application::sInstance = nullptr;
 
-	Application::Application(WindowConfig windowConfig, ComponentFactory* componentFactory)
+	Application::Application(AppConfig appConfig, ComponentFactory* componentFactory)
 		:mIsRunning(true)
 		,mTime(0.0)
 		,mComponentFactory(componentFactory)
@@ -36,7 +35,7 @@ namespace Dawn
 		sInstance = this;
 
 		mWindow = new Window();
-		if (!mWindow->Init(windowConfig))
+		if (!mWindow->Init(appConfig.Window))
 		{
 			mIsRunning = false;
 			return;
@@ -49,7 +48,7 @@ namespace Dawn
 
 		// needs to happen after AssetManager init
 		mRenderer = new Renderer();
-		if (!mRenderer->Init())
+		if (!mRenderer->Init(appConfig.RenderResolution))
 		{
 			mIsRunning = false;
 			return;

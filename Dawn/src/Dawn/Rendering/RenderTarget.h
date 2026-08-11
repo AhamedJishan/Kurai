@@ -11,7 +11,9 @@ namespace Dawn
 		RenderTarget();
 		~RenderTarget();
 
-		void Bind(const Texture* colorAttachment, const Texture* depthAttachment = nullptr);
+		void Bind();
+		void AttachColorTexture(const Texture& colorTexture);
+		void AttachDepthTexture(const Texture& depthTexture);
 
 	private:
 		unsigned int mFboId = 0;

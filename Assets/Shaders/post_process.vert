@@ -3,6 +3,8 @@
 layout (location = 0) in vec3 a_Position;
 layout (location = 1) in vec2 a_TexCoord;
 
+uniform vec2 u_SrcSize;
+uniform vec2 u_DstSize;
 
 out VS_OUT
 {
@@ -11,7 +13,23 @@ out VS_OUT
 
 void main()
 {
-    gl_Position =  vec4(a_Position, 1.0);
+    float srcAspectRatio = u_SrcSize.x / u_SrcSize.y;
+    float dstAspectRatio = u_DstSize.x / u_DstSize.y;
+
+    vec3 ndcPosition = a_Position;
+
+    if (srcAspectRatio > dstAspectRatio)
+    {
+        float diffFactor = dstAspectRatio / srcAspectRatio;
+        ndcPosition.y *= diffFactor;
+    }
+    else if (dstAspectRatio > srcAspectRatio)
+    {
+        float diffFactor = srcAspectRatio / dstAspectRatio;
+        ndcPosition.x *= diffFactor;
+    }
+
+    gl_Position =  vec4(ndcPosition, 1.0);
 
     vs_out.TexCoord = a_TexCoord;
 }

@@ -16,7 +16,6 @@ namespace Dawn
 		void Update(float deltaTime) override;
 
 		glm::mat4 GetView() const;
-		glm::mat4 GetProjection() const;
 
 		glm::vec3 UnProject(float screenX, float screenY, float depth);
 		

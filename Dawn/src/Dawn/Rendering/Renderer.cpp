@@ -33,40 +33,51 @@ namespace Dawn
 		if (mHdrRenderTarget) delete mHdrRenderTarget;
 	}
 	
-	bool Renderer::Init()
+	bool Renderer::Init(glm::vec2 resolution)
 	{
+		mResolution = resolution;
 		// Assumes a valid Opengl context is already initialised
 		// which was done in Window::Init()
-		Window* appWindow = Application::Get()->GetWindow();
-		int x, y;
-		appWindow->GetFrameBufferSize(x, y);
-		glViewport(0, 0, x, y);
-
-		appWindow->AddFrameBufferSizeCallback([this](int width, int height) { glViewport(0, 0, width, height);});
+		glViewport(0, 0, resolution.x, resolution.y);
 
 		mHdrRenderTarget = new RenderTarget();
-		mHdrColorTexture = new Texture(appWindow->GetWidth(), appWindow->GetHeight(), TextureFormat::RGBA16F);
-		mHdrDepthTexture = new Texture(appWindow->GetWidth(), appWindow->GetHeight(), TextureFormat::Depth24);
-		appWindow->AddFrameBufferSizeCallback([this](int width, int height) { mHdrColorTexture->SetSize(width, height); mHdrDepthTexture->SetSize(width, height);});
+		mHdrColorTexture = new Texture(resolution.x, resolution.y, TextureFormat::RGBA16F);
+		mHdrDepthTexture = new Texture(resolution.x, resolution.y, TextureFormat::Depth24);
 		
-		mBloomPass = new BloomPass(6);
+		mBloomPass = new BloomPass(6, mResolution);
 
 		InitQuad();
 		mPostProcessShader = Assets::GetShader("post_process");
 
 		return true;
 	}
+
+	void Renderer::SetResolution(glm::vec2 resolution)
+	{
+		mResolution = resolution;
+		mBloomPass->Resize(mResolution);
+
+		mHdrColorTexture->SetSize(mResolution.x, mResolution.y);
+		mHdrDepthTexture->SetSize(mResolution.x, mResolution.y);
+
+		glViewport(0, 0, mResolution.x, mResolution.y);
+
+		// TODO: final output texture resize
+	}
 	
 	void Renderer::Draw()
 	{
 		// --- HDR RENDER PASS --- 
-		mHdrRenderTarget->Bind(mHdrColorTexture, mHdrDepthTexture);
+		mHdrRenderTarget->AttachColorTexture(*mHdrColorTexture);
+		mHdrRenderTarget->AttachDepthTexture(*mHdrDepthTexture);
+		mHdrRenderTarget->Bind();
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glBlendEquation(GL_FUNC_ADD);
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glViewport(0, 0, mResolution.x, mResolution.y);
 		DrawScene();
 
 		// --- BLOOM PASS ---
@@ -87,7 +98,9 @@ namespace Dawn
 		glBindTexture(GL_TEXTURE_2D, mBloomPass->GetBloomTextureId());
 		mPostProcessShader->SetInt("u_BloomTexture", 1);
 		mPostProcessShader->SetFloat("u_BloomStrength", Application::Get()->GetScene()->GetEnvironmentSettings().bloomStrength);
-
+		int x, y;
+		Application::Get()->GetWindow()->GetFrameBufferSize(x, y);
+		glViewport(0, 0, x, y); // TODO: if check and have option for custom render target
 		DrawQuad();
 	}
 
@@ -110,7 +123,7 @@ namespace Dawn
 			return;
 
 		glm::mat4 viewMatrix = cam->GetView();
-		glm::mat4 projectionMatrix = cam->GetProjection();
+		glm::mat4 projectionMatrix = glm::perspectiveFov(cam->GetFOV(), mResolution.x, mResolution.y, cam->GetNear(), cam->GetFar());
 
 		const EnvironmentSettings& environmentSettings = Application::Get()->GetScene()->GetEnvironmentSettings();
 

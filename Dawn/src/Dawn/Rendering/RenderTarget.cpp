@@ -17,25 +17,33 @@ namespace Dawn
 			glDeleteFramebuffers(1, &mFboId);
 	}
 
-	void RenderTarget::Bind(const Texture* colorAttachment, const Texture* depthAttachment)
+	void RenderTarget::AttachColorTexture(const Texture& colorTexture)
 	{
-		if (!colorAttachment || !colorAttachment->IsValid())
+		if (!colorTexture.IsValid())
 		{
-			LOG_ERROR("Invalid Color Texture Attachment to Render Target!");
+			LOG_ERROR("Invalid color texture attachment");
 			return;
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, mFboId);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTexture.GetId(), 0);
 		glDrawBuffer(GL_COLOR_ATTACHMENT0);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorAttachment->GetId(), 0);
+	}
 
-		if (depthAttachment && depthAttachment->IsValid())
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthAttachment->GetId(), 0);
-		else
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
+	void RenderTarget::AttachDepthTexture(const Texture& depthTexture)
+	{
+		if (!depthTexture.IsValid())
+		{
+			LOG_ERROR("Invalid depth texture attachment");
+			return;
+		}
 
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-			LOG_ERROR("RenderTarget Framebuffer is invalid");
+		glBindFramebuffer(GL_FRAMEBUFFER, mFboId);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture.GetId(), 0);
+	}
 
+	void RenderTarget::Bind()
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, mFboId);
 	}
 }

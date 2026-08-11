@@ -2,6 +2,8 @@
 
 #include <string>
 #include <vector>
+#include <glm/vec2.hpp>
+#include "Window.h"
 
 namespace Dawn
 {
@@ -16,10 +18,16 @@ namespace Dawn
 	class AssetManager;
 	class ComponentFactory;
 
+	struct AppConfig
+	{
+		glm::vec2 RenderResolution = { 1920, 1080 };
+		WindowConfig Window;
+	};
+
 	class Application
 	{
 	public:
-		Application(struct WindowConfig windowConfig, ComponentFactory* componentFactory);
+		Application(AppConfig appConfig, ComponentFactory* componentFactory);
 		virtual ~Application();
 
 		void LoadScene(const std::string& sceneName);

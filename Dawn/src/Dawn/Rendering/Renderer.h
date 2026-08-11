@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <glm/vec3.hpp>
+#include <glm/vec2.hpp>
 
 namespace Dawn
 {
@@ -18,7 +18,10 @@ namespace Dawn
 		Renderer();
 		~Renderer();
 
-		bool Init();
+		bool Init(glm::vec2 resolution);
+
+		void SetResolution(glm::vec2 resolution);
+		glm::vec2 GetResolution() const { return mResolution; }
 
 		void Draw();
 
@@ -33,8 +36,8 @@ namespace Dawn
 		void DrawQuad();
 
 	private:
+		glm::vec2 mResolution = { 1920, 1080 };
 		std::vector<MeshRenderer*> mMeshRenderers;
-		//HDRFramebuffer* mHDRFrameBuffer = nullptr;
 		BloomPass* mBloomPass = nullptr;
 
 		RenderTarget* mHdrRenderTarget = nullptr;

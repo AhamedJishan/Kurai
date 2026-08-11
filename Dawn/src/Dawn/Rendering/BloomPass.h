@@ -7,23 +7,26 @@ namespace Dawn
 {
 	// Forward declarations
 	class Shader;
+	class Texture;
+	class RenderTarget;
 
 	struct Mip
 	{
 		glm::vec2 size;
-		unsigned int texture;
+		Texture* texture;
 	};
 
 	class BloomPass
 	{
 	public:
-		BloomPass(unsigned int mipCount = 6);
+		BloomPass(unsigned int mipCount, glm::vec2 renderResolution);
 		~BloomPass();
 
 		// quadVAO should be a triangle strip with 4 as the count
 		void Render(unsigned int hdrTexture, unsigned int quadVAO, float bloomRadius = 1.0f);
 
-		unsigned int GetBloomTextureId() const { return mMipChain[0].texture; }
+		unsigned int GetBloomTextureId() const;
+		void Resize(glm::vec2 renderResolution);
 
 	private:
 		void Init(unsigned int mipCount);
@@ -33,10 +36,9 @@ namespace Dawn
 		void Upsample(unsigned int quadVAO);
 
 	private:
-		unsigned int mFBO = 0;
-		int mSourceWidth = 0;
-		int mSourceHeight = 0;
+		glm::vec2 mRenderResolution;
 
+		RenderTarget* mBloomRenderTarget;
 		std::vector<Mip> mMipChain;
 
 		Shader* mUpsampleShader = nullptr;

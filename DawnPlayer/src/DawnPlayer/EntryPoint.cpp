@@ -6,11 +6,12 @@
 
 int main(int argc, char** argv)
 {
-	Dawn::WindowConfig config;
-	config.Title = "Dawn";
-	config.IconPath = "Assets/Icons/dawn_icon.png";
-	config.Width = 1080;
-	config.Height = 720;
+	Dawn::AppConfig config;
+	config.RenderResolution = { 1280, 720 };
+	config.Window.Title = "Dawn";
+	config.Window.IconPath = "Assets/Icons/dawn_icon.png";
+	config.Window.Width = 1440;
+	config.Window.Height = 810;
 
 	Dawn::ComponentFactory* componentFactory = new Dawn::ComponentFactory();
 
