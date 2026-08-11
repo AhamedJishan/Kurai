@@ -62,13 +62,15 @@ namespace Dawn
 
 		glViewport(0, 0, mResolution.x, mResolution.y);
 
-		// TODO: final output texture resize
+		if (mOutputColorTexture)
+			mOutputColorTexture->SetSize(mResolution.x, mResolution.y);
 	}
 
 	void Renderer::SetOutputRenderOutput(RenderTarget* renderTarget, Texture* outputColorTexture)
 	{
 		mOutputRenderTarget = renderTarget;
 		mOutputColorTexture = outputColorTexture;
+		mOutputColorTexture->SetSize(mResolution.x, mResolution.y);
 	}
 	
 	void Renderer::Draw()
@@ -114,7 +116,7 @@ namespace Dawn
 			Application::Get()->GetWindow()->GetFrameBufferSize(x, y);
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glViewport(0, 0, x, y);
-			mPostProcessShader->SetVec2("u_DstSize", { x, y });
+			mPostProcessShader->SetVec2("u_DstSize", glm::vec2(x, y));
 		}
 
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);

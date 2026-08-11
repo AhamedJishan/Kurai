@@ -126,18 +126,14 @@ namespace Dawn
 		mUpsampleShader->Bind();
 		mUpsampleShader->SetFloat("u_BloomRadius", Application::Get()->GetScene()->GetEnvironmentSettings().bloomRadius);
 
+		mBloomRenderTarget->Bind();
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE, GL_ONE);
 		glBlendEquation(GL_FUNC_ADD);
 
-		mBloomRenderTarget->Bind();
 		for (int i = mMipChain.size() - 2; i >= 0; i--)
 		{
 			mBloomRenderTarget->AttachColorTexture(*mMipChain[i].texture);
-			glClearColor(0, 0, 0, 0);
-			glClear(GL_COLOR_BUFFER_BIT);
-
-			//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mMipChain[i].texture->GetId(), 0);
 			glViewport(0, 0, static_cast<GLsizei>(mMipChain[i].size.x), static_cast<GLsizei>(mMipChain[i].size.y));
 
 			glActiveTexture(GL_TEXTURE0);

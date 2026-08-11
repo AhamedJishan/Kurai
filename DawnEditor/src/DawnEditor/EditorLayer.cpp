@@ -17,7 +17,9 @@ namespace Dawn
 	void EditorLayer::OnAttach() 
 	{
 		mViewportRT = new RenderTarget();
-		mViewportTexture = new Texture(1920, 1080, TextureFormat::RGBA8);
+		glm::vec2 rendererResolution = Application::Get()->GetRenderer()->GetResolution();
+		mViewportTexture = new Texture(rendererResolution.x, rendererResolution.y, TextureFormat::RGBA8);
+
 		Application::Get()->GetRenderer()->SetOutputRenderOutput(mViewportRT, mViewportTexture);
 	}
 
