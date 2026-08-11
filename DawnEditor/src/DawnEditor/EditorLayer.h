@@ -5,6 +5,8 @@ namespace Dawn
 {
 	// Forward declarations
 	class Actor;
+	class RenderTarget;
+	class Texture;
 
 	class EditorLayer : public Layer
 	{
@@ -17,5 +19,7 @@ namespace Dawn
 
 	private:
 		Actor* mSelectedActor = nullptr;
+		RenderTarget* mViewportRT = nullptr;
+		Texture* mViewportTexture = nullptr;
 	};
 }

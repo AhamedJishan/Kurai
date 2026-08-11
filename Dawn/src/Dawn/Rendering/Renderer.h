@@ -22,6 +22,7 @@ namespace Dawn
 
 		void SetResolution(glm::vec2 resolution);
 		glm::vec2 GetResolution() const { return mResolution; }
+		void SetOutputRenderOutput(RenderTarget* renderTarget, Texture* outputColorTexture);
 
 		void Draw();
 
@@ -43,6 +44,9 @@ namespace Dawn
 		RenderTarget* mHdrRenderTarget = nullptr;
 		Texture* mHdrColorTexture = nullptr;
 		Texture* mHdrDepthTexture = nullptr;
+		// Non owning
+		RenderTarget* mOutputRenderTarget = nullptr;	
+		Texture* mOutputColorTexture = nullptr;
 
 		unsigned int mQuadVAO = 0, mQuadVBO = 0;
 		Shader* mPostProcessShader = nullptr;

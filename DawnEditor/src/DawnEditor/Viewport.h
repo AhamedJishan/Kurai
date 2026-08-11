@@ -1,7 +1,13 @@
 #pragma once
 
-namespace Dawn::Editor
+namespace Dawn
 {
-	void BeginViewport();
-	void EndViewport();
+	// Forward declarations
+	class Texture;
+
+	namespace Editor
+	{
+		void BeginViewport(Texture* viewportTexture);
+		void EndViewport();
+	}
 }

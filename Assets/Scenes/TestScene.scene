@@ -9,7 +9,7 @@ EnvironmentSettings:
   FogColor: [0.1, 0.1, 0.1]
   FogDensity: 0.025
   BloomRadius: 1.0
-  BloomStrength: 0.01
+  BloomStrength: 0.05
 
 Actors:
   - Id: 1

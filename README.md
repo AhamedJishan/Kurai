@@ -5,3 +5,5 @@ Project 2
 - Optimize VertexSkinData to use uint8_t instead of glm::vec4
 - Physics and ParticleSystem temporarily disabled, will be reintegrated later.
 - Refactor Texture::SetSize to take in vec2
+- Fix Bloom
+- Fix DawnPlayer output screen

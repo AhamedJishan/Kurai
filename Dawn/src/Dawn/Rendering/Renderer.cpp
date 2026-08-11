@@ -64,6 +64,12 @@ namespace Dawn
 
 		// TODO: final output texture resize
 	}
+
+	void Renderer::SetOutputRenderOutput(RenderTarget* renderTarget, Texture* outputColorTexture)
+	{
+		mOutputRenderTarget = renderTarget;
+		mOutputColorTexture = outputColorTexture;
+	}
 	
 	void Renderer::Draw()
 	{
@@ -84,11 +90,6 @@ namespace Dawn
 		mBloomPass->Render(mHdrColorTexture->GetId(), mQuadVAO);
 
 		// --- POST PROCESS QUAD TO SCREEN ---
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glDisable(GL_DEPTH_TEST);
-		glDisable(GL_BLEND);
 		mPostProcessShader->Bind();
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, mHdrColorTexture->GetId());
@@ -98,10 +99,33 @@ namespace Dawn
 		glBindTexture(GL_TEXTURE_2D, mBloomPass->GetBloomTextureId());
 		mPostProcessShader->SetInt("u_BloomTexture", 1);
 		mPostProcessShader->SetFloat("u_BloomStrength", Application::Get()->GetScene()->GetEnvironmentSettings().bloomStrength);
-		int x, y;
-		Application::Get()->GetWindow()->GetFrameBufferSize(x, y);
-		glViewport(0, 0, x, y); // TODO: if check and have option for custom render target
+		mPostProcessShader->SetVec2("u_SrcSize", mResolution);
+
+		if (mOutputRenderTarget && mOutputColorTexture && mOutputColorTexture->IsValid())
+		{
+			mOutputRenderTarget->Bind();
+			mOutputRenderTarget->AttachColorTexture(*mOutputColorTexture);
+			glViewport(0, 0, mOutputColorTexture->GetWidth(), mOutputColorTexture->GetHeight());
+			mPostProcessShader->SetVec2("u_DstSize", glm::vec2(mOutputColorTexture->GetWidth(), mOutputColorTexture->GetHeight()));
+		}
+		else
+		{
+			int x, y;
+			Application::Get()->GetWindow()->GetFrameBufferSize(x, y);
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glViewport(0, 0, x, y);
+			mPostProcessShader->SetVec2("u_DstSize", { x, y });
+		}
+
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_BLEND);
 		DrawQuad();
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
 	}
 
 	void Renderer::AddMeshRenderer(MeshRenderer* meshRenderer)
