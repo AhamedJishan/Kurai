@@ -108,7 +108,7 @@ namespace Dawn
 			glDeleteTextures(1, &mId);
 	}
 
-	void Texture::SetSize(int width, int height)
+	void Texture::Resize(const glm::vec2& size)
 	{
 		if (mIsImageTexture)
 		{
@@ -116,8 +116,8 @@ namespace Dawn
 			return;
 		}
 
-		mWidth = width;
-		mHeight = height;
+		mWidth = size.x;
+		mHeight = size.y;
 
 		glBindTexture(GL_TEXTURE_2D, mId);
 		glTexImage2D(GL_TEXTURE_2D, 0, ToGlInternalFormat(mTextureFormat), mWidth, mHeight, 0, ToGlFormat(mTextureFormat), ToGlType(mTextureFormat), nullptr);

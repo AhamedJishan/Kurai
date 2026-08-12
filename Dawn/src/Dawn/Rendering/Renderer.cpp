@@ -57,18 +57,18 @@ namespace Dawn
 		mResolution = resolution;
 		mBloomPass->Resize(mResolution);
 
-		mHdrColorTexture->SetSize(mResolution.x, mResolution.y);
-		mHdrDepthTexture->SetSize(mResolution.x, mResolution.y);
+		mHdrColorTexture->Resize(mResolution);
+		mHdrDepthTexture->Resize(mResolution);
 
 		if (mOutputColorTexture)
-			mOutputColorTexture->SetSize(mResolution.x, mResolution.y);
+			mOutputColorTexture->Resize(mResolution);
 	}
 
 	void Renderer::SetOutputRenderOutput(RenderTarget* renderTarget, Texture* outputColorTexture)
 	{
 		mOutputRenderTarget = renderTarget;
 		mOutputColorTexture = outputColorTexture;
-		mOutputColorTexture->SetSize(mResolution.x, mResolution.y);
+		mOutputColorTexture->Resize(mResolution);
 	}
 	
 	void Renderer::Draw()

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/vec2.hpp>
+
 namespace Dawn
 {
 	enum class TextureFormat
@@ -35,7 +37,7 @@ namespace Dawn
 		int GetWidth() const { return mWidth; }
 		int GetHeight() const { return mHeight; }
 
-		void SetSize(int width, int height);
+		void Resize(const glm::vec2& size);
 
 	private:
 		bool Load(const class Image* image);

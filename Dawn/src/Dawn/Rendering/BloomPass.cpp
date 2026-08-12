@@ -84,7 +84,7 @@ namespace Dawn
 			if (mipSize.x < 2.0f || mipSize.y < 2.0f)
 				mipSize = glm::vec2(2.0f);
 			mip.size = mipSize;
-			mip.texture->SetSize(mipSize.x, mipSize.y);
+			mip.texture->Resize(mipSize);
 			mipSize /= 2.0f;
 		}
 	}
