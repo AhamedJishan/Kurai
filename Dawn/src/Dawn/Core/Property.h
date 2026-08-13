@@ -2,11 +2,16 @@
 
 #include <string>
 
+// Forward declarations
+namespace YAML
+{
+	class Node;
+}
+
 namespace Dawn
 {
 	enum class PropertyType
 	{
-		None = 0,
 		Bool,
 		Int,
 		Float,
@@ -19,8 +24,14 @@ namespace Dawn
 
 	struct Property
 	{
+	public:
+		void Serialize(YAML::Node& node) const;
+		void Deserialize(const YAML::Node& node);
+
+	public:
 		std::string name;
-		PropertyType type;
 		void* data;
+		PropertyType type;
+
 	};
 }
