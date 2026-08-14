@@ -17,9 +17,11 @@ namespace Dawn::Editor
 	{
 		ImGui::Begin("Hierarchy");
 
-		const std::vector<Actor*>& actors = Application::Get()->GetScene()->GetActors();
+		Scene* scene = Application::Get()->GetScene();
+		if (!scene)
+			return;
 
-		for (Actor* actor : actors)
+		for (Actor* actor : scene->GetActors())
 		{
 			if (actor == sActorBeingRenamed)
 			{

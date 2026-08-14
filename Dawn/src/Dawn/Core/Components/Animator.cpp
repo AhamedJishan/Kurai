@@ -1,6 +1,5 @@
 #include "Animator.h"
 
-#include <yaml-cpp/yaml.h>
 #include <Dawn/Asset/Assets.h>
 #include <Dawn/Animation/Skeleton.h>
 #include <Dawn/Animation/Clip.h>
@@ -9,31 +8,25 @@
 
 namespace Dawn
 {
-	void Animator::Serialize(YAML::Node& node, SerializationContext& serializationContext) const
+	std::vector<Property> Animator::GetProperties()
 	{
-		node["Skeleton"] = mSkeleton->GetAssetPath();
-		node["ActiveClipName"] = mActiveClipName;
-
-		YAML::Node& clipsNode = node["Clips"];
-		for (auto& clipEntry : mClips)
-			clipsNode[clipEntry.first] = clipEntry.second->GetAssetPath();
+		return 
+		{
+			{"Skeleton", &mSkeletonAssetPath, PropertyType::String},
+			{"Clips", &mClipNameToPathCache, PropertyType::StringPairList},
+			{"ActiveClip", &mActiveClipName, PropertyType::String}
+		};
 	}
 
-	void Animator::Deserialize(const YAML::Node & node, SerializationContext& serializationContext)
+	void Animator::OnPropertiesChanged()
 	{
-		SetSkeleton(Assets::GetSkeleton(node["Skeleton"].as<std::string>()));
+		SetSkeleton(mSkeletonAssetPath);
 
-		const YAML::Node& clipsNode = node["Clips"];
-		for (auto it = clipsNode.begin(); it != clipsNode.end(); it++)
-		{
-			std::string clipName = it->first.as<std::string>();
-			std::string clipAssetPath = it->second.as<std::string>();
+		mClips.clear();
+		for (auto& [clipName, clipAssetPath] : mClipNameToPathCache)
+			AddClip(clipName, Assets::GetAnimationClip(clipAssetPath));
 
-			Clip* clip = Assets::GetAnimationClip(clipAssetPath);
-			AddClip(clipName, clip);
-		}
-
-		Play(node["ActiveClipName"].as<std::string>());
+		Play(mActiveClipName);
 	}
 
 	Animator::Animator(Actor* owner)
@@ -66,30 +59,42 @@ namespace Dawn
 
 	void Animator::Play(const std::string& clipName)
 	{
-		mActiveClipName = "";
-		mPlaybackTime = 0.0f;
-
 		auto it = mClips.find(clipName);
 		if (it == mClips.end())
 		{
 			LOG_WARN("Couldn't find a clip named '%s'", clipName.c_str());
+			mActiveClipName = "";
 			return;
 		}
 
+		mPlaybackTime = 0.0f;
 		mActiveClipName = clipName;
 	}
 
-	void Animator::SetSkeleton(const Skeleton* skeleton)
+	void Animator::SetSkeleton(const std::string& skeletonAssetPath)
 	{
+		Skeleton* skeleton = Assets::GetSkeleton(skeletonAssetPath);
 		if (!skeleton)
 		{
 			LOG_WARN("Tried to assign an empty skeleton.");
+			mSkeletonAssetPath = "";
+			mSkeleton = nullptr;
 			return;
 		}
 		mSkeleton = skeleton; 
+		mSkeletonAssetPath = skeletonAssetPath;
 		mMatrixPalette.resize(skeleton->GetNumBones());
 	}
 
+	void Animator::AddClip(const std::string& clipName, Clip* clip)
+	{
+		if (!clip)
+		{
+			LOG_ERROR("Clip '%s' is an invalid clip", clipName.c_str());
+			return;
+		}
+		mClips.emplace(clipName, clip);
+	}
 
 	std::vector<glm::mat4> Animator::BuildGlobalTransforms(const std::vector<glm::mat4>& localTransforms)
 	{

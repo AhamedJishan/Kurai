@@ -12,14 +12,16 @@ namespace Dawn
 {
 	enum class PropertyType
 	{
-		Bool,
 		Int,
+		Bool,
 		Float,
-		String,
 		Vec2,
 		Vec3,
 		Vec4,
-		Quat
+		Quat,
+		String,
+		StringList,
+		StringPairList
 	};
 
 	struct Property

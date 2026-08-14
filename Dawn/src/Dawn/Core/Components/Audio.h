@@ -22,11 +22,15 @@ namespace Dawn
 		SoundEvent PlayEvent(const std::string& name);
 		void StopAllEvents();
 
-		void Serialize(YAML::Node& node, SerializationContext& serializationContext) const override;
-		void Deserialize(const YAML::Node& node, SerializationContext& serializationContext) override;
+		std::vector<Property> GetProperties() override;
+		void OnPropertiesChanged() override;
 
 	private:
 		std::vector<SoundEvent> mEvents2D;
 		std::vector<SoundEvent> mEvents3D;
+
+		// Scratch buffer for serialization only. Rebuilt in GetProperties() and OnPropertiesChanged(). Do not read directly.
+		std::vector<std::string> mEventNames2D;
+		std::vector<std::string> mEventNames3D;
 	};
 }

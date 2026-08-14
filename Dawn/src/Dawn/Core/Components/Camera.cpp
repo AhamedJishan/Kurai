@@ -1,26 +1,22 @@
 #include "Camera.h"
 
-#include <yaml-cpp/yaml.h>
 #include "Dawn/Core/Actor.h"
 #include <Dawn/Core/Application.h>
 #include <Dawn/Core/Window.h>
 #include <Dawn/Audio/AudioSystem.h>
 #include <Dawn/Rendering/Renderer.h>
+#include <Dawn/Core/Property.h>
 
 namespace Dawn
 {
-	void Camera::Serialize(YAML::Node& node, SerializationContext& serializationContext) const
+	std::vector<Property> Camera::GetProperties()
 	{
-		node["FOV"] = mFOV;
-		node["Near"] = mNear;
-		node["Far"] = mFar;
-	}
-
-	void Camera::Deserialize(const YAML::Node & node, SerializationContext& serializationContext)
-	{
-		SetFOV(node["FOV"].as<float>());
-		SetNearPlane(node["Near"].as<float>());
-		SetFarPlane(node["Far"].as<float>());
+		return 
+		{
+			{"FOV", &mFOV, PropertyType::Float},
+			{"Near", &mNear, PropertyType::Float},
+			{"Far", &mFar, PropertyType::Float}
+		};
 	}
 
 	Camera::Camera(Actor* owner)

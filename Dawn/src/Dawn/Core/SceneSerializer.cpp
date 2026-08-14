@@ -1,10 +1,13 @@
 #include "SceneSerializer.h"
 
+#include <vector>
 #include <fstream>
 #include <yaml-cpp/yaml.h>
+#include <Dawn/Utils/YamlGlm.h>
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <Dawn/Utils/Log.h>
+#include <Dawn/Core/Property.h>
 #include "Application.h"
 #include "ComponentFactory.h"
 #include "Component.h"
@@ -15,46 +18,6 @@
 
 namespace Dawn
 {
-	// --- YAML helpers ---
-	glm::vec3 ToVec3(const YAML::Node& node)
-	{
-		return {
-			node[0].as<float>(),
-			node[1].as<float>(),
-			node[2].as<float>()
-		};
-	}
-	// quat: w, x, y, z
-	glm::quat ToQuat(const YAML::Node& node)
-	{
-		return {
-			node[0].as<float>(),
-			node[1].as<float>(),
-			node[2].as<float>(),
-			node[3].as<float>()
-		};
-	}
-	YAML::Node ToYaml(const glm::vec3& vec)
-	{
-		YAML::Node vecNode;
-		vecNode.SetStyle(YAML::EmitterStyle::Flow);
-		vecNode.push_back(vec.x);
-		vecNode.push_back(vec.y);
-		vecNode.push_back(vec.z);
-		return vecNode;
-	}
-	YAML::Node ToYaml(const glm::quat& quat)
-	{
-		YAML::Node quatNode;
-		quatNode.SetStyle(YAML::EmitterStyle::Flow);
-		quatNode.push_back(quat.w);
-		quatNode.push_back(quat.x);
-		quatNode.push_back(quat.y);
-		quatNode.push_back(quat.z);
-		return quatNode;
-	}
-	// --------------------
-
 	// --- SCENE SERIALIZER Helper ---
 	YAML::Node SerializeEnvSettings()
 	{
@@ -64,14 +27,14 @@ namespace Dawn
 
 		YAML::Node dirLightNode = envSettingsNode["DirectionalLight"];
 
-		envSettingsNode["AmbientColor"] = ToYaml(env.ambientColor);
+		envSettingsNode["AmbientColor"] = env.ambientColor;
 		envSettingsNode["BloomRadius"] = env.bloomRadius;
 		envSettingsNode["BloomStrength"] = env.bloomStrength;
-		envSettingsNode["FogColor"] = ToYaml(env.fogColor);
+		envSettingsNode["FogColor"] = env.fogColor;
 		envSettingsNode["FogDensity"] = env.fogDensity;
-		dirLightNode["Color"] = ToYaml(dirLight.color);
+		dirLightNode["Color"] = dirLight.color;
 		dirLightNode["Intensity"] = dirLight.intensity;
-		dirLightNode["Direction"] = ToYaml(dirLight.direction);
+		dirLightNode["Direction"] = dirLight.direction;
 		return envSettingsNode;
 	}
 
@@ -82,13 +45,13 @@ namespace Dawn
 
 		const YAML::Node& dirLightNode = envSettingsNode["DirectionalLight"];
 
-		env.ambientColor = ToVec3(envSettingsNode["AmbientColor"]);
+		env.ambientColor = envSettingsNode["AmbientColor"].as<glm::vec3>();
 		env.bloomRadius = envSettingsNode["BloomRadius"].as<float>();
 		env.bloomStrength = envSettingsNode["BloomStrength"].as<float>();
-		env.fogColor = ToVec3(envSettingsNode["FogColor"]);
+		env.fogColor = envSettingsNode["FogColor"].as<glm::vec3>();
 		env.fogDensity = envSettingsNode["FogDensity"].as<float>();
-		dirLight.color = ToVec3(dirLightNode["Color"]);
-		dirLight.direction = ToVec3(dirLightNode["Direction"]);
+		dirLight.color = dirLightNode["Color"].as<glm::vec3>();
+		dirLight.direction = dirLightNode["Direction"].as<glm::vec3>();
 		dirLight.intensity = dirLightNode["Intensity"].as<float>();
 	}
 
@@ -121,17 +84,22 @@ namespace Dawn
 			YAML::Node transformNode = actorNode["Transform"];
 
 			Transform& transform = actor->GetTransform();
-			transformNode["Scale"] = ToYaml(transform.Scale);
-			transformNode["Position"] = ToYaml(transform.Position);
-			transformNode["Rotation"] = ToYaml(transform.Rotation);
+			transformNode["Scale"] = transform.Scale;
+			transformNode["Position"] = transform.Position;
+			transformNode["Rotation"] = transform.Rotation;
 
+			// --- COMPONENTS ---
 			YAML::Node componentsNode = actorNode["Components"];
 			for (Component* component : actor->GetComponents())
 			{
 				YAML::Node componentNode;
 				componentNode["Id"] = ctx.GetIdByComponent(component);
 				componentNode["Type"] = Application::Get()->GetComponentFactory()->GetComponentName(component);
-				component->Serialize(componentNode, ctx);
+
+				std::vector<Property> properties = component->GetProperties();
+				for (Property property : properties)
+					property.Serialize(componentNode[property.name]);
+
 				componentsNode.push_back(componentNode);
 			}
 
@@ -148,9 +116,9 @@ namespace Dawn
 			Actor* actor = ctx.GetActorById(actorNode["Id"].as<unsigned int>());
 
 			Transform& transform = actor->GetTransform();
-			transform.Scale = ToVec3(transformNode["Scale"]);
-			transform.Position = ToVec3(transformNode["Position"]);
-			transform.Rotation = ToQuat(transformNode["Rotation"]);
+			transform.Scale = transformNode["Scale"].as<glm::vec3>();
+			transform.Position = transformNode["Position"].as<glm::vec3>();
+			transform.Rotation = transformNode["Rotation"].as<glm::quat>();
 
 			const std::string& actorStateStr = actorNode["State"].as<std::string>();
 			if		(actorStateStr == "Active") actor->SetState(Actor::State::Active);
@@ -162,7 +130,11 @@ namespace Dawn
 			for (const YAML::Node& componentNode : componentsNode)
 			{
 				Component* component = ctx.GetComponentById(componentNode["Id"].as<unsigned int>());
-				component->Deserialize(componentNode, ctx);
+
+				std::vector<Property> properties = component->GetProperties();
+				for (Property& property : properties)
+					property.Deserialize(componentNode[property.name]);
+				component->OnPropertiesChanged();
 			}
 		}
 	}

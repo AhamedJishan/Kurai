@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+#include <Dawn/Core/Property.h>
+
 // Forward Declaration
 namespace YAML
 {
@@ -29,8 +32,8 @@ namespace Dawn
 
 		class Actor* GetOwner() const { return mOwner; }
 
-		virtual void Serialize(YAML::Node& node, SerializationContext& serializationContext) const = 0;
-		virtual void Deserialize(const YAML::Node& node, SerializationContext& serializationContext) = 0;
+		virtual std::vector<Property> GetProperties() = 0;
+		virtual void OnPropertiesChanged() {}
 
 	protected:
 		class Actor* mOwner;

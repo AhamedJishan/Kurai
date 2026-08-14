@@ -1,7 +1,9 @@
 #pragma once
 
-#include "Dawn/Core/Component.h"
 #include <glm/mat4x4.hpp>
+#include <vector>
+#include <Dawn/Core/Property.h>
+#include <Dawn/Core/Component.h>
 
 namespace Dawn
 {
@@ -29,8 +31,7 @@ namespace Dawn
 		float GetNear() const { return mNear; }
 		float GetFar() const { return mFar; }
 
-		void Serialize(YAML::Node& node, SerializationContext& serializationContext) const override;
-		void Deserialize(const YAML::Node& node, SerializationContext& serializationContext) override;
+		std::vector<Property> GetProperties() override;
 
 	protected:
 		// in degrees

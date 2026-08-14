@@ -1,27 +1,29 @@
 #include "MeshRenderer.h"
 
-#include <yaml-cpp/yaml.h>
-#include "Dawn/Core/Actor.h"
-#include "Dawn/Core/Application.h"
-#include "Dawn/Asset/Assets.h"
-#include "Dawn/Asset/RawMaterial.h"
-#include "Dawn/Asset/RawModel.h"
-#include "Dawn/Rendering/Renderer.h"
-#include "Dawn/Rendering/Mesh.h"
-#include "Dawn/Rendering/Material.h"
-#include "Dawn/Rendering/Materials/PhongMaterial.h"
+#include <Dawn/Core/Actor.h>
+#include <Dawn/Core/Application.h>
+#include <Dawn/Asset/Assets.h>
+#include <Dawn/Asset/RawMaterial.h>
+#include <Dawn/Asset/RawModel.h>
+#include <Dawn/Rendering/Renderer.h>
+#include <Dawn/Rendering/Mesh.h>
+#include <Dawn/Rendering/Material.h>
+#include <Dawn/Rendering/Materials/PhongMaterial.h>
 
 namespace Dawn
 {
-	void MeshRenderer::Serialize(YAML::Node& node, SerializationContext& serializationContext) const
+	std::vector<Property> MeshRenderer::GetProperties()
 	{
-		node["IsSkinned"] = mIsSkinned;
-		node["ModelPath"] = mModelPath;
+		return 
+		{
+			{"ModelPath", &mModelPath, PropertyType::String},
+			{"IsSkinned", &mIsSkinned, PropertyType::Bool}
+		};
 	}
-	
-	void MeshRenderer::Deserialize(const YAML::Node & node, SerializationContext& serializationContext)
+
+	void MeshRenderer::OnPropertiesChanged()
 	{
-		SetModel(node["ModelPath"].as<std::string>(), node["IsSkinned"].as<bool>());
+		SetModel(mModelPath, mIsSkinned);
 	}
 
 	MeshRenderer::MeshRenderer(Actor* owner)

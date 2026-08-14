@@ -1,28 +1,28 @@
 #include "Audio.h"
 
-#include <yaml-cpp/yaml.h>
-#include "Dawn/Audio/SoundEvent.h"
-#include "Dawn/Core/Actor.h"
-#include "Dawn/Core/Application.h"
-#include "Dawn/Audio/AudioSystem.h"
+#include <algorithm>
+#include <Dawn/Audio/SoundEvent.h>
+#include <Dawn/Core/Actor.h>
+#include <Dawn/Core/Application.h>
+#include <Dawn/Audio/AudioSystem.h>
 
 namespace Dawn
 {
-
-	void Audio::Serialize(YAML::Node& node, SerializationContext& serializationContext) const
+	std::vector<Property> Audio::GetProperties()
 	{
-		for (const SoundEvent& soundEvent : mEvents2D)
-			node["Events2D"].push_back(soundEvent.GetName());
-		for (const SoundEvent& soundEvent : mEvents3D)
-			node["Events3D"].push_back(soundEvent.GetName());
+		return 
+		{
+			{"Events2D", &mEventNames2D, PropertyType::StringList},
+			{"Events3D", &mEventNames3D, PropertyType::StringList}
+		};
 	}
 
-	void Audio::Deserialize(const YAML::Node& node, SerializationContext& serializationContext)
+	void Audio::OnPropertiesChanged()
 	{
-		for (const YAML::Node& eventNode : node["Events2D"])
-			PlayEvent(eventNode.as<std::string>());
-		for (const YAML::Node& eventNode : node["Events3D"])
-			PlayEvent(eventNode.as<std::string>());
+		StopAllEvents();
+
+		for (const std::string& eventName : mEventNames2D) PlayEvent(eventName);
+		for (const std::string& eventName : mEventNames3D) PlayEvent(eventName);
 	}
 
 	Audio::Audio(Actor* owner)
@@ -33,6 +33,8 @@ namespace Dawn
 	Audio::~Audio()
 	{
 		StopAllEvents();
+		mEventNames2D.clear();
+		mEventNames3D.clear();
 	}
 	
 	void Audio::Update(float deltaTime)
@@ -41,7 +43,12 @@ namespace Dawn
 		while (iter != mEvents2D.end())
 		{
 			if (!iter->IsValid())
+			{
+				auto eventNameItr = std::find(mEventNames2D.begin(), mEventNames2D.end(), iter->GetName());
+				if (eventNameItr != mEventNames2D.end())
+					mEventNames2D.erase(eventNameItr);
 				iter = mEvents2D.erase(iter);
+			}
 			else
 				iter++;
 		}
@@ -50,7 +57,12 @@ namespace Dawn
 		while (iter != mEvents3D.end())
 		{
 			if (!iter->IsValid())
+			{
+				auto eventNameItr = std::find(mEventNames3D.begin(), mEventNames3D.end(), iter->GetName());
+				if (eventNameItr != mEventNames3D.end())
+					mEventNames3D.erase(eventNameItr);
 				iter = mEvents3D.erase(iter);
+			}
 			else
 			{
 				iter->Set3DAttributes(mOwner->GetTransform().ToMatrix());
@@ -64,11 +76,15 @@ namespace Dawn
 		SoundEvent event = Application::Get()->GetAudioSystem()->PlayEvent(name);
 		if (event.Is3D())
 		{
+			mEventNames3D.push_back(event.GetName());
 			mEvents3D.emplace_back(event);
 			event.Set3DAttributes(mOwner->GetTransform().ToMatrix());
 		}
 		else
+		{
+			mEventNames2D.push_back(event.GetName());
 			mEvents2D.emplace_back(event);
+		}
 
 		return event;
 	}

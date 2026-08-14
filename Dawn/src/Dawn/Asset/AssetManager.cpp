@@ -134,7 +134,10 @@ namespace Dawn
         const std::vector<Clip*>& clips = rawModel->GetAnimationClips();
 
         if (clips.size() == 0)
+        {
             LOG_ERROR("'%s' doesn't have any animation clips", path.c_str());
+            return nullptr;
+        }
 
         return clips[0];
     }
