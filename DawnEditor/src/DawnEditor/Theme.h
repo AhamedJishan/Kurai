@@ -10,6 +10,11 @@ namespace Dawn::Editor
 
         ImGuiStyle& style = ImGui::GetStyle();
         ImVec4* colors = style.Colors;
+        ImGuiIO& io = ImGui::GetIO();
+
+        // --- Font ----------------------------------------------------------
+        ImFont* font = io.Fonts->AddFontFromFileTTF("Assets/Fonts/Roboto-Regular.ttf");
+        ImGui::PushFont(font, 14.0f);
 
         // --- Shape ---------------------------------------------------------
         style.WindowRounding = 4.0f;
@@ -31,7 +36,7 @@ namespace Dawn::Editor
         style.WindowBorderSize = 1.0f;
         style.ChildBorderSize = 1.0f;
         style.PopupBorderSize = 1.0f;
-        style.FrameBorderSize = 0.0f;
+        style.FrameBorderSize = 1.0f;
 
         // --- Colors: dark slate, warm orange accent -------------------------
         colors[ImGuiCol_Text] = ImVec4(0.92f, 0.92f, 0.94f, 1.00f);
@@ -69,7 +74,7 @@ namespace Dawn::Editor
         colors[ImGuiCol_ResizeGripActive] = ImVec4(0.90f, 0.55f, 0.24f, 1.00f);
         colors[ImGuiCol_Tab] = ImVec4(0.13f, 0.13f, 0.16f, 1.00f);
         colors[ImGuiCol_TabHovered] = ImVec4(0.27f, 0.27f, 0.31f, 1.00f);
-        colors[ImGuiCol_TabActive] = ImVec4(0.22f, 0.22f, 0.25f, 1.00f);
+        colors[ImGuiCol_TabActive] = ImVec4(0.28f, 0.28f, 0.31f, 1.00f);
         colors[ImGuiCol_TabUnfocused] = ImVec4(0.10f, 0.10f, 0.12f, 1.00f);
         colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.16f, 0.16f, 0.19f, 1.00f);
         colors[ImGuiCol_DockingPreview] = ImVec4(0.90f, 0.55f, 0.24f, 0.60f);
@@ -89,5 +94,6 @@ namespace Dawn::Editor
 	void ResetTheme()
 	{
 		ImGui::StyleColorsDark();
+        ImGui::PopFont();
 	}
 }

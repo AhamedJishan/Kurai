@@ -1,7 +1,13 @@
 #pragma once
 
-namespace Dawn::Editor
+namespace Dawn
 {
-	void BeginInspector();
-	void EndInspector();
+	// Forward declarations
+	class Actor;
+
+	namespace Editor
+	{
+		void BeginInspector(Actor* selectedActor);
+		void EndInspector();
+	}
 }

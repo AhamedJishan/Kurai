@@ -34,6 +34,5 @@ namespace Dawn
 		std::string name;
 		void* data;
 		PropertyType type;
-
 	};
 }

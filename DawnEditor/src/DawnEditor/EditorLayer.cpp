@@ -33,8 +33,6 @@ namespace Dawn
 
 	void EditorLayer::OnImGuiRender()
 	{
-		//ImGui::ShowDemoWindow();
-
 		Editor::ApplyTheme();
 
 		Editor::BeginDockSpace();
@@ -45,7 +43,7 @@ namespace Dawn
 		Editor::BeginViewport(mViewportTexture);
 		Editor::EndViewport();
 
-		Editor::BeginInspector();
+		Editor::BeginInspector(mSelectedActor);
 		Editor::EndInspector();
 		
 		Editor::EndDockSpace();
