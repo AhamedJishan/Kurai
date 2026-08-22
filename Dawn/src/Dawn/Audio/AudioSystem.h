@@ -33,12 +33,10 @@ namespace Dawn
 		AudioSystem();
 		~AudioSystem();
 
-		void LoadBank(const std::string& name);
-		void UnloadBank(const std::string& name);
-		void UnloadAllBanks();
-
 		void Update();
 
+		// name is of the format "BankName:EventName"
+		// For ex: "Assets/Audio/Master:audioEvent"
 		SoundEvent PlayEvent(const std::string& name, const glm::vec3 position = glm::vec3(0));
 
 		void SetListener(const glm::mat4& viewMatrix);
@@ -53,6 +51,10 @@ namespace Dawn
 	private:
 		bool Init();
 		void Shutdown();
+
+		void LoadBank(const std::string& name);
+		void UnloadBank(const std::string& name);
+		void UnloadAllBanks();
 	private:
 		// used to generate ids for EventInstances
 		static unsigned int sNextId;

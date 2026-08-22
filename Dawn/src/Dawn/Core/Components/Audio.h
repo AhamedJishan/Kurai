@@ -19,6 +19,8 @@ namespace Dawn
 
 		void Update(float deltaTime) override;
 
+		// name is of the format "BankName:EventName"
+		// For ex: "Assets/Audio/Master:audioEvent"
 		SoundEvent PlayEvent(const std::string& name);
 		void StopAllEvents();
 

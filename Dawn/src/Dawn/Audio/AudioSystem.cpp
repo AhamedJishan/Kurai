@@ -83,10 +83,7 @@ namespace Dawn
 	{
 		auto it = mBanks.find(name);
 		if (it != mBanks.end())
-		{
-			LOG_WARN("Bank '%s' is already loaded", name.c_str());
 			return;
-		}
 
 		FMOD_RESULT result;
 		// Load the bank
@@ -238,9 +235,20 @@ namespace Dawn
 
 	SoundEvent AudioSystem::PlayEvent(const std::string& name, const glm::vec3 position)
 	{
+		size_t separatorIndex = name.find_first_of(':');
+		if (separatorIndex == std::string::npos || separatorIndex == name.size() - 1)
+		{
+			LOG_ERROR("Invalid event name '%s'. Event name should be of the format 'BankName:EventName'", name.c_str());
+			return SoundEvent();
+		}
+		std::string bankName = name.substr(0, separatorIndex) + ".bank";
+		std::string eventName = "event:/" + name.substr(separatorIndex + 1);
+
+		LoadBank(bankName);
+
 		unsigned int eventId = 0;
 
-		auto iter = mEvents.find(name);
+		auto iter = mEvents.find(eventName);
 		if (iter != mEvents.end())
 		{
 			FMOD::Studio::EventInstance* event = nullptr;
@@ -267,7 +275,7 @@ namespace Dawn
 			return SoundEvent(this, eventId, name);
 		}
 
-		LOG_WARN("Event '%s' is not a part of any loaded audio banks", name.c_str());
+		LOG_WARN("Unable to load audio '%s'", name.c_str());
 		return SoundEvent();
 	}
 
