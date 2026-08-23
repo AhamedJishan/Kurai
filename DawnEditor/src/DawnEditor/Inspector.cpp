@@ -16,7 +16,7 @@
 
 namespace Dawn::Editor
 {
-	bool DrawQuat(const char* label, glm::quat& value, float speed = 0.1f, float min = 0.0f, float max = 0.0f, const char* format = "%.2f")
+	bool DrawQuatInputField(const char* label, glm::quat& value, float speed = 0.1f, float min = 0.0f, float max = 0.0f, const char* format = "%.2f")
 	{
 		ImGuiStorage* imGuiStorage = ImGui::GetStateStorage();
 		ImGuiID idx = ImGui::GetID((std::string(label) + "_x").c_str());
@@ -40,6 +40,53 @@ namespace Dawn::Editor
 		imGuiStorage->SetFloat(idx, rotEuler.x);
 		imGuiStorage->SetFloat(idy, rotEuler.y);
 		imGuiStorage->SetFloat(idz, rotEuler.z);
+
+		return edited;
+	}
+
+	bool DrawStringInputField(const char* label, std::string* value)
+	{
+		ImGui::InputText(label, value, ImGuiInputTextFlags_EnterReturnsTrue);
+		return ImGui::IsItemDeactivatedAfterEdit();
+	}
+
+	bool DrawStringListInputField(const char* label, std::vector<std::string>* value)
+	{
+		int idxToBeRemoved = -1;
+		bool edited = false;
+
+		ImGui::TableNextRow();
+		ImGui::TableNextColumn();
+		ImGui::TableNextColumn();
+
+		ImGui::PushID(label);
+
+		for (size_t i = 0; i < value->size(); i++)
+		{
+			ImGui::PushID(static_cast<int>(i));
+
+			ImGui::SetNextItemWidth(-30);
+			ImGui::InputText(label, &(*value)[i], ImGuiInputTextFlags_EnterReturnsTrue);
+			if (ImGui::IsItemDeactivatedAfterEdit())
+				edited = true;
+
+			ImGui::SameLine();
+			if (ImGui::Button(" - "))
+				idxToBeRemoved = static_cast<int>(i);
+
+			ImGui::PopID();
+		}
+
+		if (ImGui::Button("+ Add Item"))
+			value->push_back("");
+
+		ImGui::PopID();
+
+		if (idxToBeRemoved >= 0 && idxToBeRemoved < value->size())
+		{
+			value->erase(value->begin() + idxToBeRemoved);
+			edited = true;
+		}
 
 		return edited;
 	}
@@ -74,7 +121,7 @@ namespace Dawn::Editor
 				ImGui::Text("Rotation");
 				ImGui::TableNextColumn();
 				ImGui::SetNextItemWidth(-1);
-				DrawQuat("##Rotation", transform.Rotation);
+				DrawQuatInputField("##Rotation", transform.Rotation);
 					
 				ImGui::EndTable();
 			}
@@ -102,12 +149,10 @@ namespace Dawn::Editor
 		case PropertyType::Vec2: edited = ImGui::DragFloat2(propertyLabel.c_str(), glm::value_ptr(*static_cast<glm::vec2*>(property.data)), 0.1f); break;
 		case PropertyType::Vec3: edited = ImGui::DragFloat3(propertyLabel.c_str(), glm::value_ptr(*static_cast<glm::vec3*>(property.data)), 0.1f); break;
 		case PropertyType::Vec4: edited = ImGui::DragFloat4(propertyLabel.c_str(), glm::value_ptr(*static_cast<glm::vec4*>(property.data)), 0.1f); break;
-		case PropertyType::Quat: edited = DrawQuat(propertyLabel.c_str(), *static_cast<glm::quat*>(property.data)); break;
-		case PropertyType::String: 
-			ImGui::InputText(propertyLabel.c_str(), static_cast<std::string*>(property.data), ImGuiInputTextFlags_EnterReturnsTrue);
-			edited = ImGui::IsItemDeactivatedAfterEdit();
-			break;
-		// TODO: StringList and StrinPairList
+		case PropertyType::Quat: edited = DrawQuatInputField(propertyLabel.c_str(), *static_cast<glm::quat*>(property.data)); break;
+		case PropertyType::String: edited = DrawStringInputField(propertyLabel.c_str(), static_cast<std::string*>(property.data)); break;
+		case PropertyType::StringList: edited = DrawStringListInputField(propertyLabel.c_str(), static_cast<std::vector<std::string>*>(property.data)); break;
+		// TODO: StringPairList
 		default: break;
 		}
 

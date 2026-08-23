@@ -2,7 +2,7 @@
 
 #include <imgui/imgui.h>
 
-namespace Dawn::Editor
+namespace Dawn::GUI
 {
 	void ApplyTheme()
 	{
@@ -10,11 +10,6 @@ namespace Dawn::Editor
 
         ImGuiStyle& style = ImGui::GetStyle();
         ImVec4* colors = style.Colors;
-        ImGuiIO& io = ImGui::GetIO();
-
-        // --- Font ----------------------------------------------------------
-        ImFont* font = io.Fonts->AddFontFromFileTTF("Assets/Fonts/Roboto-Regular.ttf");
-        ImGui::PushFont(font, 14.0f);
 
         // --- Shape ---------------------------------------------------------
         style.WindowRounding = 4.0f;
@@ -94,6 +89,5 @@ namespace Dawn::Editor
 	void ResetTheme()
 	{
 		ImGui::StyleColorsDark();
-        ImGui::PopFont();
 	}
 }

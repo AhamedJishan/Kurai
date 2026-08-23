@@ -2,7 +2,6 @@
 
 #include <imgui/imgui.h>
 #include <glm/vec2.hpp>
-#include "Theme.h"
 #include "DockSpace.h"
 #include "Hierarchy.h"
 #include "Viewport.h"
@@ -29,12 +28,11 @@ namespace Dawn
 		delete mViewportTexture;
 		Application::Get()->GetRenderer()->SetOutputRenderOutput(nullptr, nullptr);
 	}
+
 	void EditorLayer::OnUpdate(float deltaTime) {}
 
 	void EditorLayer::OnImGuiRender()
 	{
-		Editor::ApplyTheme();
-
 		Editor::BeginDockSpace();
 
 		Editor::BeginHierarchy(mSelectedActor);
@@ -47,8 +45,6 @@ namespace Dawn
 		Editor::EndInspector();
 		
 		Editor::EndDockSpace();
-
-		Editor::ResetTheme();
 	}
 
 }

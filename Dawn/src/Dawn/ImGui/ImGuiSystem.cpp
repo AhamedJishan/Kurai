@@ -6,6 +6,7 @@
 #include <Vendor/imgui/imgui_impl_opengl3.h>
 #include <Dawn/Core/Application.h>
 #include <Dawn/Core/Window.h>
+#include "Theme.h"
 
 namespace Dawn
 {
@@ -31,10 +32,16 @@ namespace Dawn
 		// Setup Platform/Renderer backends
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init("#version 330");
+
+		ImFont* font = io.Fonts->AddFontFromFileTTF("Assets/Fonts/Roboto-Regular.ttf");
+		ImGui::PushFont(font, 14.0f);
+		GUI::ApplyTheme();
 	}
 
 	ImGuiSystem::~ImGuiSystem()
 	{
+		GUI::ResetTheme();
+		ImGui::PopFont();
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();

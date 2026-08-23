@@ -5,3 +5,4 @@ Project 2
 - Optimize VertexSkinData to use uint8_t instead of glm::vec4
 - Physics and ParticleSystem temporarily disabled, will be reintegrated later.
 - Draw components in the inspector
+- Make a centralized place to edit and store asset paths. (Audio, Font, Models, etc)

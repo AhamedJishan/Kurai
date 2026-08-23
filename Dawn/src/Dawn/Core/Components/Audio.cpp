@@ -21,8 +21,8 @@ namespace Dawn
 	{
 		StopAllEvents();
 
-		for (const std::string& eventName : mEventNames2D) PlayEvent(eventName);
-		for (const std::string& eventName : mEventNames3D) PlayEvent(eventName);
+		for (const std::string& eventName : mEventNames2D) if (!eventName.empty()) PlayEvent(eventName);
+		for (const std::string& eventName : mEventNames3D) if (!eventName.empty()) PlayEvent(eventName);
 	}
 
 	Audio::Audio(Actor* owner)
@@ -76,15 +76,11 @@ namespace Dawn
 		SoundEvent event = Application::Get()->GetAudioSystem()->PlayEvent(name);
 		if (event.Is3D())
 		{
-			mEventNames3D.push_back(event.GetName());
 			mEvents3D.emplace_back(event);
 			event.Set3DAttributes(mOwner->GetTransform().ToMatrix());
 		}
 		else
-		{
-			mEventNames2D.push_back(event.GetName());
 			mEvents2D.emplace_back(event);
-		}
 
 		return event;
 	}

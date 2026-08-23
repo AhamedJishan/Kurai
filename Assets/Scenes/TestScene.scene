@@ -26,6 +26,11 @@ Actors:
         FOV: 90.0
         Near: 0.1
         Far: 1000.0
+      - Id: 5
+        Type: Audio
+        Events2D:
+          - Assets/Audio/MainMenu:mainmenu_bgm
+          - Assets/Audio/Game:enemy_presence
     
   - Id: 3
     Name: ArenaActor

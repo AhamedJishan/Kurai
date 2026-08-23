@@ -6,7 +6,6 @@ namespace Dawn
 {
 	Scene::Scene()
 	{
-		// TODO: Load the scene from the filepath. To be done when/if Serialization is implemented
 	}
 
 	Scene::~Scene()
