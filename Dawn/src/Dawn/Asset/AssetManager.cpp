@@ -7,7 +7,6 @@
 #include <Dawn/Rendering/Mesh.h>
 #include <Dawn/Animation/Clip.h>
 #include <Dawn/Animation/Skeleton.h>
-#include "Vertex.h"
 #include "RawModel.h"
 #include "RawMesh.h"
 #include "AssimpImporter.h"
@@ -120,6 +119,9 @@ namespace Dawn
     Skeleton* AssetManager::GetSkeleton(const std::string& path)
     {
         RawModel* rawModel = GetRawModel(path);
+        if (!rawModel)
+            return nullptr;
+
         Skeleton* skeleton = rawModel->GetSkeleton();
 
         if (!skeleton)
@@ -131,6 +133,9 @@ namespace Dawn
     Clip* AssetManager::GetAnimationClip(const std::string& path)
     {
         const RawModel* rawModel = GetRawModel(path);
+        if (!rawModel)
+            return nullptr;
+
         const std::vector<Clip*>& clips = rawModel->GetAnimationClips();
 
         if (clips.size() == 0)

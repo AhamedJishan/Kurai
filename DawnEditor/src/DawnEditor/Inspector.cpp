@@ -16,7 +16,7 @@
 
 namespace Dawn::Editor
 {
-	bool DrawQuatInputField(const char* label, glm::quat& value, float speed = 0.1f, float min = 0.0f, float max = 0.0f, const char* format = "%.2f")
+	bool DrawQuatInputField(const char* label, glm::quat& value, float speed = 0.1f, float min = 0.0f, float max = 0.0f, const char* format = "%.6g")
 	{
 		ImGuiStorage* imGuiStorage = ImGui::GetStateStorage();
 		ImGuiID idx = ImGui::GetID((std::string(label) + "_x").c_str());
@@ -32,7 +32,7 @@ namespace Dawn::Editor
 		if (std::abs(glm::dot(reconstructed, value)) < 0.9999f)
 			rotEuler = glm::degrees(glm::eulerAngles(value));
 
-		bool edited = ImGui::DragFloat3("##Rotation", &rotEuler[0], speed, min, max, format);
+		bool edited = ImGui::DragFloat3("##Rotation", &rotEuler[0], speed, min, max, format, ImGuiSliderFlags_NoRoundToFormat);
 
 		if (edited)
 			value = glm::quat(glm::radians(rotEuler));
@@ -77,8 +77,60 @@ namespace Dawn::Editor
 			ImGui::PopID();
 		}
 
-		if (ImGui::Button("+ Add Item"))
+		if (ImGui::Button(" + "))
 			value->push_back("");
+
+		ImGui::PopID();
+
+		if (idxToBeRemoved >= 0 && idxToBeRemoved < value->size())
+		{
+			value->erase(value->begin() + idxToBeRemoved);
+			edited = true;
+		}
+
+		return edited;
+	}
+
+	bool DrawStringPairListInputField(const char* label, std::vector<std::pair<std::string, std::string>>* value)
+	{
+		int idxToBeRemoved = -1;
+		bool edited = false;
+
+		ImGui::PushID(label);
+
+		for (size_t i = 0; i < value->size(); i++)
+		{
+			ImGui::TableNextRow();
+			ImGui::TableNextColumn();
+			ImGui::Dummy(ImVec2(20, 20));
+			ImGui::SameLine();
+
+			ImGui::PushID(static_cast<int>(i));
+
+			ImGui::PushID("key");
+			ImGui::SetNextItemWidth(-1);
+			ImGui::InputText(label, &(*value)[i].first, ImGuiInputTextFlags_EnterReturnsTrue);
+			if (ImGui::IsItemDeactivatedAfterEdit())
+				edited = true;
+			ImGui::PopID();
+
+			ImGui::PushID("value");
+			ImGui::TableNextColumn();
+			ImGui::SetNextItemWidth(-30);
+			ImGui::InputText(label, &(*value)[i].second, ImGuiInputTextFlags_EnterReturnsTrue);
+			if (ImGui::IsItemDeactivatedAfterEdit())
+				edited = true;
+			ImGui::PopID();
+
+			ImGui::SameLine();
+			if (ImGui::Button(" - "))
+				idxToBeRemoved = static_cast<int>(i);
+
+			ImGui::PopID();
+		}
+
+		if (ImGui::Button(" + "))
+			value->push_back({ "" , ""});
 
 		ImGui::PopID();
 
@@ -107,14 +159,14 @@ namespace Dawn::Editor
 				ImGui::Text("Position");
 				ImGui::TableNextColumn();
 				ImGui::SetNextItemWidth(-1);
-				ImGui::DragFloat3("##Position", &transform.Position[0], .1f, 0.0f, 0.0f, "%.2f");
+				ImGui::DragFloat3("##Position", &transform.Position[0], .1f, 0.0f, 0.0f, "%.6g");
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
 				ImGui::Text("Scale");
 				ImGui::TableNextColumn();
 				ImGui::SetNextItemWidth(-1);
-				ImGui::DragFloat3("##Scale", &transform.Scale[0], .10f, 0.0f, 0.0f, "%.2f");
+				ImGui::DragFloat3("##Scale", &transform.Scale[0], .10f, 0.0f, 0.0f, "%.6g");
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
@@ -145,14 +197,14 @@ namespace Dawn::Editor
 		{
 		case PropertyType::Int: edited = ImGui::DragInt(propertyLabel.c_str(), static_cast<int*>(property.data), 0.1f); break;
 		case PropertyType::Bool: edited = ImGui::Checkbox(propertyLabel.c_str(), static_cast<bool*>(property.data)); break;
-		case PropertyType::Float: edited = ImGui::DragFloat(propertyLabel.c_str(), static_cast<float*>(property.data), 0.1f); break;
-		case PropertyType::Vec2: edited = ImGui::DragFloat2(propertyLabel.c_str(), glm::value_ptr(*static_cast<glm::vec2*>(property.data)), 0.1f); break;
-		case PropertyType::Vec3: edited = ImGui::DragFloat3(propertyLabel.c_str(), glm::value_ptr(*static_cast<glm::vec3*>(property.data)), 0.1f); break;
-		case PropertyType::Vec4: edited = ImGui::DragFloat4(propertyLabel.c_str(), glm::value_ptr(*static_cast<glm::vec4*>(property.data)), 0.1f); break;
+		case PropertyType::Float: edited = ImGui::DragFloat(propertyLabel.c_str(), static_cast<float*>(property.data), 0.1f,0.0f, 0.0f, "%.6g", ImGuiSliderFlags_NoRoundToFormat); break;
+		case PropertyType::Vec2: edited = ImGui::DragFloat2(propertyLabel.c_str(), glm::value_ptr(*static_cast<glm::vec2*>(property.data)), 0.1f, 0.0f, 0.0f, "%.6g", ImGuiSliderFlags_NoRoundToFormat); break;
+		case PropertyType::Vec3: edited = ImGui::DragFloat3(propertyLabel.c_str(), glm::value_ptr(*static_cast<glm::vec3*>(property.data)), 0.1f, 0.0f, 0.0f, "%.6g", ImGuiSliderFlags_NoRoundToFormat); break;
+		case PropertyType::Vec4: edited = ImGui::DragFloat4(propertyLabel.c_str(), glm::value_ptr(*static_cast<glm::vec4*>(property.data)), 0.1f, 0.0f, 0.0f, "%.6g", ImGuiSliderFlags_NoRoundToFormat); break;
 		case PropertyType::Quat: edited = DrawQuatInputField(propertyLabel.c_str(), *static_cast<glm::quat*>(property.data)); break;
 		case PropertyType::String: edited = DrawStringInputField(propertyLabel.c_str(), static_cast<std::string*>(property.data)); break;
 		case PropertyType::StringList: edited = DrawStringListInputField(propertyLabel.c_str(), static_cast<std::vector<std::string>*>(property.data)); break;
-		// TODO: StringPairList
+		case PropertyType::StringPairList: edited = DrawStringPairListInputField(propertyLabel.c_str(), static_cast<std::vector<std::pair<std::string, std::string>>*>(property.data)); break;
 		default: break;
 		}
 
@@ -166,7 +218,11 @@ namespace Dawn::Editor
 
 		if (ImGui::CollapsingHeader(componentName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			if (ImGui::BeginTable(componentName.c_str(), 2))
+			if (properties.size() == 0)
+			{
+				ImGui::Text("No configurable property!");
+			}
+			else if (ImGui::BeginTable(componentName.c_str(), 2))
 			{
 				float availableWidth = ImGui::GetContentRegionAvail().x;
 				ImGui::TableSetupColumn("Property", ImGuiTableColumnFlags_WidthFixed, 0.3f * availableWidth);

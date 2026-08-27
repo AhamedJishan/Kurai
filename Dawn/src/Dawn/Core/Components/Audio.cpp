@@ -1,6 +1,5 @@
 #include "Audio.h"
 
-#include <algorithm>
 #include <Dawn/Audio/SoundEvent.h>
 #include <Dawn/Core/Actor.h>
 #include <Dawn/Core/Application.h>
@@ -10,19 +9,11 @@ namespace Dawn
 {
 	std::vector<Property> Audio::GetProperties()
 	{
-		return 
-		{
-			{"Events2D", &mEventNames2D, PropertyType::StringList},
-			{"Events3D", &mEventNames3D, PropertyType::StringList}
-		};
+		return {};
 	}
 
 	void Audio::OnPropertiesChanged()
 	{
-		StopAllEvents();
-
-		for (const std::string& eventName : mEventNames2D) if (!eventName.empty()) PlayEvent(eventName);
-		for (const std::string& eventName : mEventNames3D) if (!eventName.empty()) PlayEvent(eventName);
 	}
 
 	Audio::Audio(Actor* owner)
@@ -33,8 +24,6 @@ namespace Dawn
 	Audio::~Audio()
 	{
 		StopAllEvents();
-		mEventNames2D.clear();
-		mEventNames3D.clear();
 	}
 	
 	void Audio::Update(float deltaTime)
@@ -43,12 +32,7 @@ namespace Dawn
 		while (iter != mEvents2D.end())
 		{
 			if (!iter->IsValid())
-			{
-				auto eventNameItr = std::find(mEventNames2D.begin(), mEventNames2D.end(), iter->GetName());
-				if (eventNameItr != mEventNames2D.end())
-					mEventNames2D.erase(eventNameItr);
 				iter = mEvents2D.erase(iter);
-			}
 			else
 				iter++;
 		}
@@ -58,9 +42,6 @@ namespace Dawn
 		{
 			if (!iter->IsValid())
 			{
-				auto eventNameItr = std::find(mEventNames3D.begin(), mEventNames3D.end(), iter->GetName());
-				if (eventNameItr != mEventNames3D.end())
-					mEventNames3D.erase(eventNameItr);
 				iter = mEvents3D.erase(iter);
 			}
 			else

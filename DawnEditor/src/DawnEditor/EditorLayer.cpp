@@ -37,10 +37,10 @@ namespace Dawn
 
 		Editor::BeginHierarchy(mSelectedActor);
 		Editor::EndHierarchy();
-
+		
 		Editor::BeginViewport(mViewportTexture);
 		Editor::EndViewport();
-
+		
 		Editor::BeginInspector(mSelectedActor);
 		Editor::EndInspector();
 		

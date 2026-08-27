@@ -20,13 +20,16 @@ namespace Dawn
 
 	void Animator::OnPropertiesChanged()
 	{
-		SetSkeleton(mSkeletonAssetPath);
+		if (!mSkeletonAssetPath.empty())
+			SetSkeleton(mSkeletonAssetPath);
 
 		mClips.clear();
 		for (auto& [clipName, clipAssetPath] : mClipNameToPathCache)
-			AddClip(clipName, Assets::GetAnimationClip(clipAssetPath));
+			if (!clipName.empty() && !clipAssetPath.empty())
+				AddClip(clipName, Assets::GetAnimationClip(clipAssetPath));
 
-		Play(mActiveClipName);
+		if (!mActiveClipName.empty())
+			Play(mActiveClipName);
 	}
 
 	Animator::Animator(Actor* owner)
@@ -40,11 +43,13 @@ namespace Dawn
 
 	void Animator::Update(float deltaTime)
 	{
-		if (mActiveClipName == "" || mSkeleton == nullptr)
+		if (mSkeleton == nullptr)
 			return;
 
 		Pose animatedPose = mSkeleton->GetBindPose();	// giving bind pose as default pose
-		mClips[mActiveClipName]->Sample(animatedPose, mPlaybackTime);
+
+		if (!mActiveClipName.empty() && mClips.count(mActiveClipName) != 0)
+			mClips[mActiveClipName]->Sample(animatedPose, mPlaybackTime);
 
 		const std::vector<glm::mat4> localTransforms = animatedPose.GetLocalTransformMatrices();
 		const std::vector<glm::mat4> globalTransforms = BuildGlobalTransforms(localTransforms);

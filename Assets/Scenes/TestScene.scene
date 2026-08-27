@@ -26,13 +26,13 @@ Actors:
         FOV: 90.0
         Near: 0.1
         Far: 1000.0
-      - Id: 5
+      - Id: 3
         Type: Audio
         Events2D:
           - Assets/Audio/MainMenu:mainmenu_bgm
           - Assets/Audio/Game:enemy_presence
     
-  - Id: 3
+  - Id: 4
     Name: ArenaActor
     State: Active
     Transform: 
@@ -41,7 +41,26 @@ Actors:
       Rotation: [1.0, 0.0, 0.0, 0.0]
     
     Components:
-      - Id: 4
+      - Id: 5
         Type: MeshRenderer
         IsSkinned: false
         ModelPath: Assets/Models/arena/arena.obj
+        
+  - Id: 6
+    Name: TestAnimActor
+    State: Active
+    Transform: 
+      Scale: [0.0002, 0.0002, 0.0002]
+      Position: [0.0, -2.0, -2.0]
+      Rotation: [1.0, 0.0, 0.0, 0.0]
+    Components:
+      - Id: 7
+        Type: MeshRenderer
+        IsSkinned: true
+        ModelPath: Assets/Models/archer/Hip Hop Dancing.dae
+      - Id: 8
+        Type: Animator
+        Skeleton: Assets/Models/archer/Hip Hop Dancing.dae
+        Clips:
+          Dance: Assets/Models/archer/Hip Hop Dancing.dae
+        ActiveClip: Dance

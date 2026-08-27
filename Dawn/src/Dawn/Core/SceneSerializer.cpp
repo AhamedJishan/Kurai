@@ -133,7 +133,11 @@ namespace Dawn
 
 				std::vector<Property> properties = component->GetProperties();
 				for (Property& property : properties)
+				{
+					if (!componentNode[property.name].IsDefined())
+						continue;
 					property.Deserialize(componentNode[property.name]);
+				}
 				component->OnPropertiesChanged();
 			}
 		}

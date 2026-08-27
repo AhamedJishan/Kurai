@@ -26,6 +26,9 @@ namespace Dawn
 
 	void Camera::Update(float deltaTime)
 	{
+		if (mFOV <= 0.0f)
+			mFOV = 0.1f;
+
 		Application::Get()->GetAudioSystem()->SetListener(GetView());
 	}
 
