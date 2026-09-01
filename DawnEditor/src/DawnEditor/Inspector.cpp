@@ -221,9 +221,9 @@ namespace Dawn::Editor
 		std::string componentName = Application::Get()->GetComponentFactory()->GetComponentName(component);
 		std::vector<Property> properties = component->GetProperties();
 
-		// TODO: Remove component
+		bool isVisible = true;
 		ImGui::PushID((void*)component);
-		if (ImGui::CollapsingHeader(componentName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+		if (ImGui::CollapsingHeader(componentName.c_str(), &isVisible, ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			if (properties.size() == 0)
 			{
@@ -244,6 +244,8 @@ namespace Dawn::Editor
 				ImGui::EndTable();
 			}
 		}
+		if (!isVisible)
+			component->GetOwner()->DeleteComponent(component);
 		ImGui::PopID();
 
 		ImGui::Separator();

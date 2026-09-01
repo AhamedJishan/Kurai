@@ -161,9 +161,12 @@ namespace Dawn
 				glm::mat4 modelMatrix = meshRenderer->GetOwner()->GetTransform().ToMatrix();
 
 				Material* mat = materials[mesh->GetMaterialIndex()];
+				Animator* animator = meshRenderer->GetOwner()->GetComponent<Animator>();
 				MeshType meshType = mesh->GetMeshType();
 
-				Shader* shader = Assets::GetShader(mat->GetName(), meshType == MeshType::Skinned);
+				bool skinned = (meshType == MeshType::Skinned) && (animator != nullptr);
+
+				Shader* shader = Assets::GetShader(mat->GetName(), skinned);
 
 				shader->Bind();
 				mat->Apply(shader);
@@ -173,11 +176,8 @@ namespace Dawn
 				shader->SetMat4("u_View", viewMatrix);
 				shader->SetMat4("u_Projection", projectionMatrix);
 
-				if (meshType == MeshType::Skinned)
-				{
-					Animator* animator = meshRenderer->GetOwner()->GetComponent<Animator>();
+				if (skinned)
 					shader->SetMat4s("u_MatrixPalette", animator->GetMatrixPalette());
-				}
 
 				shader->SetFloat("u_FogDensity", environmentSettings.fogDensity);
 				shader->SetVec3("u_FogColor", environmentSettings.fogColor);
