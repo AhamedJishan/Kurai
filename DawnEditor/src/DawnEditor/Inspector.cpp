@@ -132,6 +132,10 @@ namespace Dawn::Editor
 			ImGui::PopID();
 		}
 
+		ImGui::TableNextRow();
+		ImGui::TableNextColumn();
+		ImGui::Dummy(ImVec2(20, 20));
+		ImGui::SameLine();
 		if (ImGui::Button(" + "))
 			value->push_back({ "" , ""});
 
