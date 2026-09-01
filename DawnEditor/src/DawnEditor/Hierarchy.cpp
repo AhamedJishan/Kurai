@@ -1,7 +1,6 @@
 #include "Hierarchy.h"
 
 #include <imgui/imgui.h>
-#include <vector>
 #include <string>
 #include <Dawn/Core/Actor.h>
 #include <Dawn/Core/Application.h>
@@ -45,9 +44,13 @@ namespace Dawn::Editor
 				continue; // NEXT ITERATION
 			}
 
+			ImGui::PushID((void*)actor);
+
 			bool selected = actor == selectedActor;
 			if (ImGui::Selectable(actor->GetName().c_str(), selected, ImGuiSelectableFlags_SpanAllColumns))
 				selectedActor = actor;
+
+			ImGui::PopID();
 
 			if (ImGui::BeginPopupContextItem())
 			{
@@ -59,10 +62,19 @@ namespace Dawn::Editor
 				}
 				if (ImGui::MenuItem("Delete"))
 				{
-					Application::Get()->GetScene()->DestroyActor(actor);
+					scene->DestroyActor(actor);
 				}
 				ImGui::EndPopup();
 			}
+		}
+
+		if (ImGui::BeginPopupContextWindow("Hierarchy Context Window", ImGuiPopupFlags_NoOpenOverItems))
+		{
+			if (ImGui::MenuItem("Create Actor"))
+			{
+				scene->CreateActor();
+			}
+			ImGui::EndPopup();
 		}
 	}
 
