@@ -56,6 +56,17 @@ namespace Dawn
 			return it->second;
 		}
 
+		std::vector<std::string> GetComponentNames()
+		{
+			std::vector<std::string> componentNames;
+			componentNames.reserve(mFactories.size());
+
+			for (auto it = mFactories.begin(); it != mFactories.end(); it++)
+				componentNames.push_back(it->first);
+
+			return componentNames;
+		}
+
 	private:
 		std::unordered_map<std::string, std::function<Component* (Actor*)>> mFactories;
 		std::unordered_map<std::type_index, std::string> mComponentNames;

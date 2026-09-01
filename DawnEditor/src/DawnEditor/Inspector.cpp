@@ -1,5 +1,8 @@
 #include "Inspector.h"
 
+#include <vector>
+#include <string>
+#include <algorithm>
 #include <imgui/imgui.h>
 #include <imgui/imgui_stdlib.h>
 #include <glm/vec2.hpp>
@@ -178,6 +181,8 @@ namespace Dawn::Editor
 				ImGui::EndTable();
 			}
 		}
+
+		ImGui::Separator();
 	}
 
 	// returns bool, whether the property was changed or not
@@ -216,6 +221,8 @@ namespace Dawn::Editor
 		std::string componentName = Application::Get()->GetComponentFactory()->GetComponentName(component);
 		std::vector<Property> properties = component->GetProperties();
 
+		// TODO: Remove component
+		ImGui::PushID((void*)component);
 		if (ImGui::CollapsingHeader(componentName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			if (properties.size() == 0)
@@ -237,6 +244,49 @@ namespace Dawn::Editor
 				ImGui::EndTable();
 			}
 		}
+		ImGui::PopID();
+
+		ImGui::Separator();
+	}
+
+	void DrawAddComponent(Actor* actor)
+	{
+		const static std::string labelText = "Add Component";
+		const static std::string popupText = "Add Component Popup";
+		std::vector<std::string> componentNames = Application::Get()->GetComponentFactory()->GetComponentNames();
+
+		ImVec2 labelTextSize = ImGui::CalcTextSize(labelText.c_str());
+		ImVec2 availSize = ImGui::GetContentRegionAvail();
+
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + availSize.x/2.0f - labelTextSize.x/2.0f);
+		if (ImGui::Button(labelText.c_str()))
+			ImGui::OpenPopup(popupText.c_str());
+
+		std::string componentQueryStr;
+		if (ImGui::BeginPopup(popupText.c_str()))
+		{
+			ImGui::InputTextWithHint("##Search", "Search...", &componentQueryStr);
+
+			std::string componentQueryStrLower = componentQueryStr;
+			std::string componentNameLower;
+			std::transform(componentQueryStrLower.begin(), componentQueryStrLower.end(), componentQueryStrLower.begin(), ::tolower);
+
+			ImGui::BeginChild("ComponentsListWindow", ImVec2(0, 200));
+			for (std::string& componentName : componentNames)
+			{
+				componentNameLower = componentName;
+				std::transform(componentNameLower.begin(), componentNameLower.end(), componentNameLower.begin(), ::tolower);
+				if (componentNameLower.find(componentQueryStrLower) != std::string::npos)
+					if (ImGui::Selectable(componentName.c_str()))
+					{
+						Application::Get()->GetComponentFactory()->Create(componentName, actor);
+						ImGui::CloseCurrentPopup();
+					}
+			}
+			ImGui::EndChild();
+
+			ImGui::EndPopup();
+		}
 	}
 
 
@@ -253,7 +303,7 @@ namespace Dawn::Editor
 		for (Component* component : selectedActor->GetComponents())
 			DrawComponent(component);
 
-		// Add Component
+		DrawAddComponent(selectedActor);
 	}
 
 	void EndInspector()
