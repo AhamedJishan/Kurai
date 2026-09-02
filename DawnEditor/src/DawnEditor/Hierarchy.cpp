@@ -12,7 +12,7 @@ namespace Dawn::Editor
 	static char sActorRenameBuffer[256] = "";
 	static bool sFocusActorRename = false;
 
-	void BeginHierarchy(Actor*& selectedActor)
+	void DrawHierarchy(Actor*& selectedActor)
 	{
 		ImGui::Begin("Hierarchy");
 
@@ -76,10 +76,7 @@ namespace Dawn::Editor
 			}
 			ImGui::EndPopup();
 		}
-	}
 
-	void EndHierarchy()
-	{
 		ImGui::End();
 	}
 }

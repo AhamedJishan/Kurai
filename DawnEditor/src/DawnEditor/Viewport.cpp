@@ -7,7 +7,7 @@ namespace Dawn
 {
 	namespace Editor
 	{
-		void BeginViewport(Texture* viewportTexture)
+		void DrawViewport(Texture* viewportTexture)
 		{
 			ImGui::Begin("Viewport");
 
@@ -28,10 +28,7 @@ namespace Dawn
 			ImGui::SetCursorPos(cursor);
 
 			ImGui::Image((ImTextureID)(intptr_t)(viewportTexture->GetId()), imageSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-		}
 
-		void EndViewport()
-		{
 			ImGui::End();
 		}
 	}

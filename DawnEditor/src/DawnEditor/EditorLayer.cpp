@@ -35,15 +35,10 @@ namespace Dawn
 	{
 		Editor::BeginDockSpace();
 
-		Editor::BeginHierarchy(mSelectedActor);
-		Editor::EndHierarchy();
-		
-		Editor::BeginViewport(mViewportTexture);
-		Editor::EndViewport();
-		
-		Editor::BeginInspector(mSelectedActor);
-		Editor::EndInspector();
-		
+		Editor::DrawHierarchy(mSelectedActor);
+		Editor::DrawViewport(mViewportTexture);
+		Editor::DrawInspector(mSelectedActor);
+
 		Editor::EndDockSpace();
 	}
 

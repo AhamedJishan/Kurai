@@ -7,7 +7,6 @@ namespace Dawn
 
 	namespace Editor
 	{
-		void BeginHierarchy(Actor*& selectedActor);
-		void EndHierarchy();
+		void DrawHierarchy(Actor*& selectedActor);
 	}
 }

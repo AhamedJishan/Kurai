@@ -7,7 +7,6 @@ namespace Dawn
 
 	namespace Editor
 	{
-		void BeginInspector(Actor* selectedActor);
-		void EndInspector();
+		void DrawInspector(Actor* selectedActor);
 	}
 }

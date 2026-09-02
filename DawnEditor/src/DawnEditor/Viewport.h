@@ -7,7 +7,6 @@ namespace Dawn
 
 	namespace Editor
 	{
-		void BeginViewport(Texture* viewportTexture);
-		void EndViewport();
+		void DrawViewport(Texture* viewportTexture);
 	}
 }

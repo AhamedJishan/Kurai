@@ -310,10 +310,7 @@ namespace Dawn::Editor
 			DrawComponent(component);
 
 		DrawAddComponent(selectedActor);
-	}
 
-	void EndInspector()
-	{
 		ImGui::End();
 	}
 }
