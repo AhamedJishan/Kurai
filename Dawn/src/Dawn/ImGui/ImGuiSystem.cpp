@@ -34,7 +34,13 @@ namespace Dawn
 		ImGui_ImplOpenGL3_Init("#version 330");
 
 		ImFont* font = io.Fonts->AddFontFromFileTTF("Assets/Fonts/Roboto-Regular.ttf");
+		
+		ImFontConfig iconConfig;
+		iconConfig.MergeMode = true;
+		iconConfig.PixelSnapH = true;
+		io.Fonts->AddFontFromFileTTF("Assets/Fonts/OpenFontIcons.ttf", 0.0f, &iconConfig);
 		ImGui::PushFont(font, 14.0f);
+
 		GUI::ApplyTheme();
 	}
 

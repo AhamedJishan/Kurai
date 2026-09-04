@@ -3,33 +3,30 @@
 #include <imgui/imgui.h>
 #include <Dawn/Rendering/Texture.h>
 
-namespace Dawn
+namespace Dawn::Editor
 {
-	namespace Editor
+	void DrawViewport(Texture* viewportTexture)
 	{
-		void DrawViewport(Texture* viewportTexture)
-		{
-			ImGui::Begin("Viewport");
+		ImGui::Begin("Viewport");
 
-			ImVec2 availRegionSize = ImGui::GetContentRegionAvail();
-			float dstAspect = availRegionSize.x / availRegionSize.y;
-			float srcAspect = static_cast<float>(viewportTexture->GetWidth()) / viewportTexture->GetHeight();
+		ImVec2 availRegionSize = ImGui::GetContentRegionAvail();
+		float dstAspect = availRegionSize.x / availRegionSize.y;
+		float srcAspect = static_cast<float>(viewportTexture->GetWidth()) / viewportTexture->GetHeight();
 
-			ImVec2 imageSize = availRegionSize;
+		ImVec2 imageSize = availRegionSize;
 
-			if (srcAspect > dstAspect)
-				imageSize.y = availRegionSize.x / srcAspect;
-			else
-				imageSize.x = availRegionSize.y * srcAspect;
+		if (srcAspect > dstAspect)
+			imageSize.y = availRegionSize.x / srcAspect;
+		else
+			imageSize.x = availRegionSize.y * srcAspect;
 
-			ImVec2 cursor = ImGui::GetCursorPos();
-			cursor.x += (availRegionSize.x - imageSize.x) * 0.5f;
-			cursor.y += (availRegionSize.y - imageSize.y) * 0.5f;
-			ImGui::SetCursorPos(cursor);
+		ImVec2 cursor = ImGui::GetCursorPos();
+		cursor.x += (availRegionSize.x - imageSize.x) * 0.5f;
+		cursor.y += (availRegionSize.y - imageSize.y) * 0.5f;
+		ImGui::SetCursorPos(cursor);
 
-			ImGui::Image((ImTextureID)(intptr_t)(viewportTexture->GetId()), imageSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+		ImGui::Image((ImTextureID)(intptr_t)(viewportTexture->GetId()), imageSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 
-			ImGui::End();
-		}
+		ImGui::End();
 	}
 }

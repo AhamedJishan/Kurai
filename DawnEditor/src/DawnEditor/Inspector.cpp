@@ -296,13 +296,15 @@ namespace Dawn::Editor
 	}
 
 
-
-	void BeginInspector(Actor* selectedActor)
+	void DrawInspector(Actor* selectedActor)
 	{
 		ImGui::Begin("Inspector");
 
 		if (!selectedActor)
+		{
+			ImGui::End();
 			return;
+		}
 
 		DrawTransform(selectedActor);
 

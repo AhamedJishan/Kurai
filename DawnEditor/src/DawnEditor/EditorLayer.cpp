@@ -1,11 +1,11 @@
 #include "EditorLayer.h"
 
-#include <imgui/imgui.h>
 #include <glm/vec2.hpp>
 #include "DockSpace.h"
 #include "Hierarchy.h"
 #include "Viewport.h"
 #include "Inspector.h"
+#include "AssetBrowser.h"
 #include <Dawn/Core/Application.h>
 #include <Dawn/Rendering/Renderer.h>
 #include <Dawn/Rendering/RenderTarget.h>
@@ -38,6 +38,7 @@ namespace Dawn
 		Editor::DrawHierarchy(mSelectedActor);
 		Editor::DrawViewport(mViewportTexture);
 		Editor::DrawInspector(mSelectedActor);
+		Editor::DrawAssetBrwoser();
 
 		Editor::EndDockSpace();
 	}
