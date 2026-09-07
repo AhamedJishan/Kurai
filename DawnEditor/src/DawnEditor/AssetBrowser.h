@@ -4,6 +4,6 @@ namespace Dawn
 {
 	namespace Editor
 	{
-		void DrawAssetBrwoser();
+		void DrawAssetBrowser();
 	}
 }

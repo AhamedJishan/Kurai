@@ -38,7 +38,7 @@ namespace Dawn
 		Editor::DrawHierarchy(mSelectedActor);
 		Editor::DrawViewport(mViewportTexture);
 		Editor::DrawInspector(mSelectedActor);
-		Editor::DrawAssetBrwoser();
+		Editor::DrawAssetBrowser();
 
 		Editor::EndDockSpace();
 	}
