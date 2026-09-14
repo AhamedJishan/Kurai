@@ -26,6 +26,7 @@ namespace Dawn::Editor
 		{".dae", ICON_BOX}, {".obj", ICON_BOX}, {".fbx", ICON_BOX}, {".blend", ICON_BOX}
 	};
 
+
 	void DrawDirectoryEntryIcon(const std::filesystem::directory_entry& directoryEntry)
 	{
 		const char* icon;
@@ -54,49 +55,87 @@ namespace Dawn::Editor
 		for (auto& entry : std::filesystem::directory_iterator(currentPath))
 			directoryEntries.push_back(entry);
 
-		float availSizeX = ImGui::GetContentRegionAvail().x;
-		int cellsPerRow = (availSizeX - 2.0f * sPadding) / sCellSize.x;
+		ImVec2 availSize = ImGui::GetContentRegionAvail();
+		int cellsPerRow = (availSize.x - 2.0f * sPadding) / sCellSize.x;
 		if (cellsPerRow <= 0) cellsPerRow = 1;
-
-		for (int i = 0; i < directoryEntries.size(); i++)
+		
+		if (ImGui::BeginChild("##CellContainerWindow", availSize, true))
 		{
-			ImGui::PushID(i);
-
-			std::string entryName = directoryEntries[i].path().filename().string();
-			bool selected = entryName == sSelectedEntryName;
-
-			if (ImGui::BeginChild("##CellWindow", sCellSize, true, ImGuiWindowFlags_NoScrollbar))
+			for (int i = 0; i < directoryEntries.size(); i++)
 			{
-				ImGui::SetCursorPos({});
-				if (ImGui::Selectable("##CellSelectable", selected, ImGuiSelectableFlags_AllowDoubleClick, sCellSize))
+				ImGui::PushID(i);
+
+				std::string entryName = directoryEntries[i].path().filename().string();
+				bool selected = entryName == sSelectedEntryName;
+
+				if (ImGui::BeginChild("##CellWindow", sCellSize, true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 				{
-					if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && directoryEntries[i].is_directory())
+					ImGui::SetCursorPos({});
+					if (ImGui::Selectable("##CellSelectable", selected, ImGuiSelectableFlags_AllowDoubleClick, sCellSize))
 					{
-						sActiveDirectoryPath = directoryEntries[i].path();
+						if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && directoryEntries[i].is_directory())
+						{
+							sActiveDirectoryPath = directoryEntries[i].path();
+						}
+						else
+						{
+							sSelectedEntryName = entryName;
+						}
 					}
-					else
+
+					if (ImGui::BeginDragDropSource())
 					{
-						sSelectedEntryName = entryName;
+						// TODO: drag and drop logic
 					}
+
+					ImGui::SetCursorPos({ sPadding, sPadding });
+					DrawDirectoryEntryIcon(directoryEntries[i]);
+
+					ImGui::SetCursorPos(sTextPos);
+					ImGui::TextUnformatted(entryName.c_str());
 				}
+				ImGui::EndChild();
+				if ((i + 1) % cellsPerRow != 0)
+					ImGui::SameLine();
 
-				if (ImGui::BeginDragDropSource())
-				{
-					// TODO: drag and drop logic
-				}
-
-				ImGui::SetCursorPos({ sPadding, sPadding });
-				DrawDirectoryEntryIcon(directoryEntries[i]);
-
-				ImGui::SetCursorPos(sTextPos);
-				ImGui::TextUnformatted(entryName.c_str());
+				ImGui::PopID();
 			}
-			ImGui::EndChild();
-			if ((i + 1) % cellsPerRow != 0)
-				ImGui::SameLine();
-
-			ImGui::PopID();
 		}
+		ImGui::EndChild();
+	}
+
+	void DrawDirBreadCrumbs()
+	{
+		std::filesystem::path accumulatedPath;
+
+		for (const auto& directory : sActiveDirectoryPath)
+		{
+			accumulatedPath /= directory;
+			ImVec2 textSize = ImGui::CalcTextSize(directory.string().c_str());
+
+			ImGui::SameLine();
+			ImGui::SetCursorPosY(2);
+			if (ImGui::Selectable(directory.string().c_str(), false, 0, textSize))
+			{
+				sActiveDirectoryPath = accumulatedPath;
+				return;
+			}
+
+			ImGui::SameLine();
+			ImGui::SetCursorPosY(2);
+			ImGui::TextUnformatted("/");
+		}
+	}
+
+	void DrawDirectoryNavigator()
+	{
+		float availSizeX = ImGui::GetContentRegionAvail().x;
+
+		if (ImGui::BeginChild("##DirectoryNavigator", {availSizeX, 24.0f}, true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
+		{
+			DrawDirBreadCrumbs();
+		}
+		ImGui::EndChild();
 	}
 
 
@@ -104,6 +143,7 @@ namespace Dawn::Editor
 	{
 		ImGui::Begin("Asset Browser");
 
+		DrawDirectoryNavigator();
 		DrawDirectoryContents(sActiveDirectoryPath);
 
 		ImGui::End();
