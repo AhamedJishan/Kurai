@@ -27,7 +27,7 @@ namespace Dawn::Editor
 	};
 
 
-	void DrawDirectoryEntryIcon(const std::filesystem::directory_entry& directoryEntry)
+	const char* GetDirectoryEntryIcon(const std::filesystem::directory_entry& directoryEntry)
 	{
 		const char* icon;
 		if (directoryEntry.is_directory())
@@ -44,9 +44,7 @@ namespace Dawn::Editor
 				icon = ICON_FILE;
 		}
 
-		ImGui::PushFont(NULL, sIconSize);
-		ImGui::TextUnformatted(icon);
-		ImGui::PopFont();
+		return icon;
 	}
 
 	void DrawDirectoryContents(const std::filesystem::path& currentPath)
@@ -86,13 +84,18 @@ namespace Dawn::Editor
 					if (ImGui::BeginDragDropSource())
 					{
 						// TODO: drag and drop logic
+						ImGui::EndDragDropSource();
 					}
 
 					ImGui::SetCursorPos({ sPadding, sPadding });
-					DrawDirectoryEntryIcon(directoryEntries[i]);
+					ImGui::PushFont(NULL, sIconSize);
+					ImGui::TextUnformatted(GetDirectoryEntryIcon(directoryEntries[i]));
+					ImGui::PopFont();
 
 					ImGui::SetCursorPos(sTextPos);
 					ImGui::TextUnformatted(entryName.c_str());
+					if (ImGui::IsItemHovered())
+						ImGui::SetItemTooltip(entryName.c_str());
 				}
 				ImGui::EndChild();
 				if ((i + 1) % cellsPerRow != 0)
@@ -141,11 +144,11 @@ namespace Dawn::Editor
 
 	void DrawAssetBrowser()
 	{
-		ImGui::Begin("Asset Browser");
-
-		DrawDirectoryNavigator();
-		DrawDirectoryContents(sActiveDirectoryPath);
-
+		if (ImGui::Begin("Asset Browser"))
+		{
+			DrawDirectoryNavigator();
+			DrawDirectoryContents(sActiveDirectoryPath);
+		}
 		ImGui::End();
 	}
 }
