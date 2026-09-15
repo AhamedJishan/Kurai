@@ -36,16 +36,17 @@ namespace Dawn
 	{
 		Application::Get()->GetRenderer()->RemoveMeshRenderer(this);
 		
-		for (Material* mat : mMaterials)
-			delete mat;
-		mMaterials.clear();
+		Reset();
 	}
 
 	void MeshRenderer::SetModel(const std::string& modelPath, bool requestSkinning)
 	{
 		RawModel* rawModel = Assets::GetRawModel(modelPath);
 		if (!rawModel)
+		{
+			Reset();
 			return;
+		}
 
 		mModelPath = modelPath;
 		mIsSkinned = requestSkinning;
@@ -64,5 +65,17 @@ namespace Dawn
 		mMaterials.reserve(rawMaterials.size());
 		for (RawMaterial* rawMaterial : rawMaterials)
 			mMaterials.push_back(PhongMaterial::CreateFromRaw(rawMaterial));
+	}
+
+	void MeshRenderer::Reset()
+	{
+		mModelPath = "";
+		mIsSkinned = false;
+
+		for (Material* mat : mMaterials)
+			delete mat;
+
+		mMaterials.clear();
+		mMeshes.clear();
 	}
 }

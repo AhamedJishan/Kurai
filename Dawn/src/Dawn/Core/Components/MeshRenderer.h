@@ -27,6 +27,9 @@ namespace Dawn
 		void OnPropertiesChanged() override;
 
 	private:
+		void Reset();
+
+	private:
 		bool mIsSkinned = false;
 		std::string mModelPath;
 
