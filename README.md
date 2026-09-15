@@ -3,6 +3,7 @@ Project 2
 
 ## TODO:
 - FIX: Dynamic grid of assetbrowser
+- Handle various combinations for meshrender path. like empty
 - tooltip to display full name of files
 - [WIP] Make Assetbrowser window
 - Add file hierarchy window in assetbrowser

@@ -16,7 +16,7 @@ namespace Dawn
 	{
 		return 
 		{
-			{"ModelPath", &mModelPath, PropertyType::String},
+			{"ModelPath", &mModelPath, PropertyType::AssetPath},
 			{"IsSkinned", &mIsSkinned, PropertyType::Bool}
 		};
 	}

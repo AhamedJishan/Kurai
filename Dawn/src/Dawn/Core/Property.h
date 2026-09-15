@@ -20,6 +20,7 @@ namespace Dawn
 		Vec4,
 		Quat,
 		String,
+		AssetPath,
 		StringList,
 		StringPairList
 	};

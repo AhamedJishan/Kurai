@@ -83,7 +83,10 @@ namespace Dawn::Editor
 
 					if (ImGui::BeginDragDropSource())
 					{
-						// TODO: drag and drop logic
+						std::string path = directoryEntries[i].path().string();
+						ImGui::SetDragDropPayload("ASSET_PATH", path.c_str(), path.size() + 1);
+
+						ImGui::TextUnformatted(entryName.c_str());
 						ImGui::EndDragDropSource();
 					}
 

@@ -21,6 +21,7 @@ namespace Dawn
 		case Dawn::PropertyType::Vec3:		node = *static_cast<glm::vec3*>(data); break;
 		case Dawn::PropertyType::Vec4:		node = *static_cast<glm::vec4*>(data); break;
 		case Dawn::PropertyType::Quat:		node = *static_cast<glm::quat*>(data); break;
+		case Dawn::PropertyType::AssetPath: ;
 		case Dawn::PropertyType::String:	node = *static_cast<std::string*>(data); break;
 		case Dawn::PropertyType::StringList:
 		{
@@ -49,6 +50,7 @@ namespace Dawn
 		case Dawn::PropertyType::Vec3:		*static_cast<glm::vec3*>(data) = node.as<glm::vec3>(); break;
 		case Dawn::PropertyType::Vec4:		*static_cast<glm::vec4*>(data) = node.as<glm::vec4>(); break;
 		case Dawn::PropertyType::Quat:		*static_cast<glm::quat*>(data) = node.as<glm::quat>(); break;
+		case Dawn::PropertyType::AssetPath: ;
 		case Dawn::PropertyType::String:	*static_cast<std::string*>(data) = node.as<std::string>(); break;
 		case Dawn::PropertyType::StringList:
 		{

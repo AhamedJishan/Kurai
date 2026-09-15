@@ -53,6 +53,24 @@ namespace Dawn::Editor
 		return ImGui::IsItemDeactivatedAfterEdit();
 	}
 
+	bool DrawAssetPathInputField(const char* label, std::string* value)
+	{
+		bool ret = false;
+
+		ret = DrawStringInputField(label, value);
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* p = ImGui::AcceptDragDropPayload("ASSET_PATH"))
+			{
+				*value = static_cast<const char*>(p->Data);
+				ret = true;
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		return ret;
+	}
+
 	bool DrawStringListInputField(const char* label, std::vector<std::string>* value)
 	{
 		int idxToBeRemoved = -1;
@@ -211,6 +229,7 @@ namespace Dawn::Editor
 		case PropertyType::Vec3: edited = ImGui::DragFloat3(propertyLabel.c_str(), glm::value_ptr(*static_cast<glm::vec3*>(property.data)), 0.1f, 0.0f, 0.0f, "%.6g", ImGuiSliderFlags_NoRoundToFormat); break;
 		case PropertyType::Vec4: edited = ImGui::DragFloat4(propertyLabel.c_str(), glm::value_ptr(*static_cast<glm::vec4*>(property.data)), 0.1f, 0.0f, 0.0f, "%.6g", ImGuiSliderFlags_NoRoundToFormat); break;
 		case PropertyType::Quat: edited = DrawQuatInputField(propertyLabel.c_str(), *static_cast<glm::quat*>(property.data)); break;
+		case PropertyType::AssetPath: edited = DrawAssetPathInputField(propertyLabel.c_str(), static_cast<std::string*>(property.data)); break;
 		case PropertyType::String: edited = DrawStringInputField(propertyLabel.c_str(), static_cast<std::string*>(property.data)); break;
 		case PropertyType::StringList: edited = DrawStringListInputField(propertyLabel.c_str(), static_cast<std::vector<std::string>*>(property.data)); break;
 		case PropertyType::StringPairList: edited = DrawStringPairListInputField(propertyLabel.c_str(), static_cast<std::vector<std::pair<std::string, std::string>>*>(property.data)); break;
