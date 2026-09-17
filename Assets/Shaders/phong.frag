@@ -21,7 +21,7 @@ uniform float u_Shininess;
 // to be set by Renderer
 uniform float u_FogDensity;
 uniform vec3 u_FogColor;
-uniform vec3 u_CameraPosition;
+uniform vec3 u_ViewPosition;
 uniform vec3 u_AmbientColor;
 uniform vec3 u_DirectionalLightColor;
 uniform vec3 u_DirectionalLightDirection;
@@ -80,7 +80,7 @@ void main()
     }
 
     vec3 lightDir = normalize(-u_DirectionalLightDirection);
-    vec3 viewDir = normalize(u_CameraPosition - frag_in.FragPos);
+    vec3 viewDir = normalize(u_ViewPosition - frag_in.FragPos);
     vec3 halfDir = normalize(lightDir + viewDir);
 
     vec3 directionalLightColor = u_DirectionalLightIntensity * u_DirectionalLightColor;
@@ -100,7 +100,7 @@ void main()
     }
 
     // --- FOG (Exponential squared) ---
-    float dist = length(frag_in.FragPos - u_CameraPosition);
+    float dist = length(frag_in.FragPos - u_ViewPosition);
     float fogIntensity = 1 - exp(-pow(dist * u_FogDensity, 2.0));
 
     vec3 finalColor = mix(phong, u_FogColor, fogIntensity);

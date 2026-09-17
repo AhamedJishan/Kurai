@@ -52,13 +52,13 @@ namespace Dawn::Editor
 		std::vector<std::filesystem::directory_entry> directoryEntries;
 		for (auto& entry : std::filesystem::directory_iterator(currentPath))
 			directoryEntries.push_back(entry);
-
-		ImVec2 availSize = ImGui::GetContentRegionAvail();
-		int cellsPerRow = (availSize.x - 2.0f * sPadding) / sCellSize.x;
-		if (cellsPerRow <= 0) cellsPerRow = 1;
 		
-		if (ImGui::BeginChild("##CellContainerWindow", availSize, true))
+		if (ImGui::BeginChild("##CellContainerWindow", ImGui::GetContentRegionAvail(), true))
 		{
+			ImVec2 availSize = ImGui::GetContentRegionAvail();
+			int cellsPerRow = (availSize.x - 2.0f * sPadding) / sCellSize.x;
+			if (cellsPerRow <= 0) cellsPerRow = 1;
+
 			for (int i = 0; i < directoryEntries.size(); i++)
 			{
 				ImGui::PushID(i);

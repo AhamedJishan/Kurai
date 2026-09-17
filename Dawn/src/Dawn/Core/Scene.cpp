@@ -1,6 +1,11 @@
 #include "Scene.h"
 
+#include <glm/mat4x4.hpp>
 #include "Actor.h"
+#include "Application.h"
+#include <Dawn/Core/Components/Camera.h>
+#include <Dawn/Rendering/Renderer.h>
+#include <Dawn/Audio/AudioSystem.h>
 
 namespace Dawn
 {
@@ -45,6 +50,16 @@ namespace Dawn
 		for (Actor* actor : deadActors)
 			DeleteActor(actor);					// Actor::~Actor() calls Scene::RemoveActor() to remove itself from mActors
 		deadActors.clear();
+
+		if (mActiveCamera)
+		{
+			glm::mat4 view = mActiveCamera->GetView();
+			glm::mat4 projection = mActiveCamera->GetProjection();
+
+			Application::Get()->GetAudioSystem()->SetListener(view);
+			Application::Get()->GetRenderer()->SetView(view);
+			Application::Get()->GetRenderer()->SetProjection(projection);
+		}
 	}
 
 	Actor* Scene::CreateActor(const std::string& name)

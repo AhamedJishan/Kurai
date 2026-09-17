@@ -2,7 +2,7 @@
 Project 2
 
 ## TODO:
-- FIX: Dynamic grid of assetbrowser
+- Add blender like transform control, g to grab, s to scale, r to rotate.
 - Add file hierarchy window in assetbrowser
 - Make editor specific camera
 - Play game button

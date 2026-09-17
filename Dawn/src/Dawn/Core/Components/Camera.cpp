@@ -2,8 +2,8 @@
 
 #include "Dawn/Core/Actor.h"
 #include <Dawn/Core/Application.h>
+#include <Dawn/Rendering/Renderer.h>
 #include <Dawn/Core/Window.h>
-#include <Dawn/Audio/AudioSystem.h>
 #include <Dawn/Rendering/Renderer.h>
 #include <Dawn/Core/Property.h>
 
@@ -27,9 +27,7 @@ namespace Dawn
 	void Camera::Update(float deltaTime)
 	{
 		if (mFOV <= 0.0f)
-			mFOV = 0.1f;
-
-		Application::Get()->GetAudioSystem()->SetListener(GetView());
+			mFOV = 0.001f;
 	}
 
 	glm::mat4 Camera::GetView() const
@@ -39,6 +37,12 @@ namespace Dawn
 		glm::vec3 up = mOwner->GetTransform().GetUp();
 
 		return glm::lookAt(position, position + forward, up);
+	}
+
+	glm::mat4 Camera::GetProjection() const
+	{
+		glm::vec2 resolution = Application::Get()->GetRenderer()->GetResolution();
+		return glm::perspectiveFov(glm::radians(mFOV), resolution.x, resolution.y, mNear, mFar);
 	}
 
 	glm::vec3 Camera::UnProject(float screenX, float screenY, float depth)

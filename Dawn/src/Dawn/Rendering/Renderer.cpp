@@ -1,5 +1,4 @@
 #include "Renderer.h"
-#include "Dawn/Utils/Log.h"
 
 #include <algorithm>
 #include <glad/glad.h>
@@ -9,7 +8,6 @@
 #include "Dawn/Core/Window.h"
 #include "Dawn/Core/Actor.h"
 #include "Dawn/Core/Scene.h"
-#include "Dawn/Core/Components/Camera.h"
 #include "Dawn/Core/Components/MeshRenderer.h"
 #include <Dawn/Core/Components/Animator.h>
 #include "RenderTarget.h"
@@ -143,13 +141,6 @@ namespace Dawn
 
 	void Renderer::DrawScene()
 	{
-		Camera* cam = Application::Get()->GetScene()->GetActiveCamera();
-		if (!cam)
-			return;
-
-		glm::mat4 viewMatrix = cam->GetView();
-		glm::mat4 projectionMatrix = glm::perspectiveFov(glm::radians(cam->GetFOV()), mResolution.x, mResolution.y, cam->GetNear(), cam->GetFar());
-
 		const EnvironmentSettings& environmentSettings = Application::Get()->GetScene()->GetEnvironmentSettings();
 
 		for (MeshRenderer* meshRenderer : mMeshRenderers)
@@ -173,15 +164,15 @@ namespace Dawn
 				mesh->Bind();
 
 				shader->SetMat4("u_Model", modelMatrix);
-				shader->SetMat4("u_View", viewMatrix);
-				shader->SetMat4("u_Projection", projectionMatrix);
+				shader->SetMat4("u_View", mView);
+				shader->SetMat4("u_Projection", mProjection);
 
 				if (skinned)
 					shader->SetMat4s("u_MatrixPalette", animator->GetMatrixPalette());
 
 				shader->SetFloat("u_FogDensity", environmentSettings.fogDensity);
 				shader->SetVec3("u_FogColor", environmentSettings.fogColor);
-				shader->SetVec3("u_CameraPosition", cam->GetOwner()->GetTransform().Position);
+				shader->SetVec3("u_ViewPosition", glm::vec3(mView[3]));
 				shader->SetVec3("u_AmbientColor", environmentSettings.ambientColor);
 				shader->SetVec3("u_DirectionalLightColor", environmentSettings.directionalLight.color);
 				shader->SetVec3("u_DirectionalLightDirection", environmentSettings.directionalLight.direction);

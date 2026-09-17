@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <glm/vec2.hpp>
+#include <glm/mat4x4.hpp>
 
 namespace Dawn
 {
@@ -24,6 +25,9 @@ namespace Dawn
 		glm::vec2 GetResolution() const { return mResolution; }
 		void SetOutputRenderOutput(RenderTarget* renderTarget, Texture* outputColorTexture);
 
+		void SetView(const glm::mat4& view) { mView = view; }
+		void SetProjection(const glm::mat4& projection) { mProjection = projection; }
+
 		void Draw();
 
 		// To be called by Constructor of MeshRenderer
@@ -37,6 +41,9 @@ namespace Dawn
 		void DrawQuad();
 
 	private:
+		glm::mat4 mView;
+		glm::mat4 mProjection;
+
 		glm::vec2 mResolution = { 1920, 1080 };
 		std::vector<MeshRenderer*> mMeshRenderers;
 		BloomPass* mBloomPass = nullptr;
