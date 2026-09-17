@@ -7,6 +7,7 @@
 #include "Inspector.h"
 #include "AssetBrowser.h"
 #include <Dawn/Core/Application.h>
+#include <Dawn/Core/Scene.h>
 #include <Dawn/Rendering/Renderer.h>
 #include <Dawn/Rendering/RenderTarget.h>
 #include <Dawn/Rendering/Texture.h>
@@ -29,7 +30,10 @@ namespace Dawn
 		Application::Get()->GetRenderer()->SetOutputRenderOutput(nullptr, nullptr);
 	}
 
-	void EditorLayer::OnUpdate(float deltaTime) {}
+	void EditorLayer::OnUpdate(float deltaTime) 
+	{
+		mCamera.Update(deltaTime);
+	}
 
 	void EditorLayer::OnImGuiRender()
 	{

@@ -4,7 +4,6 @@
 #include <Dawn/Core/Application.h>
 #include <Dawn/Rendering/Renderer.h>
 #include <Dawn/Core/Window.h>
-#include <Dawn/Rendering/Renderer.h>
 #include <Dawn/Core/Property.h>
 
 namespace Dawn

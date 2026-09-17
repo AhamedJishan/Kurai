@@ -1,5 +1,6 @@
 #pragma once
 #include <Dawn/Core/Layer.h>
+#include "EditorCamera.h"
 
 namespace Dawn
 {
@@ -21,5 +22,7 @@ namespace Dawn
 		Actor* mSelectedActor = nullptr;
 		RenderTarget* mViewportRT = nullptr;
 		Texture* mViewportTexture = nullptr;
+
+		EditorCamera mCamera;
 	};
 }
