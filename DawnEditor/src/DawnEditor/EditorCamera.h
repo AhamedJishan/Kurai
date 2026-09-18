@@ -20,5 +20,11 @@ namespace Dawn
 		float far = 1000.0f;
 
 		Transform transform;
+
+	private:
+		const float mLookSensitivity = 0.0025f;
+		// In radians
+		float mYaw = 0.0f;
+		float mPitch = 0.0f;
 	};
 }

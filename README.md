@@ -2,6 +2,7 @@
 Project 2
 
 ## TODO:
+- Expose Viewport hover and active state so that editor camera knows it.
 - Add blender like transform control, g to grab, s to scale, r to rotate.
 - Add file hierarchy window in assetbrowser
 - Make editor specific camera
