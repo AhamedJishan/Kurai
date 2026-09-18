@@ -78,11 +78,11 @@ namespace Dawn
 			Transform thisLocal = mJoints[i];
 			Transform otherLocal = other.mJoints[i];
 
-			if (thisLocal.Position != otherLocal.Position)
+			if (thisLocal.position != otherLocal.position)
 				return false;
-			if (thisLocal.Rotation != otherLocal.Rotation)
+			if (thisLocal.rotation != otherLocal.rotation)
 				return false;
-			if (thisLocal.Scale != otherLocal.Scale)
+			if (thisLocal.scale != otherLocal.scale)
 				return false;
 		}
 	}

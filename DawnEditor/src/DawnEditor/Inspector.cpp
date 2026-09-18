@@ -184,21 +184,21 @@ namespace Dawn::Editor
 				ImGui::Text("Position");
 				ImGui::TableNextColumn();
 				ImGui::SetNextItemWidth(-1);
-				ImGui::DragFloat3("##Position", &transform.Position[0], .1f, 0.0f, 0.0f, "%.6g");
+				ImGui::DragFloat3("##Position", &transform.position[0], .1f, 0.0f, 0.0f, "%.6g");
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
 				ImGui::Text("Scale");
 				ImGui::TableNextColumn();
 				ImGui::SetNextItemWidth(-1);
-				ImGui::DragFloat3("##Scale", &transform.Scale[0], .10f, 0.0f, 0.0f, "%.6g");
+				ImGui::DragFloat3("##Scale", &transform.scale[0], .10f, 0.0f, 0.0f, "%.6g");
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
 				ImGui::Text("Rotation");
 				ImGui::TableNextColumn();
 				ImGui::SetNextItemWidth(-1);
-				DrawQuatInputField("##Rotation", transform.Rotation);
+				DrawQuatInputField("##Rotation", transform.rotation);
 					
 				ImGui::EndTable();
 			}

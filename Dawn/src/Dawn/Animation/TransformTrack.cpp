@@ -110,13 +110,13 @@ namespace Dawn
 		Transform result = ref;
 
 		if (mScale.GetSize() > 0)
-			result.Scale = mScale.Sample(time, looping);
+			result.scale = mScale.Sample(time, looping);
 
 		if (mRotation.GetSize() > 0)
-			result.Rotation = mRotation.Sample(time, looping);
+			result.rotation = mRotation.Sample(time, looping);
 
 		if (mPosition.GetSize() > 0)
-			result.Position = mPosition.Sample(time, looping);
+			result.position = mPosition.Sample(time, looping);
 
 		return result;
 	}

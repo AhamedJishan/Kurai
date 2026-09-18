@@ -16,16 +16,16 @@ namespace Dawn
 
 		// Angle in radians
 		void Rotate(float angle, const glm::vec3& axisOfRotation);
-		glm::vec3 GetUp()		const { return glm::normalize(glm::mat3_cast(Rotation) * glm::vec3(0, 1, 0)); }
-		glm::vec3 GetRight()	const { return glm::normalize(glm::mat3_cast(Rotation) * glm::vec3(1, 0, 0)); }
-		glm::vec3 GetForward()	const { return glm::normalize(glm::mat3_cast(Rotation) * glm::vec3(0, 0, -1)); }
+		glm::vec3 GetUp()		const { return glm::normalize(glm::mat3_cast(rotation) * glm::vec3(0, 1, 0)); }
+		glm::vec3 GetRight()	const { return glm::normalize(glm::mat3_cast(rotation) * glm::vec3(1, 0, 0)); }
+		glm::vec3 GetForward()	const { return glm::normalize(glm::mat3_cast(rotation) * glm::vec3(0, 0, -1)); }
 
 		// In a parent-child relation, a is the parent and b is the child
 		static Transform Combine(const Transform& a, const Transform& b);
 
 	public:
-		glm::vec3 Scale;
-		glm::quat Rotation;
-		glm::vec3 Position;
+		glm::vec3 scale;
+		glm::quat rotation;
+		glm::vec3 position;
 	};
 }

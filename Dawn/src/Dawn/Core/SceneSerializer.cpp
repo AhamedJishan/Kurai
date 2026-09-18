@@ -84,9 +84,9 @@ namespace Dawn
 			YAML::Node transformNode = actorNode["Transform"];
 
 			Transform& transform = actor->GetTransform();
-			transformNode["Scale"] = transform.Scale;
-			transformNode["Position"] = transform.Position;
-			transformNode["Rotation"] = transform.Rotation;
+			transformNode["Scale"] = transform.scale;
+			transformNode["Position"] = transform.position;
+			transformNode["Rotation"] = transform.rotation;
 
 			// --- COMPONENTS ---
 			YAML::Node componentsNode = actorNode["Components"];
@@ -116,9 +116,9 @@ namespace Dawn
 			Actor* actor = ctx.GetActorById(actorNode["Id"].as<unsigned int>());
 
 			Transform& transform = actor->GetTransform();
-			transform.Scale = transformNode["Scale"].as<glm::vec3>();
-			transform.Position = transformNode["Position"].as<glm::vec3>();
-			transform.Rotation = transformNode["Rotation"].as<glm::quat>();
+			transform.scale = transformNode["Scale"].as<glm::vec3>();
+			transform.position = transformNode["Position"].as<glm::vec3>();
+			transform.rotation = transformNode["Rotation"].as<glm::quat>();
 
 			const std::string& actorStateStr = actorNode["State"].as<std::string>();
 			if		(actorStateStr == "Active") actor->SetState(Actor::State::Active);

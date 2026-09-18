@@ -320,9 +320,9 @@ namespace Dawn:: AssimpImporter
 				node->mTransformation.Decompose(scale, rotation, position);
 
 				Transform transform;
-				transform.Scale = AssimpToGlm(scale);
-				transform.Position = AssimpToGlm(position);
-				transform.Rotation = AssimpToGlm(rotation);
+				transform.scale = AssimpToGlm(scale);
+				transform.position = AssimpToGlm(position);
+				transform.rotation = AssimpToGlm(rotation);
 
 				int currentIndex = outPose.AddJoint(transform);
 				outParents.push_back(parentIndex);
