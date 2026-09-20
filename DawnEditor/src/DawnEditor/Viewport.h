@@ -5,8 +5,10 @@ namespace Dawn
 	// Forward declarations
 	class Texture;
 
-	namespace Editor
+	class Viewport
 	{
-		void DrawViewport(Texture* viewportTexture);
-	}
+	public:
+		void Draw(Texture* texture);
+	private:
+	};
 }

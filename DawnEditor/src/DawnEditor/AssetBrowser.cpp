@@ -1,62 +1,63 @@
 #include "AssetBrowser.h"
 
-#include <imgui/imgui.h>
-#include <filesystem>
-#include <string>
 #include <vector>
-#include <unordered_map>
-#include <Dawn/ImGui/OpenFontIcons.h>
 
-namespace Dawn::Editor
+namespace Dawn
 {
-	static std::string sSelectedEntryName = "";
-	static std::filesystem::path sActiveDirectoryPath = "Assets";
-
-	static const ImVec2 sCellSize = { 100.0f, 110.0f };
-	static const float sPadding = 10.0f;
-	static const float sIconSize = sCellSize.x - 2.0f * sPadding;
-	static const ImVec2 sTextPos = { sPadding, sIconSize };
-
-	static const std::unordered_map<std::string, const char*> sFileExtToIconMap =
+	void AssetBrowser::Draw()
 	{
-		{".frag", ICON_FILE_TEXT}, {".vert", ICON_FILE_TEXT}, {".scene", ICON_FILE_TEXT}, {".mtl", ICON_FILE_TEXT},
-		{".png", ICON_IMAGE}, {".jpg", ICON_IMAGE}, {".jpeg", ICON_IMAGE}, {".tif", ICON_IMAGE},
-		{".bank", ICON_MUSIC},
-		{".ttf", ICON_ITALIC},
-		{".dae", ICON_BOX}, {".obj", ICON_BOX}, {".fbx", ICON_BOX}, {".blend", ICON_BOX}
-	};
-
-
-	const char* GetDirectoryEntryIcon(const std::filesystem::directory_entry& directoryEntry)
-	{
-		const char* icon;
-		if (directoryEntry.is_directory())
+		if (ImGui::Begin("Asset Browser"))
 		{
-			icon = ICON_FOLDER;
+			DrawDirectoryNavigator();
+			DrawDirectoryContents(mActiveDirectoryPath);
 		}
-		else
-		{
-			std::string extension = directoryEntry.path().extension().string();
-			auto it = sFileExtToIconMap.find(extension);
-			if (it != sFileExtToIconMap.end())
-				icon = it->second;
-			else
-				icon = ICON_FILE;
-		}
-
-		return icon;
+		ImGui::End();
 	}
 
-	void DrawDirectoryContents(const std::filesystem::path& currentPath)
+	void AssetBrowser::DrawDirectoryNavigator()
+	{
+		float availSizeX = ImGui::GetContentRegionAvail().x;
+
+		if (ImGui::BeginChild("##DirectoryNavigator", { availSizeX, 24.0f }, true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
+		{
+			DrawDirBreadCrumbs();
+		}
+		ImGui::EndChild();
+	}
+
+	void AssetBrowser::DrawDirBreadCrumbs()
+	{
+		std::filesystem::path accumulatedPath;
+
+		for (const auto& directory : mActiveDirectoryPath)
+		{
+			accumulatedPath /= directory;
+			ImVec2 textSize = ImGui::CalcTextSize(directory.string().c_str());
+
+			ImGui::SameLine();
+			ImGui::SetCursorPosY(2);
+			if (ImGui::Selectable(directory.string().c_str(), false, 0, textSize))
+			{
+				mActiveDirectoryPath = accumulatedPath;
+				return;
+			}
+
+			ImGui::SameLine();
+			ImGui::SetCursorPosY(2);
+			ImGui::TextUnformatted("/");
+		}
+	}
+
+	void AssetBrowser::DrawDirectoryContents(const std::filesystem::path& currentPath)
 	{
 		std::vector<std::filesystem::directory_entry> directoryEntries;
 		for (auto& entry : std::filesystem::directory_iterator(currentPath))
 			directoryEntries.push_back(entry);
-		
+
 		if (ImGui::BeginChild("##CellContainerWindow", ImGui::GetContentRegionAvail(), true))
 		{
 			ImVec2 availSize = ImGui::GetContentRegionAvail();
-			int cellsPerRow = (availSize.x - 2.0f * sPadding) / sCellSize.x;
+			int cellsPerRow = (availSize.x - 2.0f * mPadding) / mCellSize.x;
 			if (cellsPerRow <= 0) cellsPerRow = 1;
 
 			for (int i = 0; i < directoryEntries.size(); i++)
@@ -64,20 +65,20 @@ namespace Dawn::Editor
 				ImGui::PushID(i);
 
 				std::string entryName = directoryEntries[i].path().filename().string();
-				bool selected = entryName == sSelectedEntryName;
+				bool selected = entryName == mSelectedEntryName;
 
-				if (ImGui::BeginChild("##CellWindow", sCellSize, true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
+				if (ImGui::BeginChild("##CellWindow", mCellSize, true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 				{
 					ImGui::SetCursorPos({});
-					if (ImGui::Selectable("##CellSelectable", selected, ImGuiSelectableFlags_AllowDoubleClick, sCellSize))
+					if (ImGui::Selectable("##CellSelectable", selected, ImGuiSelectableFlags_AllowDoubleClick, mCellSize))
 					{
 						if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && directoryEntries[i].is_directory())
 						{
-							sActiveDirectoryPath = directoryEntries[i].path();
+							mActiveDirectoryPath = directoryEntries[i].path();
 						}
 						else
 						{
-							sSelectedEntryName = entryName;
+							mSelectedEntryName = entryName;
 						}
 					}
 
@@ -90,12 +91,12 @@ namespace Dawn::Editor
 						ImGui::EndDragDropSource();
 					}
 
-					ImGui::SetCursorPos({ sPadding, sPadding });
-					ImGui::PushFont(NULL, sIconSize);
+					ImGui::SetCursorPos({ mPadding, mPadding });
+					ImGui::PushFont(NULL, mIconSize);
 					ImGui::TextUnformatted(GetDirectoryEntryIcon(directoryEntries[i]));
 					ImGui::PopFont();
 
-					ImGui::SetCursorPos(sTextPos);
+					ImGui::SetCursorPos(mTextPos);
 					ImGui::TextUnformatted(entryName.c_str());
 					if (ImGui::IsItemHovered())
 						ImGui::SetItemTooltip(entryName.c_str());
@@ -110,48 +111,23 @@ namespace Dawn::Editor
 		ImGui::EndChild();
 	}
 
-	void DrawDirBreadCrumbs()
+	const char* AssetBrowser::GetDirectoryEntryIcon(const std::filesystem::directory_entry& directoryEntry)
 	{
-		std::filesystem::path accumulatedPath;
-
-		for (const auto& directory : sActiveDirectoryPath)
+		const char* icon;
+		if (directoryEntry.is_directory())
 		{
-			accumulatedPath /= directory;
-			ImVec2 textSize = ImGui::CalcTextSize(directory.string().c_str());
-
-			ImGui::SameLine();
-			ImGui::SetCursorPosY(2);
-			if (ImGui::Selectable(directory.string().c_str(), false, 0, textSize))
-			{
-				sActiveDirectoryPath = accumulatedPath;
-				return;
-			}
-
-			ImGui::SameLine();
-			ImGui::SetCursorPosY(2);
-			ImGui::TextUnformatted("/");
+			icon = ICON_FOLDER;
 		}
-	}
-
-	void DrawDirectoryNavigator()
-	{
-		float availSizeX = ImGui::GetContentRegionAvail().x;
-
-		if (ImGui::BeginChild("##DirectoryNavigator", {availSizeX, 24.0f}, true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
+		else
 		{
-			DrawDirBreadCrumbs();
+			std::string extension = directoryEntry.path().extension().string();
+			auto it = mFileExtToIconMap.find(extension);
+			if (it != mFileExtToIconMap.end())
+				icon = it->second;
+			else
+				icon = ICON_FILE;
 		}
-		ImGui::EndChild();
-	}
 
-
-	void DrawAssetBrowser()
-	{
-		if (ImGui::Begin("Asset Browser"))
-		{
-			DrawDirectoryNavigator();
-			DrawDirectoryContents(sActiveDirectoryPath);
-		}
-		ImGui::End();
+		return icon;
 	}
 }

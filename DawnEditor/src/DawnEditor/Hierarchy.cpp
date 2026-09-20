@@ -6,13 +6,9 @@
 #include <Dawn/Core/Application.h>
 #include <Dawn/Core/Scene.h>
 
-namespace Dawn::Editor
+namespace Dawn
 {
-	static Actor* sActorBeingRenamed = nullptr;
-	static char sActorRenameBuffer[256] = "";
-	static bool sFocusActorRename = false;
-
-	void DrawHierarchy(Actor*& selectedActor)
+	void Hierarchy::Draw(Actor*& selectedActor)
 	{
 		ImGui::Begin("Hierarchy");
 
@@ -22,24 +18,24 @@ namespace Dawn::Editor
 
 		for (Actor* actor : scene->GetActors())
 		{
-			if (actor == sActorBeingRenamed)
+			if (actor == mActorBeingRenamed)
 			{
 				ImGui::SetNextItemWidth(-1);
 
-				if (sFocusActorRename)
+				if (mFocusActorRename)
 				{
 					ImGui::SetKeyboardFocusHere();
-					sFocusActorRename = false;
+					mFocusActorRename = false;
 				}
 
-				if (ImGui::InputText("##ActorRename", sActorRenameBuffer, sizeof(sActorRenameBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
+				if (ImGui::InputText("##ActorRename", mActorRenameBuffer, sizeof(mActorRenameBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
 				{
-					sActorBeingRenamed->SetName(sActorRenameBuffer);
-					sActorBeingRenamed = nullptr;
+					mActorBeingRenamed->SetName(mActorRenameBuffer);
+					mActorBeingRenamed = nullptr;
 				}
 
 				if (ImGui::IsItemDeactivated())
-					sActorBeingRenamed = nullptr;
+					mActorBeingRenamed = nullptr;
 
 				continue; // NEXT ITERATION
 			}
@@ -56,9 +52,9 @@ namespace Dawn::Editor
 			{
 				if (ImGui::MenuItem("Rename"))
 				{
-					sActorBeingRenamed = actor;
-					sFocusActorRename = true;
-					strcpy(sActorRenameBuffer, actor->GetName().c_str());
+					mActorBeingRenamed = actor;
+					mFocusActorRename = true;
+					strcpy(mActorRenameBuffer, actor->GetName().c_str());
 				}
 				if (ImGui::MenuItem("Delete"))
 				{

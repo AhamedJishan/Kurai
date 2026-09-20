@@ -2,12 +2,7 @@
 
 #include <glm/vec2.hpp>
 #include "DockSpace.h"
-#include "Hierarchy.h"
-#include "Viewport.h"
-#include "Inspector.h"
-#include "AssetBrowser.h"
 #include <Dawn/Core/Application.h>
-#include <Dawn/Core/Scene.h>
 #include <Dawn/Rendering/Renderer.h>
 #include <Dawn/Rendering/RenderTarget.h>
 #include <Dawn/Rendering/Texture.h>
@@ -39,10 +34,10 @@ namespace Dawn
 	{
 		Editor::BeginDockSpace();
 
-		Editor::DrawHierarchy(mSelectedActor);
-		Editor::DrawViewport(mViewportTexture);
-		Editor::DrawInspector(mSelectedActor);
-		Editor::DrawAssetBrowser();
+		mHierarchy.Draw(mSelectedActor);
+		mViewport.Draw(mViewportTexture);
+		mInspector.Draw(mSelectedActor);
+		mAssetBrowser.Draw();
 
 		Editor::EndDockSpace();
 	}

@@ -5,21 +5,141 @@
 #include <algorithm>
 #include <imgui/imgui.h>
 #include <imgui/imgui_stdlib.h>
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
-#include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <Dawn/Core/Application.h>
 #include <Dawn/Core/ComponentFactory.h>
 #include <Dawn/Core/Actor.h>
 #include <Dawn/Core/Component.h>
-#include <Dawn/Core/Property.h>
-#include <Dawn/Core/Transform.h>
 
-namespace Dawn::Editor
+namespace Dawn
 {
-	bool DrawQuatInputField(const char* label, glm::quat& value, float speed = 0.1f, float min = 0.0f, float max = 0.0f, const char* format = "%.6g")
+	void Inspector::Draw(Actor* selectedActor)
+	{
+		ImGui::Begin("Inspector");
+
+		if (!selectedActor)
+		{
+			ImGui::End();
+			return;
+		}
+
+		DrawTransform(selectedActor);
+
+		for (Component* component : selectedActor->GetComponents())
+			DrawComponent(component);
+
+		DrawAddComponent(selectedActor);
+
+		ImGui::End();
+	}
+
+	void Inspector::DrawTransform(Actor* actor)
+	{
+		if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (ImGui::BeginTable("Transform", 2))
+			{
+				float availableWidth = ImGui::GetContentRegionAvail().x;
+				ImGui::TableSetupColumn("Property", ImGuiTableColumnFlags_WidthFixed, 0.3f * availableWidth);
+				ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
+				Transform& transform = actor->GetTransform();
+				ImGui::TableNextRow();
+				ImGui::TableNextColumn();
+				ImGui::Text("Position");
+				ImGui::TableNextColumn();
+				ImGui::SetNextItemWidth(-1);
+				ImGui::DragFloat3("##Position", &transform.position[0], .1f, 0.0f, 0.0f, "%.6g");
+
+				ImGui::TableNextRow();
+				ImGui::TableNextColumn();
+				ImGui::Text("Scale");
+				ImGui::TableNextColumn();
+				ImGui::SetNextItemWidth(-1);
+				ImGui::DragFloat3("##Scale", &transform.scale[0], .10f, 0.0f, 0.0f, "%.6g");
+
+				ImGui::TableNextRow();
+				ImGui::TableNextColumn();
+				ImGui::Text("Rotation");
+				ImGui::TableNextColumn();
+				ImGui::SetNextItemWidth(-1);
+				DrawQuatInputField("##Rotation", transform.rotation);
+
+				ImGui::EndTable();
+			}
+		}
+
+		ImGui::Separator();
+	}
+
+	void Inspector::DrawComponent(Component* component)
+	{
+		std::string componentName = Application::Get()->GetComponentFactory()->GetComponentName(component);
+		std::vector<Property> properties = component->GetProperties();
+
+		bool isVisible = true;
+		ImGui::PushID((void*)component);
+		if (ImGui::CollapsingHeader(componentName.c_str(), &isVisible, ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (properties.size() == 0)
+			{
+				ImGui::Text("No configurable property!");
+			}
+			else if (ImGui::BeginTable(componentName.c_str(), 2))
+			{
+				float availableWidth = ImGui::GetContentRegionAvail().x;
+				ImGui::TableSetupColumn("Property", ImGuiTableColumnFlags_WidthFixed, 0.3f * availableWidth);
+				ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
+				for (Property& property : properties)
+				{
+					ImGui::TableNextRow();
+					if (DrawProperty(property))
+						component->OnPropertiesChanged();
+				}
+				ImGui::EndTable();
+			}
+		}
+		if (!isVisible)
+			component->GetOwner()->DeleteComponent(component);
+		ImGui::PopID();
+
+		ImGui::Separator();
+	}
+
+	// returns bool, whether the property was changed or not
+	bool Inspector::DrawProperty(Property property)
+	{
+		std::string propertyLabel("##" + property.name);
+
+		ImGui::TableNextColumn();
+		ImGui::Text(property.name.c_str());
+
+		ImGui::TableNextColumn();
+		ImGui::SetNextItemWidth(-1);
+
+		bool edited = false;
+
+		switch (property.type)
+		{
+		case PropertyType::Int: edited = ImGui::DragInt(propertyLabel.c_str(), static_cast<int*>(property.data), 0.1f); break;
+		case PropertyType::Bool: edited = ImGui::Checkbox(propertyLabel.c_str(), static_cast<bool*>(property.data)); break;
+		case PropertyType::Float: edited = ImGui::DragFloat(propertyLabel.c_str(), static_cast<float*>(property.data), 0.1f, 0.0f, 0.0f, "%.6g", ImGuiSliderFlags_NoRoundToFormat); break;
+		case PropertyType::Vec2: edited = ImGui::DragFloat2(propertyLabel.c_str(), glm::value_ptr(*static_cast<glm::vec2*>(property.data)), 0.1f, 0.0f, 0.0f, "%.6g", ImGuiSliderFlags_NoRoundToFormat); break;
+		case PropertyType::Vec3: edited = ImGui::DragFloat3(propertyLabel.c_str(), glm::value_ptr(*static_cast<glm::vec3*>(property.data)), 0.1f, 0.0f, 0.0f, "%.6g", ImGuiSliderFlags_NoRoundToFormat); break;
+		case PropertyType::Vec4: edited = ImGui::DragFloat4(propertyLabel.c_str(), glm::value_ptr(*static_cast<glm::vec4*>(property.data)), 0.1f, 0.0f, 0.0f, "%.6g", ImGuiSliderFlags_NoRoundToFormat); break;
+		case PropertyType::Quat: edited = DrawQuatInputField(propertyLabel.c_str(), *static_cast<glm::quat*>(property.data)); break;
+		case PropertyType::AssetPath: edited = DrawAssetPathInputField(propertyLabel.c_str(), static_cast<std::string*>(property.data)); break;
+		case PropertyType::String: edited = DrawStringInputField(propertyLabel.c_str(), static_cast<std::string*>(property.data)); break;
+		case PropertyType::StringList: edited = DrawStringListInputField(propertyLabel.c_str(), static_cast<std::vector<std::string>*>(property.data)); break;
+		case PropertyType::StringPairList: edited = DrawStringPairListInputField(propertyLabel.c_str(), static_cast<std::vector<std::pair<std::string, std::string>>*>(property.data)); break;
+		default: break;
+		}
+
+		return edited;
+	}
+
+	bool Inspector::DrawQuatInputField(const char* label, glm::quat & value, float speed, float min, float max, const char* format)
 	{
 		ImGuiStorage* imGuiStorage = ImGui::GetStateStorage();
 		ImGuiID idx = ImGui::GetID((std::string(label) + "_x").c_str());
@@ -47,13 +167,13 @@ namespace Dawn::Editor
 		return edited;
 	}
 
-	bool DrawStringInputField(const char* label, std::string* value)
+	bool Inspector::DrawStringInputField(const char* label, std::string* value)
 	{
 		ImGui::InputText(label, value, ImGuiInputTextFlags_EnterReturnsTrue);
 		return ImGui::IsItemDeactivatedAfterEdit();
 	}
 
-	bool DrawAssetPathInputField(const char* label, std::string* value)
+	bool Inspector::DrawAssetPathInputField(const char* label, std::string* value)
 	{
 		bool ret = false;
 
@@ -71,7 +191,7 @@ namespace Dawn::Editor
 		return ret;
 	}
 
-	bool DrawStringListInputField(const char* label, std::vector<std::string>* value)
+	bool Inspector::DrawStringListInputField(const char* label, std::vector<std::string>* value)
 	{
 		int idxToBeRemoved = -1;
 		bool edited = false;
@@ -112,7 +232,7 @@ namespace Dawn::Editor
 		return edited;
 	}
 
-	bool DrawStringPairListInputField(const char* label, std::vector<std::pair<std::string, std::string>>* value)
+	bool Inspector::DrawStringPairListInputField(const char* label, std::vector<std::pair<std::string, std::string>>* value)
 	{
 		int idxToBeRemoved = -1;
 		bool edited = false;
@@ -168,113 +288,7 @@ namespace Dawn::Editor
 		return edited;
 	}
 
-	void DrawTransform(Actor* actor)
-	{
-		if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
-		{
-			if (ImGui::BeginTable("Transform", 2))
-			{
-				float availableWidth = ImGui::GetContentRegionAvail().x;
-				ImGui::TableSetupColumn("Property", ImGuiTableColumnFlags_WidthFixed, 0.3f * availableWidth);
-				ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
-
-				Transform& transform = actor->GetTransform();
-				ImGui::TableNextRow();
-				ImGui::TableNextColumn();
-				ImGui::Text("Position");
-				ImGui::TableNextColumn();
-				ImGui::SetNextItemWidth(-1);
-				ImGui::DragFloat3("##Position", &transform.position[0], .1f, 0.0f, 0.0f, "%.6g");
-
-				ImGui::TableNextRow();
-				ImGui::TableNextColumn();
-				ImGui::Text("Scale");
-				ImGui::TableNextColumn();
-				ImGui::SetNextItemWidth(-1);
-				ImGui::DragFloat3("##Scale", &transform.scale[0], .10f, 0.0f, 0.0f, "%.6g");
-
-				ImGui::TableNextRow();
-				ImGui::TableNextColumn();
-				ImGui::Text("Rotation");
-				ImGui::TableNextColumn();
-				ImGui::SetNextItemWidth(-1);
-				DrawQuatInputField("##Rotation", transform.rotation);
-					
-				ImGui::EndTable();
-			}
-		}
-
-		ImGui::Separator();
-	}
-
-	// returns bool, whether the property was changed or not
-	bool DrawProperty(Property property)
-	{
-		std::string propertyLabel("##" + property.name);
-
-		ImGui::TableNextColumn(); 
-		ImGui::Text(property.name.c_str());
-
-		ImGui::TableNextColumn();
-		ImGui::SetNextItemWidth(-1);
-
-		bool edited = false;
-
-		switch (property.type)
-		{
-		case PropertyType::Int: edited = ImGui::DragInt(propertyLabel.c_str(), static_cast<int*>(property.data), 0.1f); break;
-		case PropertyType::Bool: edited = ImGui::Checkbox(propertyLabel.c_str(), static_cast<bool*>(property.data)); break;
-		case PropertyType::Float: edited = ImGui::DragFloat(propertyLabel.c_str(), static_cast<float*>(property.data), 0.1f,0.0f, 0.0f, "%.6g", ImGuiSliderFlags_NoRoundToFormat); break;
-		case PropertyType::Vec2: edited = ImGui::DragFloat2(propertyLabel.c_str(), glm::value_ptr(*static_cast<glm::vec2*>(property.data)), 0.1f, 0.0f, 0.0f, "%.6g", ImGuiSliderFlags_NoRoundToFormat); break;
-		case PropertyType::Vec3: edited = ImGui::DragFloat3(propertyLabel.c_str(), glm::value_ptr(*static_cast<glm::vec3*>(property.data)), 0.1f, 0.0f, 0.0f, "%.6g", ImGuiSliderFlags_NoRoundToFormat); break;
-		case PropertyType::Vec4: edited = ImGui::DragFloat4(propertyLabel.c_str(), glm::value_ptr(*static_cast<glm::vec4*>(property.data)), 0.1f, 0.0f, 0.0f, "%.6g", ImGuiSliderFlags_NoRoundToFormat); break;
-		case PropertyType::Quat: edited = DrawQuatInputField(propertyLabel.c_str(), *static_cast<glm::quat*>(property.data)); break;
-		case PropertyType::AssetPath: edited = DrawAssetPathInputField(propertyLabel.c_str(), static_cast<std::string*>(property.data)); break;
-		case PropertyType::String: edited = DrawStringInputField(propertyLabel.c_str(), static_cast<std::string*>(property.data)); break;
-		case PropertyType::StringList: edited = DrawStringListInputField(propertyLabel.c_str(), static_cast<std::vector<std::string>*>(property.data)); break;
-		case PropertyType::StringPairList: edited = DrawStringPairListInputField(propertyLabel.c_str(), static_cast<std::vector<std::pair<std::string, std::string>>*>(property.data)); break;
-		default: break;
-		}
-
-		return edited;			
-	}
-
-	void DrawComponent(Component* component)
-	{
-		std::string componentName = Application::Get()->GetComponentFactory()->GetComponentName(component);
-		std::vector<Property> properties = component->GetProperties();
-
-		bool isVisible = true;
-		ImGui::PushID((void*)component);
-		if (ImGui::CollapsingHeader(componentName.c_str(), &isVisible, ImGuiTreeNodeFlags_DefaultOpen))
-		{
-			if (properties.size() == 0)
-			{
-				ImGui::Text("No configurable property!");
-			}
-			else if (ImGui::BeginTable(componentName.c_str(), 2))
-			{
-				float availableWidth = ImGui::GetContentRegionAvail().x;
-				ImGui::TableSetupColumn("Property", ImGuiTableColumnFlags_WidthFixed, 0.3f * availableWidth);
-				ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
-
-				for (Property& property : properties)
-				{
-					ImGui::TableNextRow();
-					if (DrawProperty(property))
-						component->OnPropertiesChanged();
-				}
-				ImGui::EndTable();
-			}
-		}
-		if (!isVisible)
-			component->GetOwner()->DeleteComponent(component);
-		ImGui::PopID();
-
-		ImGui::Separator();
-	}
-
-	void DrawAddComponent(Actor* actor)
+	void Inspector::DrawAddComponent(Actor* actor)
 	{
 		const static std::string labelText = "Add Component";
 		const static std::string popupText = "Add Component Popup";
@@ -312,26 +326,5 @@ namespace Dawn::Editor
 
 			ImGui::EndPopup();
 		}
-	}
-
-
-	void DrawInspector(Actor* selectedActor)
-	{
-		ImGui::Begin("Inspector");
-
-		if (!selectedActor)
-		{
-			ImGui::End();
-			return;
-		}
-
-		DrawTransform(selectedActor);
-
-		for (Component* component : selectedActor->GetComponents())
-			DrawComponent(component);
-
-		DrawAddComponent(selectedActor);
-
-		ImGui::End();
 	}
 }

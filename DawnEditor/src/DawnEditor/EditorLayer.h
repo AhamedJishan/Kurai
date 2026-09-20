@@ -1,6 +1,10 @@
 #pragma once
 #include <Dawn/Core/Layer.h>
 #include "EditorCamera.h"
+#include "Viewport.h"
+#include "Hierarchy.h"
+#include "Inspector.h"
+#include "AssetBrowser.h"
 
 namespace Dawn
 {
@@ -24,5 +28,10 @@ namespace Dawn
 		Texture* mViewportTexture = nullptr;
 
 		EditorCamera mCamera;
+
+		Viewport mViewport;
+		Hierarchy mHierarchy;
+		Inspector mInspector;
+		AssetBrowser mAssetBrowser;
 	};
 }

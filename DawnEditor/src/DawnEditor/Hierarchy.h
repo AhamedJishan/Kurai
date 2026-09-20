@@ -5,8 +5,14 @@ namespace Dawn
 	// Forward declarations
 	class Actor;
 
-	namespace Editor
+	class Hierarchy
 	{
-		void DrawHierarchy(Actor*& selectedActor);
-	}
+	public:
+		void Draw(Actor*& selectedActor);
+
+	private:
+		Actor* mActorBeingRenamed = nullptr;
+		char mActorRenameBuffer[256] = "";
+		bool mFocusActorRename = false;
+	};
 }

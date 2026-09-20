@@ -3,15 +3,15 @@
 #include <imgui/imgui.h>
 #include <Dawn/Rendering/Texture.h>
 
-namespace Dawn::Editor
+namespace Dawn
 {
-	void DrawViewport(Texture* viewportTexture)
+	void Viewport::Draw(Texture* texture)
 	{
 		ImGui::Begin("Viewport");
 
 		ImVec2 availRegionSize = ImGui::GetContentRegionAvail();
 		float dstAspect = availRegionSize.x / availRegionSize.y;
-		float srcAspect = static_cast<float>(viewportTexture->GetWidth()) / viewportTexture->GetHeight();
+		float srcAspect = static_cast<float>(texture->GetWidth()) / texture->GetHeight();
 
 		ImVec2 imageSize = availRegionSize;
 
@@ -25,7 +25,7 @@ namespace Dawn::Editor
 		cursor.y += (availRegionSize.y - imageSize.y) * 0.5f;
 		ImGui::SetCursorPos(cursor);
 
-		ImGui::Image((ImTextureID)(intptr_t)(viewportTexture->GetId()), imageSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+		ImGui::Image((ImTextureID)(intptr_t)(texture->GetId()), imageSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 
 		ImGui::End();
 	}
