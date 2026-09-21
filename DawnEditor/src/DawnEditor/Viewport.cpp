@@ -9,6 +9,8 @@ namespace Dawn
 	{
 		ImGui::Begin("Viewport");
 
+		mIsFocused = ImGui::IsWindowFocused();
+
 		ImVec2 availRegionSize = ImGui::GetContentRegionAvail();
 		float dstAspect = availRegionSize.x / availRegionSize.y;
 		float srcAspect = static_cast<float>(texture->GetWidth()) / texture->GetHeight();

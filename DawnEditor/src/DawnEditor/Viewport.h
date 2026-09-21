@@ -9,6 +9,9 @@ namespace Dawn
 	{
 	public:
 		void Draw(Texture* texture);
+
+		bool IsFocused() { return mIsFocused; }
 	private:
+		bool mIsFocused = false;
 	};
 }
