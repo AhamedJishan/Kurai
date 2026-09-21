@@ -41,8 +41,10 @@ namespace Dawn
 			return;
 		}
 
-		mAudioSystem = new AudioSystem();
 		mInputSystem = new InputSystem();
+		mInputSystem->Init();
+
+		mAudioSystem = new AudioSystem();
 		mImGuiSystem = new ImGuiSystem();
 		mAssetManager = new AssetManager();
 

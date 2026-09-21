@@ -17,6 +17,7 @@ namespace Dawn
 		static void SetCursorLocked(bool value);
 		static glm::vec2 GetCursorPos();
 		static glm::vec2 GetCursorDeltaPos();
+		static glm::vec2 GetScrollDelta();
 
 		static bool GetMouseButton(MouseButton button);
 		static bool GetMouseButtonDown(MouseButton button);

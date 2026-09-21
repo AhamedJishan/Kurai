@@ -41,6 +41,11 @@ namespace Dawn
 		return Application::Get()->GetInputSystem()->GetMouse().GetDeltaPosition();
 	}
 
+	glm::vec2 Input::GetScrollDelta()
+	{
+		return Application::Get()->GetInputSystem()->GetMouse().GetScrollDelta();
+	}
+
 	bool Input::GetMouseButton(MouseButton button)
 	{
 		return Application::Get()->GetInputSystem()->GetMouse().GetButton(button);

@@ -51,7 +51,7 @@ namespace Dawn
 			if (Input::GetKey(Key::Q)) moveDir -= transform.GetUp();
 			if (Input::GetKey(Key::E)) moveDir += transform.GetUp();
 
-			if (glm::length(moveDir) > 0.0f)
+			if (glm::length(moveDir) > 0.0f) 
 				moveDir = glm::normalize(moveDir);
 
 			if (Input::GetKey(Key::LeftShift))

@@ -14,6 +14,7 @@ namespace Dawn
 
 		glm::vec2 GetPosition() const;
 		glm::vec2 GetDeltaPosition() const;
+		glm::vec2 GetScrollDelta() const { return mScrollDelta; }
 
 		bool IsCursorLocked() const { return mCursorLocked; }
 
@@ -25,6 +26,9 @@ namespace Dawn
 
 		glm::vec2 mPreviousPos = {};
 		glm::vec2 mCurrentPos = {};
+
+		glm::vec2 mScrollDelta = {};
+		glm::vec2 mScrollAccumulator = {};
 
 		bool mPreviousState[static_cast<int>(MouseButton::Last) + 1] = {};
 		bool mCurrentState[static_cast<int>(MouseButton::Last) + 1] = {};

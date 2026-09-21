@@ -3,20 +3,25 @@
 #include "Keyboard.h"
 #include "Mouse.h"
 
+// Forward declarations
+struct GLFWwindow;
+
 namespace Dawn
 {
 	class InputSystem
 	{
 	public:
-		// TBDL: when using callbacks instead of polling
-		// void Init();
+		void Init();
 
 		void Update();
 
 		const Keyboard& GetKeyBoard() { return mKeyboard; }
-		const Mouse& GetMouse() { return mMouse; }
+		Mouse& GetMouse() { return mMouse; }	// non const since ScrollCallbackFn needs it
 
 		void SetCursorLocked(bool value);
+
+	private:
+		static void ScrollCallbackFn(GLFWwindow* window, double xOffset, double yOffset);
 
 	private:
 		Keyboard mKeyboard;

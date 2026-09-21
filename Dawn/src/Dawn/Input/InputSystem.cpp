@@ -7,6 +7,13 @@
 
 namespace Dawn
 {
+	void InputSystem::Init()
+	{
+		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(Application::Get()->GetWindow()->GetNativeWindow());
+
+		glfwSetScrollCallback(window, ScrollCallbackFn);
+	}
+
 	void InputSystem::Update()
 	{
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(Application::Get()->GetWindow()->GetNativeWindow());
@@ -42,6 +49,9 @@ namespace Dawn
 		double xPos = 0.0, yPos = 0.0;
 		glfwGetCursorPos(window, &xPos, &yPos);
 		mMouse.mCurrentPos = { xPos, yPos };
+
+		mMouse.mScrollDelta = mMouse.mScrollAccumulator;
+		mMouse.mScrollAccumulator = {0, 0};
 	}
 
 	void InputSystem::SetCursorLocked(bool value)
@@ -50,5 +60,12 @@ namespace Dawn
 
 		int cursorMode = value ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL;
 		glfwSetInputMode(window, GLFW_CURSOR, cursorMode);
+	}
+
+
+	void InputSystem::ScrollCallbackFn(GLFWwindow* window, double xOffset, double yOffset)
+	{
+		Application::Get()->GetInputSystem()->GetMouse().mScrollAccumulator.x += xOffset;
+		Application::Get()->GetInputSystem()->GetMouse().mScrollAccumulator.y += yOffset;
 	}
 }
