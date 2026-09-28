@@ -5,6 +5,7 @@
 #include "Hierarchy.h"
 #include "Inspector.h"
 #include "AssetBrowser.h"
+#include "ViewportNavigation.h"
 
 namespace Dawn
 {
@@ -28,6 +29,7 @@ namespace Dawn
 		Texture* mViewportTexture = nullptr;
 
 		EditorCamera mCamera;
+		ViewportNavigation mViewportNavigation;
 
 		Viewport mViewport;
 		Hierarchy mHierarchy;

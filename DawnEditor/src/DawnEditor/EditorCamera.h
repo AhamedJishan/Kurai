@@ -8,13 +8,10 @@ namespace Dawn
 	class EditorCamera
 	{
 	public:
-		void Update(float deltaTime, bool receivesInput = false);
+		void Update();
 
 		glm::mat4 GetView() const;
 		glm::mat4 GetProjection() const;
-
-	private:
-		void HandleNavigation(float deltaTime);
 
 	public:
 		// in degrees

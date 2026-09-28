@@ -7,7 +7,7 @@ namespace Dawn
 {
 	void Viewport::Draw(Texture* texture)
 	{
-		ImGui::Begin("Viewport");
+		ImGui::Begin(mWindowName);
 
 		mIsFocused = ImGui::IsWindowFocused();
 
@@ -30,5 +30,10 @@ namespace Dawn
 		ImGui::Image((ImTextureID)(intptr_t)(texture->GetId()), imageSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 
 		ImGui::End();
+	}
+
+	void Viewport::SetFocus(bool value)
+	{
+		ImGui::SetWindowFocus(mWindowName);
 	}
 }
