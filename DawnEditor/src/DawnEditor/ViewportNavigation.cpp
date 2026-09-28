@@ -1,6 +1,7 @@
 #include "ViewportNavigation.h"
 
 #include <glm/vec3.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <Dawn/Input/Input.h>
 
 namespace Dawn
@@ -13,6 +14,7 @@ namespace Dawn
 		if (!viewport.IsFocused())
 			return;
 
+		// WASDQE movement
 		glm::vec3 moveDir = { 0, 0, 0 };
 		if (Input::GetKey(Key::W)) moveDir += camera.transform.GetForward();
 		if (Input::GetKey(Key::S)) moveDir -= camera.transform.GetForward();
@@ -26,5 +28,15 @@ namespace Dawn
 			moveDir *= mCameraSlowMoveMultiplier;
 
 		camera.transform.position += moveDir * mCameraMoveSpeed * deltaTime;
+
+		// Look around
+		if (Input::GetKey(Key::Up)) mCameraPitch += mCameraLookSpeed * deltaTime;
+		if (Input::GetKey(Key::Down)) mCameraPitch -= mCameraLookSpeed * deltaTime;
+		if (Input::GetKey(Key::Left)) mCameraYaw += mCameraLookSpeed * deltaTime;
+		if (Input::GetKey(Key::Right)) mCameraYaw -= mCameraLookSpeed * deltaTime;
+
+		mCameraPitch = glm::clamp(mCameraPitch, glm::radians(- 89.9f), glm::radians(89.9f));
+		camera.transform.rotation = glm::angleAxis(mCameraYaw, glm::vec3(0, 1, 0));
+		camera.transform.rotation = camera.transform.rotation * glm::angleAxis(mCameraPitch, glm::vec3(1, 0, 0));
 	}
 }

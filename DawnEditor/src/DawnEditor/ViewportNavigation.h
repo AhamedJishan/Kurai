@@ -11,7 +11,11 @@ namespace Dawn
 		void Update(float deltaTime, Viewport& viewport, EditorCamera& camera);
 
 	private:
-		float mCameraMoveSpeed = 10.0f;
-		float mCameraSlowMoveMultiplier = 0.25f;
+		const float mCameraMoveSpeed = 10.0f;
+		const float mCameraSlowMoveMultiplier = 0.25f;
+
+		const float mCameraLookSpeed = 1.5f;
+		float mCameraYaw = 0.0f;
+		float mCameraPitch = 0.0f;
 	};
 }
