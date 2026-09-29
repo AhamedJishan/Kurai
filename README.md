@@ -7,6 +7,7 @@ Project 2
 - Add file hierarchy window in assetbrowser
 - Make editor specific camera
 - Play game button
+- Refine the F to focus, for precise focus using bounding boxes.
 - Make a centralized place to edit and store asset paths. (Audio, Font, Models, etc)
 - Optimize VertexSkinData to use uint8_t instead of glm::vec4
 - Physics and ParticleSystem temporarily disabled, will be reintegrated later.

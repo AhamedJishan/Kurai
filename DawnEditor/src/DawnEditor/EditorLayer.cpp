@@ -28,7 +28,7 @@ namespace Dawn
 	void EditorLayer::OnUpdate(float deltaTime) 
 	{
 		mCamera.Update();
-		mViewportNavigation.Update(deltaTime, mViewport, mCamera);
+		mViewportNavigation.Update(deltaTime, mViewport, mCamera, mSelectedActor);
 	}
 
 	void EditorLayer::OnImGuiRender()
