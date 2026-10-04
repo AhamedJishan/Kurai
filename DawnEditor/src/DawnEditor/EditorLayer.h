@@ -6,6 +6,7 @@
 #include "Inspector.h"
 #include "AssetBrowser.h"
 #include "ViewportNavigation.h"
+#include "EnvironmentSettingsWindow.h"
 
 namespace Dawn
 {
@@ -35,5 +36,6 @@ namespace Dawn
 		Hierarchy mHierarchy;
 		Inspector mInspector;
 		AssetBrowser mAssetBrowser;
+		EnvironmentSettingsWindow mEnvironmentSettingsWindow;
 	};
 }

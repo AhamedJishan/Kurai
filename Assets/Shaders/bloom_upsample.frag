@@ -4,7 +4,7 @@ out vec3 OutColor;
 
 uniform sampler2D u_SrcTexture;
 uniform vec2 u_SrcResolution;
-uniform int u_BloomRadius;
+uniform float u_BloomRadius;
 
 in VS_OUT
 {

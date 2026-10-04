@@ -39,6 +39,7 @@ namespace Dawn
 		mViewport.Draw(mViewportTexture);
 		mInspector.Draw(mSelectedActor);
 		mAssetBrowser.Draw();
+		mEnvironmentSettingsWindow.Draw();
 
 		Editor::EndDockSpace();
 	}
