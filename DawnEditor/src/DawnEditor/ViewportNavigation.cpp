@@ -57,9 +57,5 @@ namespace Dawn
 			if (glm::length(mActorFocusPosition - camera.transform.position) <= 0.1f)
 				mShouldFocusActor = false;
 		}
-
-
-		// TOD: Orbit
-
 	}
 }

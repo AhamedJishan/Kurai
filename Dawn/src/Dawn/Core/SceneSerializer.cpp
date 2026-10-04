@@ -15,6 +15,7 @@
 #include "Actor.h"
 #include "Transform.h"
 #include "Components/Camera.h"
+#include "SceneSerializationContext.h"
 
 namespace Dawn
 {
@@ -55,7 +56,7 @@ namespace Dawn
 		dirLight.intensity = dirLightNode["Intensity"].as<float>();
 	}
 
-	void BuildSerializationContext(SerializationContext& ctx)
+	void BuildSerializationContext(SceneSerializationContext& ctx)
 	{
 		ctx.Clear();
 		for (Actor* actor : Application::Get()->GetScene()->GetActors())
@@ -67,7 +68,7 @@ namespace Dawn
 		}
 	}
 
-	YAML::Node SerializeActors(SerializationContext& ctx)
+	YAML::Node SerializeActors(SceneSerializationContext& ctx)
 	{
 		YAML::Node actorsNode;
 		for (Actor* actor : Application::Get()->GetScene()->GetActors())
@@ -108,7 +109,7 @@ namespace Dawn
 		return actorsNode;
 	}
 
-	void DeserializeActors(const YAML::Node& actorsNode, SerializationContext& ctx)
+	void DeserializeActors(const YAML::Node& actorsNode, SceneSerializationContext& ctx)
 	{
 		for (const YAML::Node& actorNode : actorsNode)
 		{
@@ -143,7 +144,7 @@ namespace Dawn
 		}
 	}
 
-	void CreateComponents(const YAML::Node& componentsNode, SerializationContext& ctx, Actor* owner)
+	void CreateComponents(const YAML::Node& componentsNode, SceneSerializationContext& ctx, Actor* owner)
 	{
 		ComponentFactory* componentFactory = Application::Get()->GetComponentFactory();
 		for (const YAML::Node& componentNode : componentsNode)
@@ -154,7 +155,7 @@ namespace Dawn
 		}
 	}
 
-	void CreateActors(const YAML::Node& actorsNode, SerializationContext& ctx, Scene* scene)
+	void CreateActors(const YAML::Node& actorsNode, SceneSerializationContext& ctx, Scene* scene)
 	{
 		for (const YAML::Node& actorNode : actorsNode)
 		{
@@ -175,7 +176,7 @@ namespace Dawn
 			YAML::Node sceneNode = YAML::LoadFile(scenePath);
 
 			Scene* scene = new Scene();
-			SerializationContext ctx;
+			SceneSerializationContext ctx;
 
 			// Creation
 			CreateActors(sceneNode["Actors"], ctx, scene);
@@ -223,7 +224,7 @@ namespace Dawn
 
 		YAML::Node sceneNode;
 
-		SerializationContext ctx;
+		SceneSerializationContext ctx;
 		BuildSerializationContext(ctx);
 		
 		Camera* camera = Application::Get()->GetScene()->GetActiveCamera();
@@ -236,107 +237,5 @@ namespace Dawn
 
 		sceneFile << sceneNode;
 	}
-	// ------------------------
-
-	// --- SERIALIZATION CONTEXT ---
-	void SerializationContext::Clear()
-	{
-		mNextId = 1;
-		mActorToIdMap.clear();
-		mIdToActorMap.clear();
-		mComponentToIdMap.clear();
-		mIdToComponentMap.clear();
-	}
-
-	void SerializationContext::Register(Actor* actor)
-	{
-		mIdToActorMap.emplace(mNextId, actor);
-		mActorToIdMap.emplace(actor, mNextId);
-		mNextId++;
-	}
-
-	void SerializationContext::Register(unsigned int id, Actor * actor)
-	{
-		mIdToActorMap.emplace(id, actor);
-		mActorToIdMap.emplace(actor, id);
-		if (id >= mNextId)
-			mNextId = id + 1;
-	}
-
-	void SerializationContext::Register(Component * component)
-	{
-		mIdToComponentMap.emplace(mNextId, component);
-		mComponentToIdMap.emplace(component, mNextId);
-		mNextId++;
-
-	}
-
-	void SerializationContext::Register(unsigned int id, Component * component)
-	{
-		mIdToComponentMap.emplace(id, component);
-		mComponentToIdMap.emplace(component, id);
-		if (id >= mNextId)
-			mNextId = id + 1;
-	}
-
-	Actor* SerializationContext::GetActorById(unsigned int id) const
-	{
-		if (id == 0)
-		{
-			LOG_ERROR("Tried to resolve a null Actor reference (ID 0).");
-			return nullptr;
-		}
-
-		auto it = mIdToActorMap.find(id);
-		if (it == mIdToActorMap.end())
-		{
-			LOG_ERROR("No Actor by the id '%d' exists", id);
-			return nullptr;
-		}
-
-		return it->second;
-	}
-
-	Component* SerializationContext::GetComponentById(unsigned int id) const
-	{
-		if (id == 0)
-		{
-			LOG_ERROR("Tried to resolve a null Component reference (ID 0).");
-			return nullptr;
-		}
-
-		auto it = mIdToComponentMap.find(id);
-		if (it == mIdToComponentMap.end())
-		{
-			LOG_ERROR("No Component by the id '%d' exists", id);
-			return nullptr;
-		}
-
-		return it->second;
-	}
-
-	unsigned int SerializationContext::GetIdByActor(Actor* actor) const
-	{
-		auto it = mActorToIdMap.find(actor);
-		if (it == mActorToIdMap.end())
-		{
-			LOG_ERROR("Tried to get id of an unregistered Actor");
-			return 0;
-		}
-
-		return it->second;
-	}
-
-	unsigned int SerializationContext::GetIdByComponent(Component* component) const
-	{
-		auto it = mComponentToIdMap.find(component);
-		if (it == mComponentToIdMap.end())
-		{
-			LOG_ERROR("Tried to get id of an unregistered Component");
-			return 0;
-		}
-
-		return it->second;
-	}
-	// -----------------------------
+	// -----------------------
 }
