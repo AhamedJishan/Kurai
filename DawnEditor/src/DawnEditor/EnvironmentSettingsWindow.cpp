@@ -10,7 +10,14 @@ namespace Dawn
 	{
 		ImGui::Begin("Environment Settings");
 
-		EnvironmentSettings& envSettings = Application::Get()->GetScene()->GetEnvironmentSettings();
+		Scene* scene = Application::Get()->GetScene();
+		if (!scene)
+		{
+			ImGui::End();
+			return;
+		}
+
+		EnvironmentSettings& envSettings = scene->GetEnvironmentSettings();
 
 		if (ImGui::BeginTable("Environment Settings properties", 2))
 		{

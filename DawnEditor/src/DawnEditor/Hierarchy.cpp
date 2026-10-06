@@ -14,7 +14,10 @@ namespace Dawn
 
 		Scene* scene = Application::Get()->GetScene();
 		if (!scene)
+		{
+			ImGui::End();
 			return;
+		}
 
 		for (Actor* actor : scene->GetActors())
 		{
