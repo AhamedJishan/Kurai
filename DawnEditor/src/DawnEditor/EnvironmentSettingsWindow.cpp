@@ -16,6 +16,7 @@ namespace Dawn
 			ImGui::End();
 			return;
 		}
+		bool isSceneDirty = false;
 
 		EnvironmentSettings& envSettings = scene->GetEnvironmentSettings();
 
@@ -30,35 +31,35 @@ namespace Dawn
 			ImGui::Text("Bloom Radius");
 			ImGui::TableNextColumn();
 			ImGui::SetNextItemWidth(-1);
-			ImGui::DragFloat("##Bloom Radius", &envSettings.bloomRadius, 0.01f, 0.0f, 0.0f, "%.6g");
+			isSceneDirty |= ImGui::DragFloat("##Bloom Radius", &envSettings.bloomRadius, 0.01f, 0.0f, 0.0f, "%.6g");
 
 			ImGui::TableNextRow();
 			ImGui::TableNextColumn();
 			ImGui::Text("Bloom Strength");
 			ImGui::TableNextColumn();
 			ImGui::SetNextItemWidth(-1);
-			ImGui::DragFloat("##Bloom Strength", &envSettings.bloomStrength, 0.01f, 0.0f, 0.0f, "%.6g");
+			isSceneDirty |= ImGui::DragFloat("##Bloom Strength", &envSettings.bloomStrength, 0.01f, 0.0f, 0.0f, "%.6g");
 
 			ImGui::TableNextRow();
 			ImGui::TableNextColumn();
 			ImGui::Text("Fog Density");
 			ImGui::TableNextColumn();
 			ImGui::SetNextItemWidth(-1);
-			ImGui::DragFloat("##Fog Density", &envSettings.fogDensity, 0.01f, 0.0f, 0.0f, "%.6g");
+			isSceneDirty |= ImGui::DragFloat("##Fog Density", &envSettings.fogDensity, 0.01f, 0.0f, 0.0f, "%.6g");
 
 			ImGui::TableNextRow();
 			ImGui::TableNextColumn();
 			ImGui::Text("Fog Color");
 			ImGui::TableNextColumn();
 			ImGui::SetNextItemWidth(-1);
-			ImGui::DragFloat3("##Fog Color", &envSettings.fogColor[0], 0.1f, 0.0f, 0.0f, "%.6g");
+			isSceneDirty |= ImGui::DragFloat3("##Fog Color", &envSettings.fogColor[0], 0.1f, 0.0f, 0.0f, "%.6g");
 
 			ImGui::TableNextRow();
 			ImGui::TableNextColumn();
 			ImGui::Text("Ambient Color");
 			ImGui::TableNextColumn();
 			ImGui::SetNextItemWidth(-1);
-			ImGui::DragFloat3("##Ambient Color", &envSettings.ambientColor[0], 0.1f, 0.0f, 0.0f, "%.6g");
+			isSceneDirty |= ImGui::DragFloat3("##Ambient Color", &envSettings.ambientColor[0], 0.1f, 0.0f, 0.0f, "%.6g");
 
 			ImGui::EndTable();
 		}
@@ -72,25 +73,28 @@ namespace Dawn
 				ImGui::Text("Intensity");
 				ImGui::TableNextColumn();
 				ImGui::SetNextItemWidth(-1);
-				ImGui::DragFloat("##Intensity", &envSettings.directionalLight.intensity, 0.01f, 0.0f, 0.0f, "%.6g");
+				isSceneDirty |= ImGui::DragFloat("##Intensity", &envSettings.directionalLight.intensity, 0.01f, 0.0f, 0.0f, "%.6g");
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
 				ImGui::Text("Direction");
 				ImGui::TableNextColumn();
 				ImGui::SetNextItemWidth(-1);
-				ImGui::DragFloat3("##Direction", &envSettings.directionalLight.direction[0], 0.1f, 0.0f, 0.0f, "%.6g");
+				isSceneDirty |= ImGui::DragFloat3("##Direction", &envSettings.directionalLight.direction[0], 0.1f, 0.0f, 0.0f, "%.6g");
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
 				ImGui::Text("Color");
 				ImGui::TableNextColumn();
 				ImGui::SetNextItemWidth(-1);
-				ImGui::DragFloat3("##Color", &envSettings.directionalLight.color[0], 0.1f, 0.0f, 0.0f, "%.6g");
+				isSceneDirty |= ImGui::DragFloat3("##Color", &envSettings.directionalLight.color[0], 0.1f, 0.0f, 0.0f, "%.6g");
 
 				ImGui::EndTable();
 			}
 		}
+
+		if (isSceneDirty)
+			scene->MarkDirty();
 
 		ImGui::End();
 	}

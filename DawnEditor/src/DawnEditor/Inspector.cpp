@@ -7,6 +7,7 @@
 #include <imgui/imgui_stdlib.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <Dawn/Core/Application.h>
+#include <Dawn/Core/Scene.h>
 #include <Dawn/Core/ComponentFactory.h>
 #include <Dawn/Core/Actor.h>
 #include <Dawn/Core/Component.h>
@@ -35,6 +36,8 @@ namespace Dawn
 
 	void Inspector::DrawTransform(Actor* actor)
 	{
+		bool isSceneDirty = false;
+
 		if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			if (ImGui::BeginTable("Transform", 2))
@@ -49,27 +52,30 @@ namespace Dawn
 				ImGui::Text("Position");
 				ImGui::TableNextColumn();
 				ImGui::SetNextItemWidth(-1);
-				ImGui::DragFloat3("##Position", &transform.position[0], .1f, 0.0f, 0.0f, "%.6g");
+				isSceneDirty |= ImGui::DragFloat3("##Position", &transform.position[0], .1f, 0.0f, 0.0f, "%.6g");
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
 				ImGui::Text("Scale");
 				ImGui::TableNextColumn();
 				ImGui::SetNextItemWidth(-1);
-				ImGui::DragFloat3("##Scale", &transform.scale[0], .10f, 0.0f, 0.0f, "%.6g");
+				isSceneDirty |= ImGui::DragFloat3("##Scale", &transform.scale[0], .10f, 0.0f, 0.0f, "%.6g");
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
 				ImGui::Text("Rotation");
 				ImGui::TableNextColumn();
 				ImGui::SetNextItemWidth(-1);
-				DrawQuatInputField("##Rotation", transform.rotation);
+				isSceneDirty |= DrawQuatInputField("##Rotation", transform.rotation);
 
 				ImGui::EndTable();
 			}
 		}
 
 		ImGui::Separator();
+
+		if (isSceneDirty)
+			Application::Get()->GetScene()->MarkDirty();
 	}
 
 	void Inspector::DrawComponent(Component* component)
@@ -95,13 +101,19 @@ namespace Dawn
 				{
 					ImGui::TableNextRow();
 					if (DrawProperty(property))
+					{
 						component->OnPropertiesChanged();
+						Application::Get()->GetScene()->MarkDirty();
+					}
 				}
 				ImGui::EndTable();
 			}
 		}
 		if (!isVisible)
+		{
 			component->GetOwner()->DeleteComponent(component);
+			Application::Get()->GetScene()->MarkDirty();
+		}
 		ImGui::PopID();
 
 		ImGui::Separator();
@@ -319,6 +331,7 @@ namespace Dawn
 					if (ImGui::Selectable(componentName.c_str()))
 					{
 						Application::Get()->GetComponentFactory()->Create(componentName, actor);
+						Application::Get()->GetScene()->MarkDirty();
 						ImGui::CloseCurrentPopup();
 					}
 			}

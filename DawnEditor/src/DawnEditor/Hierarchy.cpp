@@ -34,6 +34,7 @@ namespace Dawn
 				if (ImGui::InputText("##ActorRename", mActorRenameBuffer, sizeof(mActorRenameBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
 				{
 					mActorBeingRenamed->SetName(mActorRenameBuffer);
+					scene->MarkDirty();
 					mActorBeingRenamed = nullptr;
 				}
 
@@ -62,6 +63,7 @@ namespace Dawn
 				if (ImGui::MenuItem("Delete"))
 				{
 					scene->DestroyActor(actor);
+					scene->MarkDirty();
 				}
 				ImGui::EndPopup();
 			}
@@ -72,6 +74,7 @@ namespace Dawn
 			if (ImGui::MenuItem("Create Actor"))
 			{
 				scene->CreateActor();
+				scene->MarkDirty();
 			}
 			ImGui::EndPopup();
 		}

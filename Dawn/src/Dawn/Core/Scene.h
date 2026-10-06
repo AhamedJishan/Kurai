@@ -52,10 +52,15 @@ namespace Dawn
 		void SetActiveCamera(Camera* camera) { mActiveCamera = camera; }
 		Camera* GetActiveCamera() const { return mActiveCamera; }
 
+		void MarkDirty() { mIsDirty = true; }
+		void ClearDirty() { mIsDirty = false; }
+		bool IsDirty() { return mIsDirty; }
+
 	private:
 		void DeleteActor(Actor* actor);
 
 	private:
+		bool mIsDirty = false;
 		// if true, actors won't get updated
 		bool mIsPaused = false;
 		bool mUpdatingActors = false;

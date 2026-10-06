@@ -12,3 +12,4 @@ Project 2
 - Optimize VertexSkinData to use uint8_t instead of glm::vec4
 - Physics and ParticleSystem temporarily disabled, will be reintegrated later.
 - Make Console window
+- Scene dirty flag should not stay in Dawn project. Editor project should keep track of it.
