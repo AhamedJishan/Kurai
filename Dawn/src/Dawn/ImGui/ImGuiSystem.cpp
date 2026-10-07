@@ -7,6 +7,7 @@
 #include <Dawn/Core/Application.h>
 #include <Dawn/Core/Window.h>
 #include "Theme.h"
+#include "Fonts.h"
 
 namespace Dawn
 {
@@ -33,13 +34,19 @@ namespace Dawn
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init("#version 330");
 
-		ImFont* font = io.Fonts->AddFontFromFileTTF("Assets/Fonts/Roboto-Regular.ttf");
-		
+
 		ImFontConfig iconConfig;
 		iconConfig.MergeMode = true;
 		iconConfig.PixelSnapH = true;
+
+		Fonts::Regular = io.Fonts->AddFontFromFileTTF("Assets/Fonts/Roboto-Regular.ttf");
 		io.Fonts->AddFontFromFileTTF("Assets/Fonts/OpenFontIcons.ttf", 0.0f, &iconConfig);
-		ImGui::PushFont(font, 14.0f);
+
+		Fonts::Bold = io.Fonts->AddFontFromFileTTF("Assets/Fonts/Roboto-ExtraBold.ttf");
+		io.Fonts->AddFontFromFileTTF("Assets/Fonts/OpenFontIcons.ttf", 0.0f, &iconConfig);
+
+		ImGui::PushFont(Fonts::Regular);
+
 
 		GUI::ApplyTheme();
 	}
