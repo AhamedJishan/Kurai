@@ -2,6 +2,7 @@
 Project 2
 
 ## TODO:
+- Make all windows title bold + component table ratio change
 - Add blender like transform control, g to grab, s to scale, r to rotate
 - Add gui option to tweak editor camera settings.
 - Add file hierarchy window in assetbrowser

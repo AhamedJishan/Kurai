@@ -35,7 +35,7 @@ namespace Dawn::GUI
 
         style.FontScaleDpi = 1.0f;
         style.FontScaleMain = 1.0f;
-        style.FontSizeBase = 18.0f;
+        style.FontSizeBase = 16.0f;
 
         // --- Colors: dark slate, warm orange accent -------------------------
         colors[ImGuiCol_Text] = ImVec4(0.92f, 0.92f, 0.94f, 1.00f);

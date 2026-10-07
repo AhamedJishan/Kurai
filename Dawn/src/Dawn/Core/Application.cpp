@@ -73,19 +73,16 @@ namespace Dawn
 	}
 
 	
-	void Application::LoadScene(const std::string& sceneName)
+	void Application::LoadScene(const std::filesystem::path& scenePath)
 	{
-		std::string scenePath = "Assets/Scenes/" + sceneName + ".scene";
-
 		Scene* loadedScene = SceneSerializer::Load(scenePath);
 		if (loadedScene)
 			mPendingScene = loadedScene;
 	}
 
-	void Application::SaveScene(const std::string& sceneName)
+	void Application::SaveScene()
 	{
-		std::string scenePath = "Assets/Scenes/" + sceneName + ".scene";
-		SceneSerializer::Save(scenePath);
+		SceneSerializer::Save();
 	}
 
 	void Application::Run()

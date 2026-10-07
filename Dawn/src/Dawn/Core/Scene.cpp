@@ -9,7 +9,8 @@
 
 namespace Dawn
 {
-	Scene::Scene()
+	Scene::Scene(const std::filesystem::path& path)
+		:mPath(path)
 	{
 	}
 

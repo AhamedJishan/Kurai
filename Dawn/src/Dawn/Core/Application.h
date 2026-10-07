@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <filesystem>
 #include <glm/vec2.hpp>
 #include "Window.h"
 
@@ -30,8 +31,8 @@ namespace Dawn
 		Application(AppConfig appConfig, ComponentFactory* componentFactory);
 		virtual ~Application();
 
-		void LoadScene(const std::string& sceneName);
-		void SaveScene(const std::string& sceneName);
+		void LoadScene(const std::filesystem::path& scenePath);
+		void SaveScene();	
 
 		void Run();
 		void Quit() { mIsRunning = false; }

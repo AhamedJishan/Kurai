@@ -5,6 +5,7 @@
 #include <Dawn/Core/Actor.h>
 #include <Dawn/Core/Application.h>
 #include <Dawn/Core/Scene.h>
+#include <Dawn/ImGui/Fonts.h>
 
 namespace Dawn
 {
@@ -18,6 +19,20 @@ namespace Dawn
 			ImGui::End();
 			return;
 		}
+
+		// SCENE TITLE
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.16f, 0.16f, 0.18f, 1.0f));
+		if (ImGui::BeginChild("Scene Title Window", ImVec2(0, 24), 0, ImGuiWindowFlags_NoScrollbar))
+		{
+			ScopedFont sf(Fonts::Bold, 18.0f);
+			float availY = ImGui::GetContentRegionAvail().y;
+			float textHeight = ImGui::CalcTextSize("Scene name * ").y;
+			ImGui::SetCursorPos(ImVec2(6.0f, (availY - textHeight) / 2.0f - 1.0f));	// IDK why but -1.0f is needed for actual center
+			
+			ImGui::Text("%s", scene->GetName().c_str());
+		}
+		ImGui::EndChild();
+		ImGui::PopStyleColor();
 
 		for (Actor* actor : scene->GetActors())
 		{

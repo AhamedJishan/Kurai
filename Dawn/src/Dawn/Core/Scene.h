@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <filesystem>
 #include <glm/vec3.hpp>
 
 namespace Dawn
@@ -34,7 +35,7 @@ namespace Dawn
 	class Scene
 	{
 	public:
-		Scene();
+		Scene(const std::filesystem::path& path);
 		~Scene();
 
 		void Update(float deltaTime);
@@ -52,6 +53,10 @@ namespace Dawn
 		void SetActiveCamera(Camera* camera) { mActiveCamera = camera; }
 		Camera* GetActiveCamera() const { return mActiveCamera; }
 
+		void SetPath(const std::filesystem::path& path) { mPath = path; }
+		const std::filesystem::path& GetPath() { return mPath; }
+		std::string GetName() { return mPath.stem().string(); }
+
 		void MarkDirty() { mIsDirty = true; }
 		void ClearDirty() { mIsDirty = false; }
 		bool IsDirty() { return mIsDirty; }
@@ -60,6 +65,8 @@ namespace Dawn
 		void DeleteActor(Actor* actor);
 
 	private:
+		std::filesystem::path mPath;
+
 		bool mIsDirty = false;
 		// if true, actors won't get updated
 		bool mIsPaused = false;
