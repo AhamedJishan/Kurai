@@ -31,8 +31,8 @@ namespace Dawn
 		Application(AppConfig appConfig, ComponentFactory* componentFactory);
 		virtual ~Application();
 
-		void LoadScene(const std::filesystem::path& scenePath);
-		void SaveScene();	
+		bool LoadScene(const std::filesystem::path& scenePath);
+		bool SaveScene();
 
 		void Run();
 		void Quit() { mIsRunning = false; }

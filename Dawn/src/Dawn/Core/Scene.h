@@ -53,7 +53,8 @@ namespace Dawn
 		void SetActiveCamera(Camera* camera) { mActiveCamera = camera; }
 		Camera* GetActiveCamera() const { return mActiveCamera; }
 
-		void SetPath(const std::filesystem::path& path) { mPath = path; }
+		bool SetPath(const std::filesystem::path& path);
+		bool SetName(const std::string& name);
 		const std::filesystem::path& GetPath() { return mPath; }
 		std::string GetName() { return mPath.stem().string(); }
 

@@ -6,6 +6,7 @@
 #include <Dawn/Core/Components/Camera.h>
 #include <Dawn/Rendering/Renderer.h>
 #include <Dawn/Audio/AudioSystem.h>
+#include <Dawn/Utils/Log.h>
 
 namespace Dawn
 {
@@ -97,5 +98,53 @@ namespace Dawn
 			delete actor;
 			return;
 		}
+	}
+
+	bool Scene::SetPath(const std::filesystem::path& path)
+	{
+		if (std::filesystem::exists(path))
+		{
+			LOG_WARN("'%s' already exists", path.string().c_str());
+			return false;
+		}
+
+		mPath = path;
+		MarkDirty();
+		return true;
+	}
+
+	bool Scene::SetName(const std::string& name)
+	{
+		if (name.empty())
+		{
+			LOG_WARN("Scene name can't be empty");
+			return false;
+		}
+		if (name.find_first_of("\\/:*?\"<>|") != std::string::npos)
+		{
+			LOG_WARN("'%s' has illegal characters '\\/:*?\"<>|'", name.c_str());
+			return false;
+		}
+		if (name.back() == ' ' || name.back() == '.')
+		{
+			LOG_WARN("Scene name can't end with a SPACE or '.'");
+			return false;
+		}
+
+		std::filesystem::path newPath = mPath;
+		newPath.replace_filename(name + mPath.extension().string());
+
+		if (newPath == mPath)
+			return true;
+
+		if (std::filesystem::exists(newPath))
+		{
+			LOG_WARN("'%s' already exists", name.c_str());
+			return false;
+		}
+		
+		mPath = newPath;
+		MarkDirty();
+		return true;
 	}
 }

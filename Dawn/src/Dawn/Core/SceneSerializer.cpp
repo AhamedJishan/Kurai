@@ -243,6 +243,7 @@ namespace Dawn
 		}
 
 		sceneFile << sceneNode;
+		scene->ClearDirty();
 		return true;
 	}
 	// -----------------------
