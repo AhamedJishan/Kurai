@@ -10,7 +10,7 @@ project "DawnEditor"
     objdir      "%{wks.location}/bin-int/%{cfg.buildcfg}/%{prj.name}"
 
     -- Relative paths for Assets
-    debugdir "%{cfg.targetdir}"
+    debugdir "%{wks.location}"
 
     includedirs {
         "src",

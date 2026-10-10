@@ -1,54 +1,63 @@
 ActiveCamera: 0
+
 EnvironmentSettings:
   DirectionalLight:
-    Color: [1, 1, 1]
-    Intensity: 1
-    Direction: [-1, -1, -1]
+    Direction: [-1.0, -1.0, -1.0]
+    Color: [1.0, 1.0, 1.0]
+    Intensity: 1.0
   AmbientColor: [0.2, 0.2, 0.2]
-  BloomRadius: 0.01
-  BloomStrength: 0.01
   FogColor: [0.1, 0.1, 0.1]
   FogDensity: 0.025
+  BloomRadius: 0.01
+  BloomStrength: 0.01
+
 Actors:
   - Id: 1
     Name: CameraActor
     State: Active
-    Transform:
-      Scale: [1, 1, 1]
-      Position: [0, 0, 0]
-      Rotation: [1, 0, 0, 0]
+    Transform: 
+      Scale: [1.0, 1.0, 1.0]
+      Position: [0.0, 0.0, 0.0]
+      Rotation: [1.0, 0.0, 0.0, 0.0]
+    
     Components:
       - Id: 2
         Type: Camera
-        FOV: 90
+        FOV: 90.0
         Near: 0.1
-        Far: 1000
+        Far: 1000.0
       - Id: 3
         Type: Audio
+        Events2D:
+          - Assets/Audio/MainMenu:mainmenu_bgm
+          - Assets/Audio/Game:enemy_presence
+    
   - Id: 4
     Name: ArenaActor
     State: Active
-    Transform:
-      Scale: [1, 1, 1]
-      Position: [0, -2, 0]
-      Rotation: [1, 0, 0, 0]
+    Transform: 
+      Scale: [1.0, 1.0, 1.0]
+      Position: [0.0, -2.0, 0.0]
+      Rotation: [1.0, 0.0, 0.0, 0.0]
+    
     Components:
       - Id: 5
         Type: MeshRenderer
-        ModelPath: Assets/Models/arena/arena.obj
         IsSkinned: false
+        ModelPath: Assets/Models/arena/arena.obj
+        
   - Id: 6
     Name: TestAnimActor
     State: Active
-    Transform:
+    Transform: 
       Scale: [0.0002, 0.0002, 0.0002]
-      Position: [0, -2, -2]
-      Rotation: [1, 0, 0, 0]
+      Position: [0.0, -2.0, -2.0]
+      Rotation: [1.0, 0.0, 0.0, 0.0]
     Components:
       - Id: 7
         Type: MeshRenderer
-        ModelPath: Assets/Models/archer/Hip Hop Dancing.dae
         IsSkinned: true
+        ModelPath: Assets/Models/archer/Hip Hop Dancing.dae
       - Id: 8
         Type: Animator
         Skeleton: Assets/Models/archer/Hip Hop Dancing.dae

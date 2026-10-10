@@ -1,6 +1,8 @@
 #include "DockSpace.h"
 
 #include <imgui/imgui.h>
+#include <Dawn/Core/Application.h>
+#include <Dawn/ImGui/Fonts.h>
 
 namespace Dawn::Editor
 {
@@ -27,11 +29,15 @@ namespace Dawn::Editor
 
 		if (ImGui::BeginMenuBar())
 		{
-			if (ImGui::BeginMenu("File"))
+			ImGui::PushFont(Fonts::Bold, 18);
+			bool isFileMenuOpen = ImGui::BeginMenu("File");
+			ImGui::PopFont();
+			if (isFileMenuOpen)
 			{
-				ImGui::MenuItem("New Scene");
-				ImGui::MenuItem("Open Scene");
-				ImGui::MenuItem("Save Scene");
+				//ImGui::MenuItem("New Scene");
+				//ImGui::MenuItem("Open Scene");
+				if (ImGui::MenuItem("Save Scene"))
+					Application::Get()->SaveScene();
 				ImGui::EndMenu();
 			}
 			ImGui::EndMenuBar();
