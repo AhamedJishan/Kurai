@@ -23,7 +23,7 @@ namespace Dawn
 		if (ImGui::BeginTable("Environment Settings properties", 2))
 		{
 			float availableWidth = ImGui::GetContentRegionAvail().x;
-			ImGui::TableSetupColumn("Property", ImGuiTableColumnFlags_WidthFixed, 0.3f * availableWidth);
+			ImGui::TableSetupColumn("Property", ImGuiTableColumnFlags_WidthFixed, 0.4f * availableWidth);
 			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
 
 			ImGui::TableNextRow();

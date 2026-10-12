@@ -2,6 +2,8 @@
 Project 2
 
 ## TODO:
+- Load scene from Assetbrowser
+- Save/rename scene  from Scene Hierarchy.
 - Make all windows title bold + component table ratio change
 - Add blender like transform control, g to grab, s to scale, r to rotate
 - Add gui option to tweak editor camera settings.
