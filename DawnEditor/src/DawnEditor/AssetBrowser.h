@@ -18,10 +18,15 @@ namespace Dawn
 		void DrawDirBreadCrumbs();
 		void DrawDirectoryContents(const std::filesystem::path& currentPath);
 		const char* GetDirectoryEntryIcon(const std::filesystem::directory_entry& directoryEntry);
+		bool CommitFileRename(const std::filesystem::path& oldPath);
 
 	private:
 		std::string mSelectedEntryName = "";
 		std::filesystem::path mActiveDirectoryPath = "Assets";
+
+		std::string mRenamingFilename;
+		char mRenameFileBuffer[256];
+		bool mFocusFileRename = false;
 
 		const ImVec2 mCellSize = { 100.0f, 110.0f };
 		const float mPadding = 10.0f;

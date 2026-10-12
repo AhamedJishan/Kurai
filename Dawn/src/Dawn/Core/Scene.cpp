@@ -7,6 +7,7 @@
 #include <Dawn/Rendering/Renderer.h>
 #include <Dawn/Audio/AudioSystem.h>
 #include <Dawn/Utils/Log.h>
+#include <Dawn/Utils/FileSystem.h>
 
 namespace Dawn
 {
@@ -115,21 +116,8 @@ namespace Dawn
 
 	bool Scene::SetName(const std::string& name)
 	{
-		if (name.empty())
-		{
-			LOG_WARN("Scene name can't be empty");
+		if (!FileSystem::IsValidFileName(name))
 			return false;
-		}
-		if (name.find_first_of("\\/:*?\"<>|") != std::string::npos)
-		{
-			LOG_WARN("'%s' has illegal characters '\\/:*?\"<>|'", name.c_str());
-			return false;
-		}
-		if (name.back() == ' ' || name.back() == '.')
-		{
-			LOG_WARN("Scene name can't end with a SPACE or '.'");
-			return false;
-		}
 
 		std::filesystem::path newPath = mPath;
 		newPath.replace_filename(name + mPath.extension().string());

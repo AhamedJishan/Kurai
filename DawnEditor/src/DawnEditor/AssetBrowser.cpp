@@ -1,6 +1,10 @@
 #include "AssetBrowser.h"
 
 #include <vector>
+#include <Dawn/Core/Application.h>
+#include <Dawn/Core/Scene.h>
+#include <Dawn/Utils/FileSystem.h>
+#include <Dawn/Utils/Log.h>
 
 namespace Dawn
 {
@@ -70,7 +74,7 @@ namespace Dawn
 				if (ImGui::BeginChild("##CellWindow", mCellSize, true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 				{
 					ImGui::SetCursorPos({});
-					if (ImGui::Selectable("##CellSelectable", selected, ImGuiSelectableFlags_AllowDoubleClick, mCellSize))
+					if (ImGui::Selectable("##CellSelectable", selected, ImGuiSelectableFlags_AllowDoubleClick | ImGuiSelectableFlags_AllowOverlap, mCellSize))
 					{
 						if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && directoryEntries[i].is_directory())
 						{
@@ -80,6 +84,16 @@ namespace Dawn
 						{
 							mSelectedEntryName = entryName;
 						}
+					}
+					if (directoryEntries[i].is_regular_file() && ImGui::BeginPopupContextWindow("File Context Window"))
+					{
+						if (ImGui::MenuItem("Rename"))
+						{
+							mFocusFileRename = true;
+							mRenamingFilename = directoryEntries[i].path().filename().string();
+							strcpy_s(mRenameFileBuffer, directoryEntries[i].path().stem().string().c_str());
+						}
+						ImGui::EndPopup();
 					}
 
 					if (ImGui::BeginDragDropSource())
@@ -97,15 +111,42 @@ namespace Dawn
 					ImGui::PopFont();
 
 					ImGui::SetCursorPos(mTextPos);
-					ImGui::TextUnformatted(entryName.c_str());
-					if (ImGui::IsItemHovered())
-						ImGui::SetItemTooltip(entryName.c_str());
+					if (mRenamingFilename == directoryEntries[i].path().filename().string())
+					{
+						if (mFocusFileRename)
+						{
+							ImGui::SetKeyboardFocusHere();
+							mFocusFileRename = false;
+						}
+						ImGui::SetNextItemWidth(mCellSize.x - mTextPos.x - mPadding);
+						if (ImGui::InputText("##Rename File", mRenameFileBuffer, sizeof(mRenameFileBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
+						{
+							CommitFileRename(directoryEntries[i].path());
+						}
+						else if (ImGui::IsItemDeactivated())
+							mRenamingFilename.clear();
+					}
+					else
+					{
+						ImGui::TextUnformatted(entryName.c_str());
+						if (ImGui::IsItemHovered())
+							ImGui::SetItemTooltip("%s", entryName.c_str());
+					}
 				}
 				ImGui::EndChild();
 				if ((i + 1) % cellsPerRow != 0)
 					ImGui::SameLine();
 
 				ImGui::PopID();
+			}
+
+			if (ImGui::BeginPopupContextWindow("AssetBrowser Context Window", ImGuiPopupFlags_NoOpenOverItems))
+			{
+				if (ImGui::MenuItem("Create Scene"))
+				{
+					FileSystem::CreateEmpty(mActiveDirectoryPath, "NewScene", Scene::GetExtension());
+				}
+				ImGui::EndPopup();
 			}
 		}
 		ImGui::EndChild();
@@ -129,5 +170,31 @@ namespace Dawn
 		}
 
 		return icon;
+	}
+
+	bool AssetBrowser::CommitFileRename(const std::filesystem::path& oldPath)
+	{
+		mRenamingFilename.clear();
+
+		std::string newStemName = mRenameFileBuffer;
+		if (!FileSystem::IsValidFileName(newStemName))
+			return false;
+
+		std::string newFileName = newStemName + oldPath.extension().string();
+		if (newFileName == oldPath.filename().string().c_str())
+			return false;
+
+		Scene* currentScene = Application::Get()->GetScene();
+		std::error_code ec;
+		if (currentScene && std::filesystem::equivalent(oldPath, currentScene->GetPath(), ec))
+		{
+			LOG_WARN("Can't rename the currently open scene from Asset Browser");
+			return false;
+		}
+
+		if (FileSystem::RenameFile(oldPath, newFileName))
+			return true;
+
+		return false;
 	}
 }

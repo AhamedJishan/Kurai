@@ -62,6 +62,8 @@ namespace Dawn
 		void ClearDirty() { mIsDirty = false; }
 		bool IsDirty() { return mIsDirty; }
 
+		static const std::string& GetExtension() { return "scene"; }
+
 	private:
 		void DeleteActor(Actor* actor);
 
