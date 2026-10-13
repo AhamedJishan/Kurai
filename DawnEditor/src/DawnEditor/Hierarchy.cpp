@@ -6,6 +6,7 @@
 #include <Dawn/Core/Application.h>
 #include <Dawn/Core/Scene.h>
 #include <Dawn/ImGui/Fonts.h>
+#include <Dawn/ImGui/OpenFontIcons.h>
 
 namespace Dawn
 {
@@ -32,6 +33,17 @@ namespace Dawn
 			if (scene->IsDirty())
 				sceneDisplayText += " *";
 			ImGui::Text("%s", sceneDisplayText.c_str());
+			ImGui::SameLine();
+
+			const ImGuiStyle& style = ImGui::GetStyle();
+			float saveBtnWidth = ImGui::CalcTextSize(ICON_SAVE).x + style.FramePadding.x * 2.0f;
+			float availX = ImGui::GetContentRegionAvail().x;
+
+			ImGui::BeginDisabled(!scene->IsDirty());
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + availX - saveBtnWidth);
+			if (ImGui::Button(ICON_SAVE))
+				Application::Get()->SaveScene();
+			ImGui::EndDisabled();
 		}
 		ImGui::EndChild();
 		ImGui::PopStyleColor();

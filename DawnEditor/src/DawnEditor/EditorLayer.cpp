@@ -6,6 +6,7 @@
 #include <Dawn/Rendering/Renderer.h>
 #include <Dawn/Rendering/RenderTarget.h>
 #include <Dawn/Rendering/Texture.h>
+#include <Dawn/Input/Input.h>
 
 namespace Dawn
 {
@@ -29,6 +30,9 @@ namespace Dawn
 	{
 		mCamera.Update();
 		mViewportNavigation.Update(deltaTime, mViewport, mCamera, mSelectedActor);
+
+		if (Input::GetKey(Key::LeftControl) && Input::GetKeyDown(Key::S))
+			Application::Get()->SaveScene();
 	}
 
 	void EditorLayer::OnImGuiRender()
