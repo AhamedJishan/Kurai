@@ -76,9 +76,11 @@ namespace Dawn
 					ImGui::SetCursorPos({});
 					if (ImGui::Selectable("##CellSelectable", selected, ImGuiSelectableFlags_AllowDoubleClick | ImGuiSelectableFlags_AllowOverlap, mCellSize))
 					{
-						if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && directoryEntries[i].is_directory())
+						if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 						{
-							mActiveDirectoryPath = directoryEntries[i].path();
+							if (directoryEntries[i].is_directory())
+								mActiveDirectoryPath = directoryEntries[i].path();
+							//else if (directoryEntries[i].path().extension().string() == /* SCENE extension*/)
 						}
 						else
 						{

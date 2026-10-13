@@ -11,7 +11,7 @@ namespace Dawn::FileSystem
 	bool CreateEmpty(const std::filesystem::path& atPath, std::string stemName, std::string extension)
 	{
 		int suffix = 0;
-		std::string filename = stemName.empty() ? UNTITLED : stemName + (extension.empty() ? "" : "." + extension);
+		std::string filename = stemName.empty() ? UNTITLED : stemName + (extension.empty() ? "" : extension);
 		std::filesystem::path filepath = atPath / filename;
 
 		while (std::filesystem::exists(filepath))
@@ -19,7 +19,7 @@ namespace Dawn::FileSystem
 			if (stemName.empty())
 				filepath = atPath / (UNTITLED + " (" + std::to_string(++suffix) + ")");
 			else
-				filepath = atPath / (stemName + " (" + std::to_string(++suffix) + ")" + (extension.empty() ? "" : "." + extension));
+				filepath = atPath / (stemName + " (" + std::to_string(++suffix) + ")" + (extension.empty() ? "" : extension));
 		}
 
 		std::ofstream file(filepath);
@@ -28,6 +28,8 @@ namespace Dawn::FileSystem
 			LOG_ERROR("Failed to create file '%s'", filepath.string().c_str());
 			return false;
 		}
+
+		return true;
 	}
 
 	bool RenameFile(const std::filesystem::path& filepath, const std::string& newName)
