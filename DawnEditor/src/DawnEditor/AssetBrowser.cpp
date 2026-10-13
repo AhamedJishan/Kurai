@@ -80,7 +80,8 @@ namespace Dawn
 						{
 							if (directoryEntries[i].is_directory())
 								mActiveDirectoryPath = directoryEntries[i].path();
-							//else if (directoryEntries[i].path().extension().string() == /* SCENE extension*/)
+							else if (directoryEntries[i].path().extension().string() == Scene::GetExtension())
+								Application::Get()->LoadScene(directoryEntries[i].path().string());
 						}
 						else
 						{
