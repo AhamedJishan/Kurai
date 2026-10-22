@@ -12,23 +12,24 @@ namespace Dawn
 {
 	void EditorLayer::OnAttach() 
 	{
-		mViewportRT = new RenderTarget();
-		glm::vec2 rendererResolution = Application::Get()->GetRenderer()->GetResolution();
-		mViewportTexture = new Texture(rendererResolution.x, rendererResolution.y, TextureFormat::RGBA8);
+		RenderTargetSpecification rtSpec;
+		rtSpec.resolution = Application::Get()->GetRenderer()->GetResolution();
+		rtSpec.colorAttachment = TextureFormat::RGBA8;
+		mViewportRT = new RenderTarget(rtSpec);
 
-		Application::Get()->GetRenderer()->SetOutputRenderOutput(mViewportRT, mViewportTexture);
+		Application::Get()->GetRenderer()->SetOutputRenderOutput(mViewportRT);
 	}
 
 	void EditorLayer::OnDetach() 
 	{
 		delete mViewportRT;
-		delete mViewportTexture;
-		Application::Get()->GetRenderer()->SetOutputRenderOutput(nullptr, nullptr);
+		Application::Get()->GetRenderer()->SetOutputRenderOutput(nullptr);
 	}
 
 	void EditorLayer::OnUpdate(float deltaTime) 
 	{
 		mCamera.Update();
+		mViewportRT->SetResolution(glm::uvec2(mViewport.GetSize()));
 		mViewportNavigation.Update(deltaTime, mViewport, mCamera, mSelectedActor);
 
 		if (Input::GetKey(Key::LeftControl) && Input::GetKeyDown(Key::S))
@@ -40,7 +41,7 @@ namespace Dawn
 		Editor::BeginDockSpace();
 
 		mHierarchy.Draw(mSelectedActor);
-		mViewport.Draw(mViewportTexture);
+		mViewport.Draw(mViewportRT->GetColorTexture());
 		mInspector.Draw(mSelectedActor);
 		mAssetBrowser.Draw();
 		mEnvironmentSettingsWindow.Draw();

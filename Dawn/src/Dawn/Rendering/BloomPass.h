@@ -10,35 +10,39 @@ namespace Dawn
 	class Texture;
 	class RenderTarget;
 
-	struct Mip
-	{
-		glm::vec2 size;
-		Texture* texture;
-	};
-
 	class BloomPass
 	{
 	public:
-		BloomPass(unsigned int mipCount, glm::vec2 renderResolution);
-		~BloomPass();
+		struct Mip
+		{
+			glm::uvec2 size;
+			RenderTarget* renderTarget;
+		};
 
+		BloomPass(unsigned int mipCount, glm::uvec2 renderResolution);
+		~BloomPass();
+		BloomPass(const BloomPass&) = delete;
+		BloomPass& operator=(const BloomPass&) = delete;
+
+		// Changes the glViewport, so reset it after this call
 		// quadVAO should be a triangle strip with 4 as the count
 		void Render(unsigned int hdrTexture, unsigned int quadVAO, float bloomRadius = 1.0f);
 
 		unsigned int GetBloomTextureId() const;
-		void Resize(glm::vec2 renderResolution);
+		void SetRenderResolution(glm::uvec2 renderResolution);
 
 	private:
-		void Init(unsigned int mipCount);
+		void Init();
 		void Shutdown();
+		void BuildMipChain();
 
 		void Downsample(unsigned int hdrTexture, unsigned int quadVAO);
-		void Upsample(unsigned int quadVAO);
+		void Upsample(unsigned int quadVAO, float bloomRadius);
 
 	private:
-		glm::vec2 mRenderResolution;
+		unsigned int mMipCount;
+		glm::uvec2 mRenderResolution;
 
-		RenderTarget* mBloomRenderTarget;
 		std::vector<Mip> mMipChain;
 
 		Shader* mUpsampleShader = nullptr;

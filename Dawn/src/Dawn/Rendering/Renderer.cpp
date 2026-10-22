@@ -38,9 +38,11 @@ namespace Dawn
 		// which was done in Window::Init()
 		glViewport(0, 0, resolution.x, resolution.y);
 
-		mHdrRenderTarget = new RenderTarget();
-		mHdrColorTexture = new Texture(resolution.x, resolution.y, TextureFormat::RGBA16F);
-		mHdrDepthTexture = new Texture(resolution.x, resolution.y, TextureFormat::Depth24);
+		RenderTargetSpecification hdrRenderTargetSpec;
+		hdrRenderTargetSpec.resolution = glm::uvec2(resolution);
+		hdrRenderTargetSpec.colorAttachment = TextureFormat::RGBA16F;
+		hdrRenderTargetSpec.depthAttachment = TextureFormat::Depth24;
+		mHdrRenderTarget = new RenderTarget(hdrRenderTargetSpec);
 		
 		mBloomPass = new BloomPass(6, mResolution);
 
@@ -53,20 +55,14 @@ namespace Dawn
 	void Renderer::SetResolution(glm::vec2 resolution)
 	{
 		mResolution = resolution;
-		mBloomPass->Resize(mResolution);
+		mBloomPass->SetRenderResolution(mResolution);
 
-		mHdrColorTexture->Resize(mResolution);
-		mHdrDepthTexture->Resize(mResolution);
-
-		if (mOutputColorTexture)
-			mOutputColorTexture->Resize(mResolution);
+		mHdrRenderTarget->SetResolution(mResolution);
 	}
 
-	void Renderer::SetOutputRenderOutput(RenderTarget* renderTarget, Texture* outputColorTexture)
+	void Renderer::SetOutputRenderOutput(RenderTarget* renderTarget)
 	{
 		mOutputRenderTarget = renderTarget;
-		mOutputColorTexture = outputColorTexture;
-		mOutputColorTexture->Resize(mResolution);
 	}
 	
 	void Renderer::Draw()
@@ -75,8 +71,6 @@ namespace Dawn
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// --- HDR RENDER PASS --- 
-		mHdrRenderTarget->AttachColorTexture(*mHdrColorTexture);
-		mHdrRenderTarget->AttachDepthTexture(*mHdrDepthTexture);
 		mHdrRenderTarget->Bind();
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
@@ -84,16 +78,16 @@ namespace Dawn
 		glBlendEquation(GL_FUNC_ADD);
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glViewport(0, 0, mResolution.x, mResolution.y);
+		glViewport(0, 0, mHdrRenderTarget->GetResolution().x, mHdrRenderTarget->GetResolution().y);
 		DrawScene();
 
 		// --- BLOOM PASS ---
-		mBloomPass->Render(mHdrColorTexture->GetId(), mQuadVAO);
+		mBloomPass->Render(mHdrRenderTarget->GetColorTexture()->GetId(), mQuadVAO, Application::Get()->GetScene()->GetEnvironmentSettings().bloomRadius);
 
 		// --- POST PROCESS QUAD TO SCREEN ---
 		mPostProcessShader->Bind();
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, mHdrColorTexture->GetId());
+		glBindTexture(GL_TEXTURE_2D, mHdrRenderTarget->GetColorTexture()->GetId());
 		mPostProcessShader->SetInt("u_HDRTexture", 0);
 
 		glActiveTexture(GL_TEXTURE1);
@@ -102,12 +96,11 @@ namespace Dawn
 		mPostProcessShader->SetFloat("u_BloomStrength", Application::Get()->GetScene()->GetEnvironmentSettings().bloomStrength);
 		mPostProcessShader->SetVec2("u_SrcSize", mResolution);
 
-		if (mOutputRenderTarget && mOutputColorTexture && mOutputColorTexture->IsValid())
+		if (mOutputRenderTarget)
 		{
 			mOutputRenderTarget->Bind();
-			mOutputRenderTarget->AttachColorTexture(*mOutputColorTexture);
-			glViewport(0, 0, mOutputColorTexture->GetWidth(), mOutputColorTexture->GetHeight());
-			mPostProcessShader->SetVec2("u_DstSize", glm::vec2(mOutputColorTexture->GetWidth(), mOutputColorTexture->GetHeight()));
+			glViewport(0, 0, mOutputRenderTarget->GetResolution().x, mOutputRenderTarget->GetResolution().y);
+			mPostProcessShader->SetVec2("u_DstSize", glm::vec2(mOutputRenderTarget->GetResolution().x, mOutputRenderTarget->GetResolution().y));
 		}
 		else
 		{

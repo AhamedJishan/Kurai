@@ -23,7 +23,7 @@ namespace Dawn
 
 		void SetResolution(glm::vec2 resolution);
 		glm::vec2 GetResolution() const { return mResolution; }
-		void SetOutputRenderOutput(RenderTarget* renderTarget, Texture* outputColorTexture);
+		void SetOutputRenderOutput(RenderTarget* renderTarget);
 
 		void SetView(const glm::mat4& view) { mView = view; }
 		void SetProjection(const glm::mat4& projection) { mProjection = projection; }
@@ -49,11 +49,8 @@ namespace Dawn
 		BloomPass* mBloomPass = nullptr;
 
 		RenderTarget* mHdrRenderTarget = nullptr;
-		Texture* mHdrColorTexture = nullptr;
-		Texture* mHdrDepthTexture = nullptr;
 		// Non owning
-		RenderTarget* mOutputRenderTarget = nullptr;	
-		Texture* mOutputColorTexture = nullptr;
+		RenderTarget* mOutputRenderTarget = nullptr;
 
 		unsigned int mQuadVAO = 0, mQuadVBO = 0;
 		Shader* mPostProcessShader = nullptr;

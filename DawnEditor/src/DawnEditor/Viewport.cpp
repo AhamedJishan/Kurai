@@ -5,28 +5,29 @@
 
 namespace Dawn
 {
-	void Viewport::Draw(Texture* texture)
+	void Viewport::Draw(const Texture* texture)
 	{
 		ImGui::Begin(mWindowName);
+		ImVec2 availRegionSize = ImGui::GetContentRegionAvail();
 
 		mIsFocused = ImGui::IsWindowFocused();
+		mSize = glm::vec2(availRegionSize.x, availRegionSize.y);
 
-		ImVec2 availRegionSize = ImGui::GetContentRegionAvail();
 		float dstAspect = availRegionSize.x / availRegionSize.y;
 		float srcAspect = static_cast<float>(texture->GetWidth()) / texture->GetHeight();
-
+		
 		ImVec2 imageSize = availRegionSize;
-
+		
 		if (srcAspect > dstAspect)
 			imageSize.y = availRegionSize.x / srcAspect;
 		else
 			imageSize.x = availRegionSize.y * srcAspect;
-
+		
 		ImVec2 cursor = ImGui::GetCursorPos();
 		cursor.x += (availRegionSize.x - imageSize.x) * 0.5f;
 		cursor.y += (availRegionSize.y - imageSize.y) * 0.5f;
 		ImGui::SetCursorPos(cursor);
-
+		
 		ImGui::Image((ImTextureID)(intptr_t)(texture->GetId()), imageSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 
 		ImGui::End();
