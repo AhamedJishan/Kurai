@@ -14,7 +14,7 @@ namespace Dawn
 	class RenderView
 	{
 	public:
-		RenderView(glm::uvec2 resolution, bool renderToScreen, int priority = 0);
+		RenderView(glm::uvec2 resolution, bool renderToScreen);
 
 		void SetCamera(glm::vec3 viewPosition, glm::mat4 view, glm::mat4 projection);
 		void SetResolution(glm::uvec2 resolution);

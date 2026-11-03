@@ -5,7 +5,7 @@ namespace Dawn
 	// 2x2 matches BloomPass’s minimum, so all buffers stay consistent
 	static const glm::uvec2 MIN_RESOLUTION = glm::uvec2(2);
 
-	RenderView::RenderView(glm::uvec2 resolution, bool renderToScreen, int priority)
+	RenderView::RenderView(glm::uvec2 resolution, bool renderToScreen)
 		:mResolution(glm::max(resolution, MIN_RESOLUTION))
 	{
 		RenderTargetSpecification hdrRTSpec;

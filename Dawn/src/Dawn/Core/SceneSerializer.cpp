@@ -185,7 +185,7 @@ namespace Dawn
 			if (cameraId != 0)
 			{
 				Camera* camera = static_cast<Camera*>(ctx.GetComponentById(cameraId));
-				scene->SetActiveCamera(camera);
+				scene->SetMainCamera(camera);
 			}
 
 			return scene;
