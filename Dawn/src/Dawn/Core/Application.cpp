@@ -147,8 +147,11 @@ namespace Dawn
 
 	void Application::GenerateOutput()
 	{
+		mRenderer->Clear();
+
 		if (mScene)
-			mRenderer->Draw();
+			for (Layer* layer : mLayerStack)
+				layer->OnRender();
 
 		mImGuiSystem->BeginFrame();
 		for (Layer* layer : mLayerStack)

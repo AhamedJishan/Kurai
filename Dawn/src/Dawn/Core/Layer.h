@@ -11,6 +11,7 @@ namespace Dawn
 		virtual void OnDetach() {}
 
 		virtual void OnUpdate(float deltaTime) {}
+		virtual void OnRender() {}
 		virtual void OnImGuiRender() {}
 	};
 }
