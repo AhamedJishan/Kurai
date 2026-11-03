@@ -12,6 +12,7 @@ namespace Dawn
 	class MeshRenderer;
 	class Shader;
 	class Texture;
+	class RenderView;
 
 	class Renderer
 	{
@@ -21,36 +22,23 @@ namespace Dawn
 
 		bool Init(glm::vec2 resolution);
 
-		void SetResolution(glm::vec2 resolution);
-		glm::vec2 GetResolution() const { return mResolution; }
-		void SetOutputRenderOutput(RenderTarget* renderTarget);
-
-		void SetView(const glm::mat4& view) { mView = view; }
-		void SetProjection(const glm::mat4& projection) { mProjection = projection; }
-
 		void Draw();
 
-		// To be called by Constructor of MeshRenderer
-		void AddMeshRenderer(MeshRenderer* meshRenderer);
-		// To be called by Destructor of MeshRenderer
-		void RemoveMeshRenderer(MeshRenderer* meshRenderer);
+		void AddRenderView(RenderView* renderView);
+		void RemoveRenderView(RenderView* renderView);
+
+		void AddMeshRenderer(MeshRenderer* meshRenderer);		// To be called by Constructor of MeshRenderer
+		void RemoveMeshRenderer(MeshRenderer* meshRenderer);	// To be called by Destructor of MeshRenderer
 
 	private:
-		void DrawScene();
+		void DrawRenderView(const RenderView* renderView);
+		void DrawScene(const glm::vec3& viewPosition, const glm::mat4& view, const glm::mat4& projection);
 		void InitQuad();
 		void DrawQuad();
 
 	private:
-		glm::mat4 mView;
-		glm::mat4 mProjection;
-
-		glm::vec2 mResolution = { 1920, 1080 };
+		std::vector<RenderView*> mRenderViews;
 		std::vector<MeshRenderer*> mMeshRenderers;
-		BloomPass* mBloomPass = nullptr;
-
-		RenderTarget* mHdrRenderTarget = nullptr;
-		// Non owning
-		RenderTarget* mOutputRenderTarget = nullptr;
 
 		unsigned int mQuadVAO = 0, mQuadVBO = 0;
 		Shader* mPostProcessShader = nullptr;

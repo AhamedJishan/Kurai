@@ -18,6 +18,7 @@ namespace Dawn
 		case Dawn::PropertyType::Bool:		node = *static_cast<bool*>(data) ; break;
 		case Dawn::PropertyType::Float:		node = *static_cast<float*>(data) ; break;
 		case Dawn::PropertyType::Vec2:		node = *static_cast<glm::vec2*>(data); break;
+		case Dawn::PropertyType::UVec2:		node = *static_cast<glm::uvec2*>(data); break;
 		case Dawn::PropertyType::Vec3:		node = *static_cast<glm::vec3*>(data); break;
 		case Dawn::PropertyType::Vec4:		node = *static_cast<glm::vec4*>(data); break;
 		case Dawn::PropertyType::Quat:		node = *static_cast<glm::quat*>(data); break;
@@ -47,6 +48,7 @@ namespace Dawn
 		case Dawn::PropertyType::Bool:		*static_cast<bool*>(data) = node.as<bool>(); break;
 		case Dawn::PropertyType::Float:		*static_cast<float*>(data) = node.as<float>(); break;
 		case Dawn::PropertyType::Vec2:		*static_cast<glm::vec2*>(data) = node.as<glm::vec2>(); break;
+		case Dawn::PropertyType::UVec2:		*static_cast<glm::uvec2*>(data) = node.as<glm::vec2>(); break;
 		case Dawn::PropertyType::Vec3:		*static_cast<glm::vec3*>(data) = node.as<glm::vec3>(); break;
 		case Dawn::PropertyType::Vec4:		*static_cast<glm::vec4*>(data) = node.as<glm::vec4>(); break;
 		case Dawn::PropertyType::Quat:		*static_cast<glm::quat*>(data) = node.as<glm::quat>(); break;

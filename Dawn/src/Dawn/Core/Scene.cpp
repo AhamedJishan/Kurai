@@ -54,10 +54,10 @@ namespace Dawn
 			DeleteActor(actor);					// Actor::~Actor() calls Scene::RemoveActor() to remove itself from mActors
 		deadActors.clear();
 
-		if (mActiveCamera)
+		if (mMainCamera)
 		{
-			glm::mat4 view = mActiveCamera->GetView();
-			glm::mat4 projection = mActiveCamera->GetProjection();
+			glm::mat4 view = mMainCamera->GetView();
+			glm::mat4 projection = mMainCamera->GetProjection();
 
 			Application::Get()->GetAudioSystem()->SetListener(view);
 			Application::Get()->GetRenderer()->SetView(view);

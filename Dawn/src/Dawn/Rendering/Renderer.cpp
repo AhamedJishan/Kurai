@@ -11,6 +11,7 @@
 #include "Dawn/Core/Components/MeshRenderer.h"
 #include <Dawn/Core/Components/Animator.h>
 #include "RenderTarget.h"
+#include "RenderView.h"
 #include "BloomPass.h"
 #include "Shader.h"
 #include "Material.h"
@@ -27,97 +28,45 @@ namespace Dawn
 	{
 		glDeleteVertexArrays(1, &mQuadVAO);
 		glDeleteBuffers(1, &mQuadVBO);
-
-		if (mHdrRenderTarget) delete mHdrRenderTarget;
 	}
 	
 	bool Renderer::Init(glm::vec2 resolution)
 	{
-		mResolution = resolution;
-		// Assumes a valid Opengl context is already initialised
-		// which was done in Window::Init()
-		glViewport(0, 0, resolution.x, resolution.y);
-
-		RenderTargetSpecification hdrRenderTargetSpec;
-		hdrRenderTargetSpec.resolution = glm::uvec2(resolution);
-		hdrRenderTargetSpec.colorAttachment = TextureFormat::RGBA16F;
-		hdrRenderTargetSpec.depthAttachment = TextureFormat::Depth24;
-		mHdrRenderTarget = new RenderTarget(hdrRenderTargetSpec);
-		
-		mBloomPass = new BloomPass(6, mResolution);
-
 		InitQuad();
 		mPostProcessShader = Assets::GetShader("post_process");
 
 		return true;
 	}
-
-	void Renderer::SetResolution(glm::vec2 resolution)
-	{
-		mResolution = resolution;
-		mBloomPass->SetRenderResolution(mResolution);
-
-		mHdrRenderTarget->SetResolution(mResolution);
-	}
-
-	void Renderer::SetOutputRenderOutput(RenderTarget* renderTarget)
-	{
-		mOutputRenderTarget = renderTarget;
-	}
 	
 	void Renderer::Draw()
 	{
+		// Ensure the default framebuffer is cleared even when rendering to custom FBOs.
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		// --- HDR RENDER PASS --- 
-		mHdrRenderTarget->Bind();
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glBlendEquation(GL_FUNC_ADD);
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glViewport(0, 0, mHdrRenderTarget->GetResolution().x, mHdrRenderTarget->GetResolution().y);
-		DrawScene();
+		if (mRenderViews.size() == 0) return;
 
-		// --- BLOOM PASS ---
-		mBloomPass->Render(mHdrRenderTarget->GetColorTexture()->GetId(), mQuadVAO, Application::Get()->GetScene()->GetEnvironmentSettings().bloomRadius);
+		std::stable_sort(mRenderViews.begin(), mRenderViews.end(),
+			[](const RenderView* a, const RenderView* b)
+			{
+				return a->GetPriority() < b->GetPriority();
+			});
 
-		// --- POST PROCESS QUAD TO SCREEN ---
-		mPostProcessShader->Bind();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, mHdrRenderTarget->GetColorTexture()->GetId());
-		mPostProcessShader->SetInt("u_HDRTexture", 0);
+		for (const RenderView* renderView : mRenderViews)
+			if (renderView->IsEnabled())
+				DrawRenderView(renderView);
+	}
 
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, mBloomPass->GetBloomTextureId());
-		mPostProcessShader->SetInt("u_BloomTexture", 1);
-		mPostProcessShader->SetFloat("u_BloomStrength", Application::Get()->GetScene()->GetEnvironmentSettings().bloomStrength);
-		mPostProcessShader->SetVec2("u_SrcSize", mResolution);
+	void Renderer::AddRenderView(RenderView* renderView)
+	{
+		mRenderViews.push_back(renderView);
+	}
 
-		if (mOutputRenderTarget)
-		{
-			mOutputRenderTarget->Bind();
-			glViewport(0, 0, mOutputRenderTarget->GetResolution().x, mOutputRenderTarget->GetResolution().y);
-			mPostProcessShader->SetVec2("u_DstSize", glm::vec2(mOutputRenderTarget->GetResolution().x, mOutputRenderTarget->GetResolution().y));
-		}
-		else
-		{
-			int x, y;
-			Application::Get()->GetWindow()->GetFrameBufferSize(x, y);
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			glViewport(0, 0, x, y);
-			mPostProcessShader->SetVec2("u_DstSize", glm::vec2(x, y));
-		}
-
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glDisable(GL_DEPTH_TEST);
-		glDisable(GL_BLEND);
-		DrawQuad();
-		
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	void Renderer::RemoveRenderView(RenderView* renderView)
+	{
+		auto it = std::find(mRenderViews.begin(), mRenderViews.end(), renderView);
+		if (it != mRenderViews.end())
+			mRenderViews.erase(it);
 	}
 
 	void Renderer::AddMeshRenderer(MeshRenderer* meshRenderer)
@@ -132,7 +81,63 @@ namespace Dawn
 			mMeshRenderers.erase(it);
 	}
 
-	void Renderer::DrawScene()
+	void Renderer::DrawRenderView(const RenderView* renderView)
+	{
+		// --- HDR RENDER PASS ---
+		const RenderTarget* hdrTarget = renderView->GetHdrRenderTarget();
+		hdrTarget->Bind();
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendEquation(GL_FUNC_ADD);
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glViewport(0, 0, hdrTarget->GetResolution().x, hdrTarget->GetResolution().y);
+		DrawScene(renderView->GetViewPosition(), renderView->GetViewMatrix(), renderView->GetProjectionMatrix());
+
+		// --- BLOOM PASS ---
+		renderView->GetBloomPass()->Render(
+			hdrTarget->GetColorTexture()->GetId(), 
+			mQuadVAO, 
+			Application::Get()->GetScene()->GetEnvironmentSettings().bloomRadius);
+
+		// --- POST PROCESS QUAD TO SCREEN ---
+		mPostProcessShader->Bind();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, hdrTarget->GetColorTexture()->GetId());
+		mPostProcessShader->SetInt("u_HDRTexture", 0);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, renderView->GetBloomPass()->GetBloomTextureId());
+		mPostProcessShader->SetInt("u_BloomTexture", 1);
+		mPostProcessShader->SetFloat("u_BloomStrength", Application::Get()->GetScene()->GetEnvironmentSettings().bloomStrength);
+		mPostProcessShader->SetVec2("u_SrcSize", glm::vec2(renderView->GetResolution()));
+
+		if (renderView->RendersToScreen())
+		{
+			int x, y;
+			Application::Get()->GetWindow()->GetFrameBufferSize(x, y);
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glViewport(0, 0, x, y);
+			mPostProcessShader->SetVec2("u_DstSize", glm::vec2(x, y));
+		}
+		else
+		{
+			renderView->GetOutputRenderTarget()->Bind();
+			glViewport(0, 0, renderView->GetResolution().x, renderView->GetResolution().y);
+			mPostProcessShader->SetVec2("u_DstSize", glm::vec2(renderView->GetResolution().x, renderView->GetResolution().y));
+		}
+
+		glDisable(GL_BLEND);
+		glDisable(GL_DEPTH_TEST);
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		DrawQuad();
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	void Renderer::DrawScene(const glm::vec3& viewPosition, const glm::mat4& view, const glm::mat4& projection)
 	{
 		const EnvironmentSettings& environmentSettings = Application::Get()->GetScene()->GetEnvironmentSettings();
 
@@ -157,15 +162,15 @@ namespace Dawn
 				mesh->Bind();
 
 				shader->SetMat4("u_Model", modelMatrix);
-				shader->SetMat4("u_View", mView);
-				shader->SetMat4("u_Projection", mProjection);
+				shader->SetMat4("u_View", view);
+				shader->SetMat4("u_Projection", projection);
 
 				if (skinned)
 					shader->SetMat4s("u_MatrixPalette", animator->GetMatrixPalette());
 
 				shader->SetFloat("u_FogDensity", environmentSettings.fogDensity);
 				shader->SetVec3("u_FogColor", environmentSettings.fogColor);
-				shader->SetVec3("u_ViewPosition", glm::vec3(mView[3]));
+				shader->SetVec3("u_ViewPosition", viewPosition);
 				shader->SetVec3("u_AmbientColor", environmentSettings.ambientColor);
 				shader->SetVec3("u_DirectionalLightColor", environmentSettings.directionalLight.color);
 				shader->SetVec3("u_DirectionalLightDirection", environmentSettings.directionalLight.direction);

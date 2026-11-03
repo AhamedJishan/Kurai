@@ -16,6 +16,7 @@ namespace Dawn
 		Bool,
 		Float,
 		Vec2,
+		UVec2,
 		Vec3,
 		Vec4,
 		Quat,

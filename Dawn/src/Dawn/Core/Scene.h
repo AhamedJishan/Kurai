@@ -50,8 +50,8 @@ namespace Dawn
 
 		EnvironmentSettings& GetEnvironmentSettings() { return mEnvironmentSettings; }
 
-		void SetActiveCamera(Camera* camera) { mActiveCamera = camera; }
-		Camera* GetActiveCamera() const { return mActiveCamera; }
+		void SetMainCamera(Camera* camera) { mMainCamera = camera; }
+		Camera* GetMainCamera() const { return mMainCamera; }
 
 		bool SetPath(const std::filesystem::path& path);
 		bool SetName(const std::string& name);
@@ -75,7 +75,7 @@ namespace Dawn
 		bool mIsPaused = false;
 		bool mUpdatingActors = false;
 
-		Camera* mActiveCamera = nullptr;
+		Camera* mMainCamera = nullptr;
 
 		std::vector<Actor*> mActors;
 		std::vector<Actor*> mPendingActors;

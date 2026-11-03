@@ -10,6 +10,7 @@
 
 namespace Dawn
 {
+	// used to request Renderer for one complete render call
 	class RenderView
 	{
 	public:
@@ -26,6 +27,13 @@ namespace Dawn
 		glm::uvec2 GetResolution() const { return mResolution; }
 		bool RendersToScreen() const { return mOutputTarget == nullptr; }
 		const Texture* GetOutputTexture() const;
+
+		const BloomPass* GetBloomPass() const { return mBloomPass.get(); }
+		const RenderTarget* GetHdrRenderTarget() const { return mHdrTarget.get(); }
+		const RenderTarget* GetOutputRenderTarget() const { return mOutputTarget.get(); }
+		const glm::vec3& GetViewPosition() const { return mViewPosition; }
+		const glm::mat4& GetViewMatrix() const { return mView; }
+		const glm::mat4& GetProjectionMatrix() const { return mProjection; }
 
 	private:
 		friend class Renderer;

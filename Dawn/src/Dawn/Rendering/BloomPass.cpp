@@ -63,7 +63,7 @@ namespace Dawn
 		}
 	}
 
-	void BloomPass::Render(unsigned int hdrTexture, unsigned int quadVAO, float bloomRadius)
+	void BloomPass::Render(unsigned int hdrTexture, unsigned int quadVAO, float bloomRadius) const
 	{
 		Downsample(hdrTexture, quadVAO);
 		Upsample(quadVAO, bloomRadius);
@@ -85,7 +85,7 @@ namespace Dawn
 		BuildMipChain();
 	}
 
-	void BloomPass::Downsample(unsigned int hdrTexture, unsigned int quadVAO)
+	void BloomPass::Downsample(unsigned int hdrTexture, unsigned int quadVAO) const
 	{
 		mDownsampleShader->Bind();
 
@@ -115,7 +115,7 @@ namespace Dawn
 		}
 	}
 
-	void BloomPass::Upsample(unsigned int quadVAO, float bloomRadius)
+	void BloomPass::Upsample(unsigned int quadVAO, float bloomRadius) const
 	{
 		mUpsampleShader->Bind();
 		mUpsampleShader->SetFloat("u_BloomRadius", bloomRadius);

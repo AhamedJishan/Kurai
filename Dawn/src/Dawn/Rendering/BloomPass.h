@@ -26,7 +26,7 @@ namespace Dawn
 
 		// Changes the glViewport, so reset it after this call
 		// quadVAO should be a triangle strip with 4 as the count
-		void Render(unsigned int hdrTexture, unsigned int quadVAO, float bloomRadius = 1.0f);
+		void Render(unsigned int hdrTexture, unsigned int quadVAO, float bloomRadius = 1.0f) const;
 
 		unsigned int GetBloomTextureId() const;
 		void SetRenderResolution(glm::uvec2 renderResolution);
@@ -36,8 +36,8 @@ namespace Dawn
 		void Shutdown();
 		void BuildMipChain();
 
-		void Downsample(unsigned int hdrTexture, unsigned int quadVAO);
-		void Upsample(unsigned int quadVAO, float bloomRadius);
+		void Downsample(unsigned int hdrTexture, unsigned int quadVAO) const;
+		void Upsample(unsigned int quadVAO, float bloomRadius) const;
 
 	private:
 		unsigned int mMipCount;
