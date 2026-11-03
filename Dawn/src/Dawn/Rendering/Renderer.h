@@ -22,22 +22,18 @@ namespace Dawn
 
 		bool Init(glm::vec2 resolution);
 
-		void Draw();
-
-		void AddRenderView(RenderView* renderView);
-		void RemoveRenderView(RenderView* renderView);
+		void Clear();
+		void Render(const RenderView* renderView);
 
 		void AddMeshRenderer(MeshRenderer* meshRenderer);		// To be called by Constructor of MeshRenderer
 		void RemoveMeshRenderer(MeshRenderer* meshRenderer);	// To be called by Destructor of MeshRenderer
 
 	private:
-		void DrawRenderView(const RenderView* renderView);
 		void DrawScene(const glm::vec3& viewPosition, const glm::mat4& view, const glm::mat4& projection);
 		void InitQuad();
 		void DrawQuad();
 
 	private:
-		std::vector<RenderView*> mRenderViews;
 		std::vector<MeshRenderer*> mMeshRenderers;
 
 		unsigned int mQuadVAO = 0, mQuadVBO = 0;

@@ -38,50 +38,13 @@ namespace Dawn
 		return true;
 	}
 	
-	void Renderer::Draw()
+	void Renderer::Clear()
 	{
-		// Ensure the default framebuffer is cleared even when rendering to custom FBOs.
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT);
-
-		if (mRenderViews.size() == 0) return;
-
-		std::stable_sort(mRenderViews.begin(), mRenderViews.end(),
-			[](const RenderView* a, const RenderView* b)
-			{
-				return a->GetPriority() < b->GetPriority();
-			});
-
-		for (const RenderView* renderView : mRenderViews)
-			if (renderView->IsEnabled())
-				DrawRenderView(renderView);
 	}
 
-	void Renderer::AddRenderView(RenderView* renderView)
-	{
-		mRenderViews.push_back(renderView);
-	}
-
-	void Renderer::RemoveRenderView(RenderView* renderView)
-	{
-		auto it = std::find(mRenderViews.begin(), mRenderViews.end(), renderView);
-		if (it != mRenderViews.end())
-			mRenderViews.erase(it);
-	}
-
-	void Renderer::AddMeshRenderer(MeshRenderer* meshRenderer)
-	{
-		mMeshRenderers.push_back(meshRenderer);
-	}
-	
-	void Renderer::RemoveMeshRenderer(MeshRenderer* meshRenderer)
-	{
-		auto it = std::find(mMeshRenderers.begin(), mMeshRenderers.end(), meshRenderer);
-		if (it != mMeshRenderers.end())
-			mMeshRenderers.erase(it);
-	}
-
-	void Renderer::DrawRenderView(const RenderView* renderView)
+	void Renderer::Render(const RenderView* renderView)
 	{
 		// --- HDR RENDER PASS ---
 		const RenderTarget* hdrTarget = renderView->GetHdrRenderTarget();
@@ -205,5 +168,17 @@ namespace Dawn
 	{
 		glBindVertexArray(mQuadVAO);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	}
+
+	void Renderer::AddMeshRenderer(MeshRenderer* meshRenderer)
+	{
+		mMeshRenderers.push_back(meshRenderer);
+	}
+	
+	void Renderer::RemoveMeshRenderer(MeshRenderer* meshRenderer)
+	{
+		auto it = std::find(mMeshRenderers.begin(), mMeshRenderers.end(), meshRenderer);
+		if (it != mMeshRenderers.end())
+			mMeshRenderers.erase(it);
 	}
 }
