@@ -16,35 +16,25 @@ namespace Dawn
 	public:
 		RenderView(glm::uvec2 resolution, bool renderToScreen, int priority = 0);
 
-		void Update(glm::vec3 viewPosition, glm::mat4 view, glm::mat4 projection);
-
-		void SetEnabled(bool enabled) { mEnabled = enabled; }
+		void SetCamera(glm::vec3 viewPosition, glm::mat4 view, glm::mat4 projection);
 		void SetResolution(glm::uvec2 resolution);
 		void SetRenderToScreen(bool enable);
 
-		bool IsEnabled() const { return mEnabled; }
-		int GetPriority() const { return mPriority; }
-		glm::uvec2 GetResolution() const { return mResolution; }
-		bool RendersToScreen() const { return mOutputTarget == nullptr; }
-		const Texture* GetOutputTexture() const;
-
-		const BloomPass* GetBloomPass() const { return mBloomPass.get(); }
-		const RenderTarget* GetHdrRenderTarget() const { return mHdrTarget.get(); }
-		const RenderTarget* GetOutputRenderTarget() const { return mOutputTarget.get(); }
 		const glm::vec3& GetViewPosition() const { return mViewPosition; }
 		const glm::mat4& GetViewMatrix() const { return mView; }
 		const glm::mat4& GetProjectionMatrix() const { return mProjection; }
+		glm::uvec2 GetResolution() const { return mResolution; }
+		bool RendersToScreen() const { return mOutputTarget == nullptr; }
+
+		const Texture* GetOutputTexture() const;
+		const BloomPass* GetBloomPass() const { return mBloomPass.get(); }
+		const RenderTarget* GetHdrRenderTarget() const { return mHdrTarget.get(); }
+		const RenderTarget* GetOutputRenderTarget() const { return mOutputTarget.get(); }
 
 	private:
-		friend class Renderer;
-		// TODO: TBDL
-
 		void BuildOutputTarget();
 
 	private:
-		int mPriority = 0;
-		bool mEnabled = true;
-
 		glm::uvec2 mResolution;
 		glm::vec3 mViewPosition = glm::vec3(0.0f);
 		glm::mat4 mView = glm::mat4(1.0f);

@@ -1,15 +1,12 @@
 #include "RenderView.h"
 
-#include <glm/glm.hpp>
-
 namespace Dawn
 {
 	// 2x2 matches BloomPass’s minimum, so all buffers stay consistent
 	static const glm::uvec2 MIN_RESOLUTION = glm::uvec2(2);
 
 	RenderView::RenderView(glm::uvec2 resolution, bool renderToScreen, int priority)
-		:mPriority(priority)
-		,mResolution(glm::max(resolution, MIN_RESOLUTION))
+		:mResolution(glm::max(resolution, MIN_RESOLUTION))
 	{
 		RenderTargetSpecification hdrRTSpec;
 		hdrRTSpec.resolution = glm::uvec2(mResolution);
@@ -50,7 +47,7 @@ namespace Dawn
 		return nullptr;
 	}
 
-	void RenderView::Update(glm::vec3 viewPosition, glm::mat4 view, glm::mat4 projection)
+	void RenderView::SetCamera(glm::vec3 viewPosition, glm::mat4 view, glm::mat4 projection)
 	{
 		mViewPosition = viewPosition;
 		mView = view;
