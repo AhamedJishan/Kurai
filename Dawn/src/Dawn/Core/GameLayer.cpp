@@ -1,6 +1,5 @@
 #include "GameLayer.h"
 
-#include <Dawn/Utils/Log.h>
 #include <Dawn/Core/Window.h>
 #include <Dawn/Core/Application.h>
 #include <Dawn/Rendering/Renderer.h>
