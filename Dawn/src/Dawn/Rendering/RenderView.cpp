@@ -5,31 +5,28 @@ namespace Dawn
 	// 2x2 matches BloomPass’s minimum, so all buffers stay consistent
 	static const glm::uvec2 MIN_RESOLUTION = glm::uvec2(2);
 
-	RenderView::RenderView(glm::uvec2 resolution, bool renderToScreen)
-		:mResolution(glm::max(resolution, MIN_RESOLUTION))
+	RenderView::RenderView(glm::uvec2 outputResolution, bool renderToScreen)
+		:mOutputResolution(glm::max(outputResolution, MIN_RESOLUTION))
 	{
 		RenderTargetSpecification hdrRTSpec;
-		hdrRTSpec.resolution = glm::uvec2(mResolution);
+		hdrRTSpec.resolution = mRenderResolution;
 		hdrRTSpec.colorAttachment = TextureFormat::RGBA16F;
 		hdrRTSpec.depthAttachment = TextureFormat::Depth24;
+
 		mHdrTarget = std::make_unique<RenderTarget>(hdrRTSpec);
+		mBloomPass = std::make_unique<BloomPass>(6, mRenderResolution);
 
-		mBloomPass = std::make_unique<BloomPass>(6, mResolution);
-
-		if (!renderToScreen)
-			BuildOutputTarget();
+		SetRenderToScreen(renderToScreen);
 	}
 
-	void RenderView::SetResolution(glm::uvec2 resolution)
+	void RenderView::SetOutputResolution(glm::uvec2 outputResolution)
 	{
-		resolution = glm::max(resolution, MIN_RESOLUTION);
-		if (mResolution == resolution) return;
-		mResolution = resolution;
+		outputResolution = glm::max(outputResolution, MIN_RESOLUTION);
+		if (mOutputResolution == outputResolution) return;
+		mOutputResolution = outputResolution;
 
-		mHdrTarget->SetResolution(mResolution);
-		mBloomPass->SetRenderResolution(mResolution);
 		if (mOutputTarget)
-			mOutputTarget->SetResolution(mResolution);
+			mOutputTarget->SetResolution(mOutputResolution);
 	}
 
 	void RenderView::SetRenderToScreen(bool enable)
@@ -47,18 +44,22 @@ namespace Dawn
 		return nullptr;
 	}
 
-	void RenderView::SetCamera(glm::vec3 viewPosition, glm::mat4 view, glm::mat4 projection)
+	void RenderView::SetCamera(glm::vec3 position, const glm::mat4& view, const glm::mat4& projection, glm::uvec2 renderResolution)
 	{
-		mViewPosition = viewPosition;
+		mCameraPosition = position;
 		mView = view;
 		mProjection = projection;
+		mRenderResolution = glm::max(renderResolution, MIN_RESOLUTION);
+
+		mHdrTarget->SetResolution(mRenderResolution);
+		mBloomPass->SetRenderResolution(mRenderResolution);
 	}
 
 	void RenderView::BuildOutputTarget()
 	{
 		mOutputTarget.reset();
 		RenderTargetSpecification outputRTSpec;
-		outputRTSpec.resolution = glm::uvec2(mResolution);
+		outputRTSpec.resolution = mOutputResolution;
 		outputRTSpec.colorAttachment = TextureFormat::RGBA8;
 		mOutputTarget = std::make_unique<RenderTarget>(outputRTSpec);
 	}

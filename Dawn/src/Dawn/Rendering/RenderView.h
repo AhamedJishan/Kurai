@@ -14,17 +14,22 @@ namespace Dawn
 	class RenderView
 	{
 	public:
-		RenderView(glm::uvec2 resolution, bool renderToScreen);
+		enum class FitMode { Stretch, Letterbox };
 
-		void SetCamera(glm::vec3 viewPosition, glm::mat4 view, glm::mat4 projection);
-		void SetResolution(glm::uvec2 resolution);
+		RenderView(glm::uvec2 outputResolution, bool renderToScreen);
+
+		void SetCamera(glm::vec3 position, const glm::mat4& view, const glm::mat4& projection, glm::uvec2 renderResolution);
+		void SetOutputResolution(glm::uvec2 outputResolution);
 		void SetRenderToScreen(bool enable);
+		void SetFitMode(FitMode fitMode) { mFitMode = fitMode; }
 
-		const glm::vec3& GetViewPosition() const { return mViewPosition; }
+		const glm::vec3& GetCameraPosition() const { return mCameraPosition; }
 		const glm::mat4& GetViewMatrix() const { return mView; }
 		const glm::mat4& GetProjectionMatrix() const { return mProjection; }
-		glm::uvec2 GetResolution() const { return mResolution; }
+		glm::uvec2 GetOutputResolution() const { return mOutputResolution; }
+		glm::uvec2 GetRenderResolution() const { return mRenderResolution; }
 		bool RendersToScreen() const { return mOutputTarget == nullptr; }
+		FitMode GetFitMode() const { return mFitMode; }
 
 		const Texture* GetOutputTexture() const;
 		const BloomPass* GetBloomPass() const { return mBloomPass.get(); }
@@ -35,8 +40,10 @@ namespace Dawn
 		void BuildOutputTarget();
 
 	private:
-		glm::uvec2 mResolution;
-		glm::vec3 mViewPosition = glm::vec3(0.0f);
+		FitMode mFitMode = FitMode::Letterbox;
+		glm::uvec2 mOutputResolution = { 1920u, 1080u };
+		glm::uvec2 mRenderResolution = { 1920u, 1080u };
+		glm::vec3 mCameraPosition = glm::vec3(0.0f);
 		glm::mat4 mView = glm::mat4(1.0f);
 		glm::mat4 mProjection = glm::mat4(1.0f);
 
