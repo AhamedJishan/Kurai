@@ -3,37 +3,44 @@
 #include <glm/vec2.hpp>
 #include "DockSpace.h"
 #include <Dawn/Core/Application.h>
+#include <Dawn/Core/Scene.h>
 #include <Dawn/Rendering/Renderer.h>
-#include <Dawn/Rendering/RenderTarget.h>
+#include <Dawn/Rendering/RenderView.h>
 #include <Dawn/Rendering/Texture.h>
 #include <Dawn/Input/Input.h>
 
 namespace Dawn
 {
-	void EditorLayer::OnAttach() 
+	EditorLayer::EditorLayer(const std::filesystem::path& startScenePath)
+		:mStartScenePath(startScenePath)
 	{
-		RenderTargetSpecification rtSpec;
-		rtSpec.resolution = Application::Get()->GetRenderer()->GetResolution();
-		rtSpec.colorAttachment = TextureFormat::RGBA8;
-		mViewportRT = new RenderTarget(rtSpec);
-
-		Application::Get()->GetRenderer()->SetOutputRenderOutput(mViewportRT);
+		// temp res. Actual value would be updated in OnUpdate()
+		mViewportRV = std::make_unique<RenderView>(glm::uvec2(2u), false);
 	}
 
-	void EditorLayer::OnDetach() 
+	void EditorLayer::OnAttach()
 	{
-		delete mViewportRT;
-		Application::Get()->GetRenderer()->SetOutputRenderOutput(nullptr);
+		if (!mStartScenePath.empty())
+			Application::Get()->LoadScene(mStartScenePath);
 	}
+
+	void EditorLayer::OnDetach() {}
 
 	void EditorLayer::OnUpdate(float deltaTime) 
 	{
 		mCamera.Update();
-		mViewportRT->SetResolution(glm::uvec2(mViewport.GetSize()));
 		mViewportNavigation.Update(deltaTime, mViewport, mCamera, mSelectedActor);
 
 		if (Input::GetKey(Key::LeftControl) && Input::GetKeyDown(Key::S))
 			Application::Get()->SaveScene();
+	}
+
+	void EditorLayer::OnRender()
+	{
+		float aspectRatio = mViewport.GetSize().x / mViewport.GetSize().y;
+		mViewportRV->SetOutputResolution(glm::uvec2(mViewport.GetSize()));
+		mViewportRV->SetCamera(mCamera.transform.position, mCamera.GetView(), mCamera.GetProjection(aspectRatio), glm::uvec2(mViewport.GetSize()));
+		Application::Get()->GetRenderer()->Render(mViewportRV.get());
 	}
 
 	void EditorLayer::OnImGuiRender()
@@ -41,7 +48,7 @@ namespace Dawn
 		Editor::BeginDockSpace();
 
 		mHierarchy.Draw(mSelectedActor);
-		mViewport.Draw(mViewportRT->GetColorTexture());
+		mViewport.Draw(mViewportRV->GetOutputTexture());
 		mInspector.Draw(mSelectedActor);
 		mAssetBrowser.Draw();
 		mEnvironmentSettingsWindow.Draw();

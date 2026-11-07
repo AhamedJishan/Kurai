@@ -2,7 +2,9 @@
 Project 2
 
 ## TODO:
-- Fix SetListner
+- Fix SetListner for Engine and EditorCamera both.
+- FIX editorcamera fisheye bug.
+- Add RenderView::FitMode logic.
 - Make resolution as uvec2 everywhere, renderer, texture, etc.
 - Fix viewport display
 - Play game button

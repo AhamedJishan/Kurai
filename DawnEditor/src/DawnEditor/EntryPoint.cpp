@@ -18,8 +18,7 @@ int main(int argc, char** argv)
 	Dawn::ComponentFactory* componentFactory = new Dawn::ComponentFactory();
 
 	Dawn::Application app(config, componentFactory);
-	app.PushLayer(new Dawn::EditorLayer());
-	app.LoadScene("Assets/Scenes/TestScene.scene");
+	app.PushLayer(new Dawn::EditorLayer("Assets/Scenes/TestScene.scene"));
 	app.Run();
 
 	return 0;

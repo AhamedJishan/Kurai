@@ -11,7 +11,7 @@ namespace Dawn
 		void Update();
 
 		glm::mat4 GetView() const;
-		glm::mat4 GetProjection() const;
+		glm::mat4 GetProjection(float aspectRatio) const;
 
 	public:
 		// in degrees
