@@ -18,6 +18,7 @@ namespace Dawn
 
 		void OnPropertiesChanged() override;
 
+		glm::vec3 GetPosition() const;
 		glm::mat4 GetView() const;
 		glm::mat4 GetProjection() const;
 

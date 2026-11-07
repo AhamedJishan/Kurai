@@ -1,4 +1,4 @@
-ActiveCamera: 0
+MainCamera: 2
 EnvironmentSettings:
   DirectionalLight:
     Color: [1, 1, 1]

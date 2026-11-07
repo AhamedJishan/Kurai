@@ -181,7 +181,7 @@ namespace Dawn
 			DeserializeActors(sceneNode["Actors"], ctx);
 			DeserializeEnvSettings(sceneNode["EnvironmentSettings"], scene);
 
-			unsigned int cameraId = sceneNode["ActiveCamera"].as<unsigned int>(0);
+			unsigned int cameraId = sceneNode["MainCamera"].as<unsigned int>(0);
 			if (cameraId != 0)
 			{
 				Camera* camera = static_cast<Camera*>(ctx.GetComponentById(cameraId));
@@ -227,11 +227,11 @@ namespace Dawn
 		SceneSerializationContext ctx;
 		BuildSerializationContext(ctx);
 		
-		Camera* camera = scene->GetActiveCamera();
+		Camera* camera = scene->GetMainCamera();
 		unsigned int cameraId = 0;
 		if (camera) cameraId = ctx.GetIdByComponent(camera);
 
-		sceneNode["ActiveCamera"] = cameraId;
+		sceneNode["MainCamera"] = cameraId;
 		sceneNode["EnvironmentSettings"] = SerializeEnvSettings();
 		sceneNode["Actors"] = SerializeActors(ctx);
 

@@ -35,6 +35,11 @@ namespace Dawn
 		SetResolution(mResolution);
 	}
 
+	glm::vec3 Camera::GetPosition() const
+	{
+		return mOwner->GetTransform().position;
+	}
+
 	glm::mat4 Camera::GetView() const
 	{
 		glm::vec3 position = mOwner->GetTransform().position;

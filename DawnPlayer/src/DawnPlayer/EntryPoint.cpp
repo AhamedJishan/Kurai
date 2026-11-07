@@ -3,6 +3,7 @@
 #include <Dawn/Core/Application.h>
 #include <Dawn/Core/Window.h>
 #include <Dawn/Core/ComponentFactory.h>
+#include <Dawn/Core/GameLayer.h>
 
 int main(int argc, char** argv)
 {
@@ -16,7 +17,7 @@ int main(int argc, char** argv)
 	Dawn::ComponentFactory* componentFactory = new Dawn::ComponentFactory();
 
 	Dawn::Application app(config, componentFactory);
-	app.LoadScene("TestScene");
+	app.PushLayer(new Dawn::GameLayer("Assets/Scenes/TestScene.scene"));
 	app.Run();
 
 	return 0;

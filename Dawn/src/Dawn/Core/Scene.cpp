@@ -4,7 +4,6 @@
 #include "Actor.h"
 #include "Application.h"
 #include <Dawn/Core/Components/Camera.h>
-#include <Dawn/Rendering/Renderer.h>
 #include <Dawn/Audio/AudioSystem.h>
 #include <Dawn/Utils/Log.h>
 #include <Dawn/Utils/FileSystem.h>
@@ -55,14 +54,7 @@ namespace Dawn
 		deadActors.clear();
 
 		if (mMainCamera)
-		{
-			glm::mat4 view = mMainCamera->GetView();
-			glm::mat4 projection = mMainCamera->GetProjection();
-
-			Application::Get()->GetAudioSystem()->SetListener(view);
-			Application::Get()->GetRenderer()->SetView(view);
-			Application::Get()->GetRenderer()->SetProjection(projection);
-		}
+			Application::Get()->GetAudioSystem()->SetListener(mMainCamera->GetView());
 	}
 
 	Actor* Scene::CreateActor(const std::string& name)

@@ -56,7 +56,7 @@ namespace Dawn
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glViewport(0, 0, hdrTarget->GetResolution().x, hdrTarget->GetResolution().y);
-		DrawScene(renderView->GetViewPosition(), renderView->GetViewMatrix(), renderView->GetProjectionMatrix());
+		DrawScene(renderView->GetCameraPosition(), renderView->GetViewMatrix(), renderView->GetProjectionMatrix());
 
 		// --- BLOOM PASS ---
 		renderView->GetBloomPass()->Render(
@@ -74,7 +74,7 @@ namespace Dawn
 		glBindTexture(GL_TEXTURE_2D, renderView->GetBloomPass()->GetBloomTextureId());
 		mPostProcessShader->SetInt("u_BloomTexture", 1);
 		mPostProcessShader->SetFloat("u_BloomStrength", Application::Get()->GetScene()->GetEnvironmentSettings().bloomStrength);
-		mPostProcessShader->SetVec2("u_SrcSize", glm::vec2(renderView->GetResolution()));
+		mPostProcessShader->SetVec2("u_SrcSize", glm::vec2(renderView->GetRenderResolution()));
 
 		if (renderView->RendersToScreen())
 		{
@@ -87,8 +87,8 @@ namespace Dawn
 		else
 		{
 			renderView->GetOutputRenderTarget()->Bind();
-			glViewport(0, 0, renderView->GetResolution().x, renderView->GetResolution().y);
-			mPostProcessShader->SetVec2("u_DstSize", glm::vec2(renderView->GetResolution().x, renderView->GetResolution().y));
+			glViewport(0, 0, renderView->GetOutputResolution().x, renderView->GetOutputResolution().y);
+			mPostProcessShader->SetVec2("u_DstSize", glm::vec2(renderView->GetOutputResolution().x, renderView->GetOutputResolution().y));
 		}
 
 		glDisable(GL_BLEND);

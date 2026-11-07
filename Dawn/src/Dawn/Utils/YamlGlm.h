@@ -28,6 +28,27 @@ namespace YAML
     };
 
     template<>
+    struct convert<glm::uvec2> {
+        static Node encode(const glm::uvec2& rhs) {
+            Node node;
+            node.SetStyle(YAML::EmitterStyle::Flow);
+            node.push_back(rhs.x);
+            node.push_back(rhs.y);
+            return node;
+        }
+
+        static bool decode(const Node& node, glm::uvec2& rhs) {
+            if (!node.IsSequence() || node.size() != 2) {
+                return false;
+            }
+
+            rhs.x = node[0].as<unsigned int>();
+            rhs.y = node[1].as<unsigned int>();
+            return true;
+        }
+    };
+
+    template<>
     struct convert<glm::vec3> {
         static Node encode(const glm::vec3& rhs) {
             Node node;

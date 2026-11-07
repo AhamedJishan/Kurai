@@ -1,12 +1,10 @@
 #include "GameLayer.h"
 
-#include <Dawn/Core/Window.h>
 #include <Dawn/Core/Application.h>
 #include <Dawn/Rendering/Renderer.h>
 #include <Dawn/Rendering/RenderView.h>
 #include <Dawn/Core/Scene.h>
 #include <Dawn/Core/Components/Camera.h>
-#include <Dawn/Core/Actor.h>
 
 namespace Dawn
 {
@@ -29,11 +27,7 @@ namespace Dawn
 		Camera* camera = scene->GetMainCamera();
 		if (!camera) return;
 
-		int resX, resY;
-		Application::Get()->GetWindow()->GetFrameBufferSize(resX, resY);
-
-		mGameRV->SetResolution(glm::uvec2(static_cast<unsigned int>(resX), static_cast<unsigned int>(resY)));	// early-outs if unchanged
-		mGameRV->SetCamera(camera->GetOwner()->GetTransform().position, camera->GetView(), camera->GetProjection());
+		mGameRV->SetCamera(camera->GetPosition(), camera->GetView(), camera->GetProjection(), camera->GetResolution());
 		Application::Get()->GetRenderer()->Render(mGameRV.get());
 	}
 }
