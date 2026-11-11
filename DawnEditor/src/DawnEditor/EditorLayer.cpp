@@ -16,6 +16,7 @@ namespace Dawn
 	{
 		// temp res. Actual value would be updated in OnUpdate()
 		mViewportRV = std::make_unique<RenderView>(glm::uvec2(2u), false);
+		mViewportRV->SetFitMode(RenderView::FitMode::Fill);
 	}
 
 	void EditorLayer::OnAttach()

@@ -14,7 +14,7 @@ namespace Dawn
 	class RenderView
 	{
 	public:
-		enum class FitMode { Stretch, Letterbox };
+		enum class FitMode { Fill, Stretch, Letterbox};
 
 		RenderView(glm::uvec2 outputResolution, bool renderToScreen);
 

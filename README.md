@@ -2,7 +2,7 @@
 Project 2
 
 ## TODO:
-- Fix SetListner for Engine and EditorCamera both.
+- Fix SetListner for Engine and EditorCamera both. Don't use view matrix.
 - FIX editorcamera fisheye bug.
 - Add RenderView::FitMode logic.
 - Make resolution as uvec2 everywhere, renderer, texture, etc.

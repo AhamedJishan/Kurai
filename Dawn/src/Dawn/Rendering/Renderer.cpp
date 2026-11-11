@@ -18,6 +18,44 @@
 #include "Mesh.h"
 #include "Texture.h"
 
+namespace
+{
+	// Used to set glViewport
+	struct FitRect
+	{
+		glm::ivec2 pos;		// Bottom left corner. Can be negative (Fill)
+		glm::ivec2 size;
+	};
+
+	FitRect ComputeFitRect(Dawn::RenderView::FitMode fitMode, glm::vec2 src, glm::vec2 dst)
+	{
+		// Stretch (also the fallback)
+		FitRect rect{ glm::ivec2(0, 0), glm::ivec2(dst) };
+
+		switch (fitMode)
+		{
+		case Dawn::RenderView::FitMode::Fill:
+		{
+			float scale = glm::max(dst.x / src.x, dst.y / src.y);
+			rect.size = glm::ivec2(glm::round(scale * src));
+			rect.pos = (glm::ivec2(dst) - rect.size) / 2;
+			break;
+		}
+		case Dawn::RenderView::FitMode::Letterbox:
+		{
+			float scale = glm::min(dst.x / src.x, dst.y / src.y);
+			rect.size = glm::ivec2(glm::round(scale * src));
+			rect.pos = (glm::ivec2(dst) - rect.size) / 2;
+			break;
+		}
+		default:
+			break;
+		}
+
+		return rect;
+	}
+}
+
 namespace Dawn
 {
 	Renderer::Renderer()
@@ -74,22 +112,22 @@ namespace Dawn
 		glBindTexture(GL_TEXTURE_2D, renderView->GetBloomPass()->GetBloomTextureId());
 		mPostProcessShader->SetInt("u_BloomTexture", 1);
 		mPostProcessShader->SetFloat("u_BloomStrength", Application::Get()->GetScene()->GetEnvironmentSettings().bloomStrength);
-		mPostProcessShader->SetVec2("u_SrcSize", glm::vec2(renderView->GetRenderResolution()));
 
+		glm::vec2 dstSize;
 		if (renderView->RendersToScreen())
 		{
 			int x, y;
 			Application::Get()->GetWindow()->GetFrameBufferSize(x, y);
+			dstSize = glm::vec2(x, y);
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			glViewport(0, 0, x, y);
-			mPostProcessShader->SetVec2("u_DstSize", glm::vec2(x, y));
 		}
 		else
 		{
+			dstSize = glm::vec2(renderView->GetOutputResolution());
 			renderView->GetOutputRenderTarget()->Bind();
-			glViewport(0, 0, renderView->GetOutputResolution().x, renderView->GetOutputResolution().y);
-			mPostProcessShader->SetVec2("u_DstSize", glm::vec2(renderView->GetOutputResolution().x, renderView->GetOutputResolution().y));
 		}
+		FitRect rect = ComputeFitRect(renderView->GetFitMode(), glm::vec2(renderView->GetRenderResolution()), dstSize);
+		glViewport(rect.pos.x, rect.pos.y, rect.size.x, rect.size.y);
 
 		glDisable(GL_BLEND);
 		glDisable(GL_DEPTH_TEST);
