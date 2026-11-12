@@ -19,6 +19,6 @@ namespace Dawn
 		const char* mWindowName = "Viewport";
 		bool mIsFocused = false;
 
-		glm::vec2 mSize;
+		glm::vec2 mSize = { 1920, 1080 };
 	};
 }

@@ -40,7 +40,7 @@ namespace Dawn
 		void BuildOutputTarget();
 
 	private:
-		FitMode mFitMode = FitMode::Letterbox;
+		FitMode mFitMode = FitMode::Fill;
 		glm::uvec2 mOutputResolution = { 1920u, 1080u };
 		glm::uvec2 mRenderResolution = { 1920u, 1080u };
 		glm::vec3 mCameraPosition = glm::vec3(0.0f);

@@ -3,10 +3,8 @@
 #include <glm/vec2.hpp>
 #include "DockSpace.h"
 #include <Dawn/Core/Application.h>
-#include <Dawn/Core/Scene.h>
 #include <Dawn/Rendering/Renderer.h>
 #include <Dawn/Rendering/RenderView.h>
-#include <Dawn/Rendering/Texture.h>
 #include <Dawn/Input/Input.h>
 
 namespace Dawn
@@ -38,9 +36,10 @@ namespace Dawn
 
 	void EditorLayer::OnRender()
 	{
-		float aspectRatio = mViewport.GetSize().x / mViewport.GetSize().y;
-		mViewportRV->SetOutputResolution(glm::uvec2(mViewport.GetSize()));
-		mViewportRV->SetCamera(mCamera.transform.position, mCamera.GetView(), mCamera.GetProjection(aspectRatio), glm::uvec2(mViewport.GetSize()));
+		glm::uvec2 res = glm::max(glm::uvec2(mViewport.GetSize()), glm::uvec2(2u));
+		float aspectRatio = float(res.x) / float(res.y);
+		mViewportRV->SetOutputResolution(res);
+		mViewportRV->SetCamera(mCamera.transform.position, mCamera.GetView(), mCamera.GetProjection(aspectRatio), res);
 		Application::Get()->GetRenderer()->Render(mViewportRV.get());
 	}
 
