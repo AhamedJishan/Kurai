@@ -3,6 +3,7 @@
 #include <glm/vec2.hpp>
 #include "DockSpace.h"
 #include <Dawn/Core/Application.h>
+#include <Dawn/Core/Scene.h>
 #include <Dawn/Rendering/Renderer.h>
 #include <Dawn/Rendering/RenderView.h>
 #include <Dawn/Input/Input.h>
@@ -11,10 +12,14 @@ namespace Dawn
 {
 	EditorLayer::EditorLayer(const std::filesystem::path& startScenePath)
 		:mStartScenePath(startScenePath)
+		,mSceneViewport("Scene Viewport")
+		,mGameViewport("Game Viewport")
 	{
-		// temp res. Actual value would be updated in OnUpdate()
-		mViewportRV = std::make_unique<RenderView>(glm::uvec2(2u), false);
-		mViewportRV->SetFitMode(RenderView::FitMode::Fill);
+		mSceneViewportRV = std::make_unique<RenderView>(glm::uvec2(2u), false);
+		mSceneViewportRV->SetFitMode(RenderView::FitMode::Fill);
+
+		mGameViewportRV = std::make_unique<RenderView>(glm::uvec2(2u), false);
+		mGameViewportRV->SetFitMode(RenderView::FitMode::Letterbox);
 	}
 
 	void EditorLayer::OnAttach()
@@ -27,8 +32,13 @@ namespace Dawn
 
 	void EditorLayer::OnUpdate(float deltaTime) 
 	{
-		mCamera.Update();
-		mViewportNavigation.Update(deltaTime, mViewport, mCamera, mSelectedActor);
+		if (Application::Get()->GetScene())
+			mMainCamera = Application::Get()->GetScene()->GetMainCamera();
+		else
+			mMainCamera = nullptr;
+
+		mEditorCamera.Update();
+		mViewportNavigation.Update(deltaTime, mSceneViewport, mEditorCamera, mSelectedActor);
 
 		if (Input::GetKey(Key::LeftControl) && Input::GetKeyDown(Key::S))
 			Application::Get()->SaveScene();
@@ -36,11 +46,21 @@ namespace Dawn
 
 	void EditorLayer::OnRender()
 	{
-		glm::uvec2 res = glm::max(glm::uvec2(mViewport.GetSize()), glm::uvec2(2u));
-		float aspectRatio = float(res.x) / float(res.y);
-		mViewportRV->SetOutputResolution(res);
-		mViewportRV->SetCamera(mCamera.transform.position, mCamera.GetView(), mCamera.GetProjection(aspectRatio), res);
-		Application::Get()->GetRenderer()->Render(mViewportRV.get());
+		if (mSceneViewport.IsVisible())
+		{
+			glm::uvec2 res = glm::max(glm::uvec2(mSceneViewport.GetSize()), glm::uvec2(2u));
+			float aspectRatio = float(res.x) / float(res.y);
+			mSceneViewportRV->SetOutputResolution(res);
+			mSceneViewportRV->SetCamera(mEditorCamera.transform.position, mEditorCamera.GetView(), mEditorCamera.GetProjection(aspectRatio), res);
+			Application::Get()->GetRenderer()->Render(mSceneViewportRV.get());
+		}
+
+		if (mGameViewport.IsVisible() && mMainCamera)
+		{
+			mGameViewportRV->SetOutputResolution(glm::uvec2(mGameViewport.GetSize()));
+			mGameViewportRV->SetCamera(mMainCamera->GetPosition(), mMainCamera->GetView(), mMainCamera->GetProjection(), mMainCamera->GetResolution());
+			Application::Get()->GetRenderer()->Render(mGameViewportRV.get());
+		}
 	}
 
 	void EditorLayer::OnImGuiRender()
@@ -48,12 +68,15 @@ namespace Dawn
 		Editor::BeginDockSpace();
 
 		mHierarchy.Draw(mSelectedActor);
-		mViewport.Draw(mViewportRV->GetOutputTexture());
+		mSceneViewport.DrawTexture(mSceneViewportRV->GetOutputTexture());
+		if (mMainCamera)
+			mGameViewport.DrawTexture(mGameViewportRV->GetOutputTexture());
+		else
+			mGameViewport.DrawText("No Main Camera");
 		mInspector.Draw(mSelectedActor);
 		mAssetBrowser.Draw();
 		mEnvironmentSettingsWindow.Draw();
 
 		Editor::EndDockSpace();
 	}
-
 }

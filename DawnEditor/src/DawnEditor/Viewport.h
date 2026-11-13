@@ -9,14 +9,23 @@ namespace Dawn
 	class Viewport
 	{
 	public:
-		void Draw(const Texture* texture);
+		Viewport(const char* title);
 
-		bool IsFocused() { return mIsFocused; }
-		void SetFocus(bool value = true);
+		void DrawTexture(const Texture* texture);
+		void DrawText(const char* text);
+
+		bool IsVisible() const { return mIsVisible; }
+		bool IsFocused() const { return mIsFocused; }
+		void SetFocus();
 		glm::vec2 GetSize() const { return mSize; }
 
 	private:
-		const char* mWindowName = "Viewport";
+		bool Begin();
+		void End();
+
+	private:
+		const char* mWindowName = "--UNTITLED--";
+		bool mIsVisible = true;
 		bool mIsFocused = false;
 
 		glm::vec2 mSize = { 1920, 1080 };

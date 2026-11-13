@@ -2,11 +2,9 @@
 Project 2
 
 ## TODO:
+- Inspector shold display the name of the active actor.
 - Fix SetListner for Engine and EditorCamera both. Don't use view matrix.
-- FIX editorcamera fisheye bug.
-- Add RenderView::FitMode logic.
 - Make resolution as uvec2 everywhere, renderer, texture, etc.
-- Fix viewport display
 - Play game button
 - Rename scene  from Scene Hierarchy.
 - Make all windows title bold + component table ratio change

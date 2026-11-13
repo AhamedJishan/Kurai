@@ -9,7 +9,7 @@ namespace Dawn
 	void ViewportNavigation::Update(float deltaTime, Viewport& viewport, EditorCamera& camera, Actor* selectedActor)
 	{
 		if (Input::GetKey(Key::LeftAlt) && Input::GetKeyDown(Key::Enter))
-			viewport.SetFocus(true);
+			viewport.SetFocus();
 
 		if (!viewport.IsFocused())
 			return;

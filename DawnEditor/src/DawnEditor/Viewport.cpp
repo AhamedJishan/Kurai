@@ -5,36 +5,63 @@
 
 namespace Dawn
 {
-	void Viewport::Draw(const Texture* texture)
+	Viewport::Viewport(const char* title)
+		:mWindowName(title)
+	{}
+
+	void Viewport::DrawText(const char* text)
 	{
-		ImGui::Begin(mWindowName);
-		ImVec2 availRegionSize = ImGui::GetContentRegionAvail();
+		if (Begin())
+		{
+			ImGui::PushFont(NULL, 25.0f);
+			ImVec2 availRegionSize = ImGui::GetContentRegionAvail();
+			ImVec2 textSize = ImGui::CalcTextSize(text);
 
-		mIsFocused = ImGui::IsWindowFocused();
-		mSize = glm::vec2(availRegionSize.x, availRegionSize.y);
-
-		float dstAspect = availRegionSize.x / availRegionSize.y;
-		float srcAspect = static_cast<float>(texture->GetWidth()) / texture->GetHeight();
-		
-		ImVec2 imageSize = availRegionSize;
-		
-		if (srcAspect > dstAspect)
-			imageSize.y = availRegionSize.x / srcAspect;
-		else
-			imageSize.x = availRegionSize.y * srcAspect;
-		
-		ImVec2 cursor = ImGui::GetCursorPos();
-		cursor.x += (availRegionSize.x - imageSize.x) * 0.5f;
-		cursor.y += (availRegionSize.y - imageSize.y) * 0.5f;
-		ImGui::SetCursorPos(cursor);
-		
-		ImGui::Image((ImTextureID)(intptr_t)(texture->GetId()), imageSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-
-		ImGui::End();
+			ImGui::SetCursorPosX((availRegionSize.x - textSize.x) / 2.0f);
+			ImGui::SetCursorPosY((availRegionSize.y - textSize.y) / 2.0f);
+			ImGui::TextUnformatted(text);
+			ImGui::PopFont();
+		}
+		End();
 	}
 
-	void Viewport::SetFocus(bool value)
+	void Viewport::DrawTexture(const Texture* texture)
+	{
+		if (Begin() && texture)
+			ImGui::Image((ImTextureID)(intptr_t)(texture->GetId()), {mSize.x, mSize.y}, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+		End();
+	}
+
+	void Viewport::SetFocus()
 	{
 		ImGui::SetWindowFocus(mWindowName);
+	}
+
+	bool Viewport::Begin()
+	{
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 1, 1 });
+		mIsVisible = ImGui::Begin(mWindowName);
+
+		if (mIsVisible)
+		{
+			ImVec2 availRegionSize = ImGui::GetContentRegionAvail();
+			mIsFocused = ImGui::IsWindowFocused();
+			mSize = glm::vec2(availRegionSize.x, availRegionSize.y);
+		}
+		else
+		{
+			mIsFocused = false;
+			mSize = { 0, 0 };
+		}
+
+		return mIsVisible;
+	}
+
+	void Viewport::End()
+	{
+		ImGui::End();
+		ImGui::PopStyleVar();
+		ImGui::PopStyleColor();
 	}
 }
