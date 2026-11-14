@@ -15,6 +15,7 @@ namespace Dawn
 	{
 	public:
 		Camera(Actor* owner);
+		~Camera();
 
 		void OnPropertiesChanged() override;
 
@@ -37,6 +38,11 @@ namespace Dawn
 		std::vector<Property> GetProperties() override;
 
 	protected:
+		friend class Scene;
+
+		// can only be set via Scene
+		bool mIsMainCamera = false;
+
 		// in degrees
 		float mFOV = 60.0f;
 		float mNear = 0.01f;

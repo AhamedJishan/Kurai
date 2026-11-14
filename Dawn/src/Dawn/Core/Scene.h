@@ -50,7 +50,7 @@ namespace Dawn
 
 		EnvironmentSettings& GetEnvironmentSettings() { return mEnvironmentSettings; }
 
-		void SetMainCamera(Camera* camera) { mMainCamera = camera; }
+		void SetMainCamera(Camera* camera);
 		Camera* GetMainCamera() const { return mMainCamera; }
 
 		bool SetPath(const std::filesystem::path& path);

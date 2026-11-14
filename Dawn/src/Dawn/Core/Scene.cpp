@@ -93,6 +93,17 @@ namespace Dawn
 		}
 	}
 
+	void Scene::SetMainCamera(Camera* camera)
+	{
+		if (camera == mMainCamera) return;
+
+		if (mMainCamera) mMainCamera->mIsMainCamera = false;
+
+		mMainCamera = camera;
+
+		if (mMainCamera) mMainCamera->mIsMainCamera = true;
+	}
+
 	bool Scene::SetPath(const std::filesystem::path& path)
 	{
 		if (std::filesystem::exists(path))

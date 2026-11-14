@@ -1,7 +1,9 @@
 #include "Camera.h"
 
 #include "Dawn/Core/Actor.h"
+#include <Dawn/Core/Application.h>
 #include <Dawn/Core/Property.h>
+#include <Dawn/Core/Scene.h>
 
 namespace Dawn
 {
@@ -15,6 +17,7 @@ namespace Dawn
 	{
 		return 
 		{
+			{"IsMainCamera", &mIsMainCamera, PropertyType::Bool},
 			{"FOV", &mFOV, PropertyType::Float},
 			{"Near", &mNear, PropertyType::Float},
 			{"Far", &mFar, PropertyType::Float},
@@ -27,12 +30,30 @@ namespace Dawn
 	{
 	}
 
+	Camera::~Camera()
+	{
+		Scene* scene = Application::Get()->GetScene();
+		if (scene)
+			if (scene->GetMainCamera() == this)
+				scene->SetMainCamera(nullptr);
+	}
+
 	void Camera::OnPropertiesChanged()
 	{
 		SetFOV(mFOV);
 		SetNearPlane(mNear);
 		SetFarPlane(mFar);
 		SetResolution(mResolution);
+
+		Scene* scene = Application::Get()->GetScene();
+		if (scene)
+		{
+			bool wasMainBefore = scene->GetMainCamera() == this;
+			if (!wasMainBefore && mIsMainCamera)
+				scene->SetMainCamera(this);
+			else if (wasMainBefore && !mIsMainCamera)
+				scene->SetMainCamera(nullptr);
+		}
 	}
 
 	glm::vec3 Camera::GetPosition() const
