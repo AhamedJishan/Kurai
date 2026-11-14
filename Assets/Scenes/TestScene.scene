@@ -23,6 +23,7 @@ Actors:
         FOV: 90
         Near: 0.1
         Far: 1000
+        Resolution: [1920, 1080]
       - Id: 3
         Type: Audio
   - Id: 4

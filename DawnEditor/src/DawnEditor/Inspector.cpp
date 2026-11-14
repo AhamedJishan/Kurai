@@ -137,6 +137,7 @@ namespace Dawn
 		case PropertyType::Int: edited = ImGui::DragInt(propertyLabel.c_str(), static_cast<int*>(property.data), 0.1f); break;
 		case PropertyType::Bool: edited = ImGui::Checkbox(propertyLabel.c_str(), static_cast<bool*>(property.data)); break;
 		case PropertyType::Float: edited = ImGui::DragFloat(propertyLabel.c_str(), static_cast<float*>(property.data), 0.1f, 0.0f, 0.0f, "%.6g", ImGuiSliderFlags_NoRoundToFormat); break;
+		case PropertyType::UVec2: edited = ImGui::DragScalarN(propertyLabel.c_str(),ImGuiDataType_U32, glm::value_ptr(*static_cast<glm::uvec2*>(property.data)), 2); break;
 		case PropertyType::Vec2: edited = ImGui::DragFloat2(propertyLabel.c_str(), glm::value_ptr(*static_cast<glm::vec2*>(property.data)), 0.1f, 0.0f, 0.0f, "%.6g", ImGuiSliderFlags_NoRoundToFormat); break;
 		case PropertyType::Vec3: edited = ImGui::DragFloat3(propertyLabel.c_str(), glm::value_ptr(*static_cast<glm::vec3*>(property.data)), 0.1f, 0.0f, 0.0f, "%.6g", ImGuiSliderFlags_NoRoundToFormat); break;
 		case PropertyType::Vec4: edited = ImGui::DragFloat4(propertyLabel.c_str(), glm::value_ptr(*static_cast<glm::vec4*>(property.data)), 0.1f, 0.0f, 0.0f, "%.6g", ImGuiSliderFlags_NoRoundToFormat); break;
