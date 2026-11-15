@@ -1,7 +1,7 @@
 #include "EditorLayer.h"
 
 #include <glm/vec2.hpp>
-#include "DockSpace.h"
+#include "EditorWorkspace.h"
 #include <Dawn/Core/Application.h>
 #include <Dawn/Core/Scene.h>
 #include <Dawn/Rendering/Renderer.h>
@@ -65,7 +65,7 @@ namespace Dawn
 
 	void EditorLayer::OnImGuiRender()
 	{
-		Editor::BeginDockSpace();
+		Editor::BeginEditorWorkspace();
 
 		mHierarchy.Draw(mSelectedActor);
 		mSceneViewport.DrawTexture(mSceneViewportRV->GetOutputTexture());
@@ -77,6 +77,6 @@ namespace Dawn
 		mAssetBrowser.Draw();
 		mEnvironmentSettingsWindow.Draw();
 
-		Editor::EndDockSpace();
+		Editor::EndEditorWorkspace();
 	}
 }

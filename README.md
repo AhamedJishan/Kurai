@@ -2,10 +2,10 @@
 Project 2
 
 ## TODO:
+- Play game button
 - Inspector shold display the name of the active actor.
 - Fix SetListner for Engine and EditorCamera both. Don't use view matrix.
 - Make resolution as uvec2 everywhere, renderer, texture, etc.
-- Play game button
 - Rename scene  from Scene Hierarchy.
 - Make all windows title bold + component table ratio change
 - Add blender like transform control, g to grab, s to scale, r to rotate
@@ -17,3 +17,4 @@ Project 2
 - Physics and ParticleSystem temporarily disabled, will be reintegrated later.
 - Make Console window
 - Scene dirty flag should not stay in Dawn project. Editor project should keep track of it.
+- Have a fixed layout for the editor to start with. [probably using the dockbuilder api]
