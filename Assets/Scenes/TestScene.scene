@@ -40,14 +40,32 @@ Actors:
         ModelPath: Assets/Models/arena/arena.obj
         IsSkinned: false
   - Id: 6
-    Name: TestActor
+    Name: MeshRendererTest
     State: Active
     Transform:
       Scale: [0.02, 0.02, 0.02]
-      Position: [0, -2, -2]
+      Position: [-5, -2, -8]
       Rotation: [1, 0, 0, 0]
     Components:
       - Id: 7
         Type: MeshRenderer
         ModelPath: Assets/Models/archer/Hip Hop Dancing.dae
         IsSkinned: false
+  - Id: 8
+    Name: AnimationTest
+    State: Active
+    Transform:
+      Scale: [0.0002, 0.0002, 0.0002]
+      Position: [0, -2, -2]
+      Rotation: [1, 0, 0, 0]
+    Components:
+      - Id: 9
+        Type: MeshRenderer
+        ModelPath: Assets\Models\archer\Hip Hop Dancing.dae
+        IsSkinned: true
+      - Id: 10
+        Type: Animator
+        Skeleton: Assets\Models\archer\Hip Hop Dancing.dae
+        Clips:
+          test: Assets\Models\archer\Hip Hop Dancing.dae
+        ActiveClip: test

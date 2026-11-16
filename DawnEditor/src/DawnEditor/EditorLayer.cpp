@@ -73,10 +73,12 @@ namespace Dawn
 
 		mHierarchy.Draw(mSelectedActor);
 		mSceneViewport.DrawTexture(mSceneViewportRV->GetOutputTexture());
+
 		if (mMainCamera)
 			mGameViewport.DrawTexture(mGameViewportRV->GetOutputTexture());
 		else
 			mGameViewport.DrawText("No Main Camera");
+
 		mInspector.Draw(mSelectedActor);
 		mAssetBrowser.Draw();
 		mEnvironmentSettingsWindow.Draw();

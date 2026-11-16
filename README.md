@@ -3,6 +3,8 @@ Project 2
 
 ## TODO:
 - Play game button
+- Fix, AddComponent component autofill.
+- Fix, drag n drop not working for skeleton and animation clip type.
 - Inspector shold display the name of the active actor.
 - Fix SetListner for Engine and EditorCamera both. Don't use view matrix.
 - Make resolution as uvec2 everywhere, renderer, texture, etc.
