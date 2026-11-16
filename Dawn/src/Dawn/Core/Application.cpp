@@ -137,7 +137,7 @@ namespace Dawn
 		mInputSystem->Update();
 
 		if (mScene)
-			mScene->Update(deltaTime);
+			mScene->Update(deltaTime, simulateScene);
 
 		for (Layer* layer : mLayerStack)
 			layer->OnUpdate(deltaTime);

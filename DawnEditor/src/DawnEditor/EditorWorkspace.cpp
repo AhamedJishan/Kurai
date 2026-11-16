@@ -3,15 +3,14 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 #include <Dawn/Core/Application.h>
-#include <Dawn/ImGui/Fonts.h>
 #include <Dawn/ImGui/OpenFontIcons.h>
 
 namespace Dawn::Editor
 {
 	static const char* WINDOW_TITLE = "Editor Workspace";
 	static const char* DOCKSPACE_NAME = "Main Dockspace";
-	static const float TOOLBAR_HEIGHT = 34.0f;
-	static const float PLAY_STOP_BUTTON_SIZE = 26.0f;
+	static const float TOOLBAR_HEIGHT = 32.0f;
+	static const float PLAY_STOP_BUTTON_SIZE = 24.0f;
 
 	void BeginEditorWorkspace()
 	{
@@ -44,9 +43,11 @@ namespace Dawn::Editor
 			ImGui::SetCursorPosX(cursorX);
 			ImGui::SetCursorPosY((TOOLBAR_HEIGHT - PLAY_STOP_BUTTON_SIZE) * 0.5f);
 
+			ImGui::PushFont(NULL, 14.0f);
 			if (ImGui::Button(ICON_PLAY, ImVec2(PLAY_STOP_BUTTON_SIZE, PLAY_STOP_BUTTON_SIZE))) { /* Play Logic */ }
 			ImGui::SameLine();
 			if (ImGui::Button(ICON_SQUARE, ImVec2(PLAY_STOP_BUTTON_SIZE, PLAY_STOP_BUTTON_SIZE))) { /* Stop Logic */ }
+			ImGui::PopFont();
 		}
 		ImGui::End();
 		ImGui::PopStyleVar();

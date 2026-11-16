@@ -20,6 +20,7 @@ Actors:
     Components:
       - Id: 2
         Type: Camera
+        IsMainCamera: true
         FOV: 90
         Near: 0.1
         Far: 1000
@@ -39,20 +40,14 @@ Actors:
         ModelPath: Assets/Models/arena/arena.obj
         IsSkinned: false
   - Id: 6
-    Name: TestAnimActor
+    Name: TestActor
     State: Active
     Transform:
-      Scale: [0.0002, 0.0002, 0.0002]
+      Scale: [0.02, 0.02, 0.02]
       Position: [0, -2, -2]
       Rotation: [1, 0, 0, 0]
     Components:
       - Id: 7
         Type: MeshRenderer
         ModelPath: Assets/Models/archer/Hip Hop Dancing.dae
-        IsSkinned: true
-      - Id: 8
-        Type: Animator
-        Skeleton: Assets/Models/archer/Hip Hop Dancing.dae
-        Clips:
-          Dance: Assets/Models/archer/Hip Hop Dancing.dae
-        ActiveClip: Dance
+        IsSkinned: false

@@ -26,16 +26,16 @@ namespace Dawn
 		mPendingActors.clear();
 	}
 
-	void Scene::Update(float deltaTime)
+	void Scene::Update(float deltaTime, bool simulate)
 	{
-		if (mIsPaused)
-			return;
-
 		// Update Actors
-		mUpdatingActors = true;
-		for (Actor* actor : mActors)
-			actor->Update(deltaTime);
-		mUpdatingActors = false;
+		if (simulate)
+		{
+			mUpdatingActors = true;
+			for (Actor* actor : mActors)
+				actor->Update(deltaTime);
+			mUpdatingActors = false;
+		}
 
 		// Move pending actors to mActors
 		for (Actor* actor : mPendingActors)

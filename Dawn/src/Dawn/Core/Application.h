@@ -55,9 +55,12 @@ namespace Dawn
 		void GenerateOutput();
 		void RegisterBuiltInComponents();
 
+	public:
+		bool simulateScene = true;		// whether or not to update scene actors
+
 	private:
 		static Application* sInstance;
-
+		
 		Scene* mScene = nullptr;
 		Scene* mPendingScene = nullptr;
 

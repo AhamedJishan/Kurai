@@ -24,11 +24,15 @@ namespace Dawn
 
 	void EditorLayer::OnAttach()
 	{
+		Application::Get()->simulateScene = false;
 		if (!mStartScenePath.empty())
 			Application::Get()->LoadScene(mStartScenePath);
 	}
 
-	void EditorLayer::OnDetach() {}
+	void EditorLayer::OnDetach() 
+	{
+		Application::Get()->simulateScene = true;
+	}
 
 	void EditorLayer::OnUpdate(float deltaTime) 
 	{

@@ -38,15 +38,12 @@ namespace Dawn
 		Scene(const std::filesystem::path& path);
 		~Scene();
 
-		void Update(float deltaTime);
+		void Update(float deltaTime, bool simulate);
 
 		const std::vector<Actor*>& GetActors() const { return mActors; }
 
 		Actor* CreateActor(const std::string& name = "Actor");
 		void DestroyActor(Actor* actor);
-
-		void SetPaused(bool value) { mIsPaused = value; }
-		bool IsPaused() const { return mIsPaused; }
 
 		EnvironmentSettings& GetEnvironmentSettings() { return mEnvironmentSettings; }
 
@@ -71,8 +68,6 @@ namespace Dawn
 		std::filesystem::path mPath;
 
 		bool mIsDirty = false;
-		// if true, actors won't get updated
-		bool mIsPaused = false;
 		bool mUpdatingActors = false;
 
 		Camera* mMainCamera = nullptr;
