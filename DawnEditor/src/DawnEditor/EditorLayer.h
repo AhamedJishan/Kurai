@@ -32,6 +32,7 @@ namespace Dawn
 
 	private:
 		std::filesystem::path mStartScenePath;
+
 		Actor* mSelectedActor = nullptr;
 		Camera* mMainCamera = nullptr;
 

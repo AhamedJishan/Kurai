@@ -171,7 +171,7 @@ namespace Dawn
 	// --- SCENE SERIALIZER ---
 	Scene* SceneSerializer::Load(const std::filesystem::path& scenePath)
 	{
-		Scene* scene = new Scene(scenePath);
+		Scene* scene = new Scene();
 		try
 		{
 			YAML::Node sceneNode = YAML::LoadFile(scenePath.string());
@@ -208,7 +208,7 @@ namespace Dawn
 		return nullptr;
 	}
 
-	bool SceneSerializer::Save()
+	bool SceneSerializer::Save(const std::filesystem::path& scenePath)
 	{
 		Scene* scene = Application::Get()->GetScene();
 		if (!scene)
@@ -216,9 +216,11 @@ namespace Dawn
 			LOG_ERROR("No Active Scene to save!");
 			return false;
 		}
-		if (scene->GetPath().empty() || !scene->GetPath().has_filename())
+
+		std::ofstream sceneFile(scenePath);
+		if (!sceneFile)
 		{
-			LOG_ERROR("Active scene has invalid path!");
+			LOG_ERROR("Failed to open '%s' for saving scene!", scenePath.c_str());
 			return false;
 		}
 
@@ -234,13 +236,6 @@ namespace Dawn
 		sceneNode["MainCamera"] = cameraId;
 		sceneNode["EnvironmentSettings"] = SerializeEnvSettings();
 		sceneNode["Actors"] = SerializeActors(ctx);
-
-		std::ofstream sceneFile(scene->GetPath());
-		if (!sceneFile)
-		{
-			LOG_ERROR("Failed to open '%s' for saving scene!", scene->GetPath().string().c_str());
-			return false;
-		}
 
 		sceneFile << sceneNode;
 		scene->ClearDirty();

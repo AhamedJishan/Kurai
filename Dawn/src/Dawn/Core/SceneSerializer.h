@@ -10,6 +10,6 @@ namespace Dawn
 	namespace SceneSerializer
 	{
 		Scene* Load(const std::filesystem::path& scenePath);
-		bool Save();
+		bool Save(const std::filesystem::path& scenePath);
 	}
 }

@@ -29,7 +29,7 @@ namespace Dawn
 			float textHeight = ImGui::CalcTextSize("DUMMY TEXT").y;
 			ImGui::SetCursorPos(ImVec2(6.0f, (availY - textHeight) / 2.0f - 1.0f));	// -1.0f small adjustment
 			
-			std::string sceneDisplayText = scene->GetName();
+			std::string sceneDisplayText = Application::Get()->GetScenePath().stem().string();
 			if (scene->IsDirty())
 				sceneDisplayText += " *";
 			ImGui::Text("%s", sceneDisplayText.c_str());

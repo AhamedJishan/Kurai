@@ -189,7 +189,7 @@ namespace Dawn
 
 		Scene* currentScene = Application::Get()->GetScene();
 		std::error_code ec;
-		if (currentScene && std::filesystem::equivalent(oldPath, currentScene->GetPath(), ec))
+		if (currentScene && std::filesystem::equivalent(oldPath, Application::Get()->GetScenePath(), ec))
 		{
 			LOG_WARN("Can't rename the currently open scene from Asset Browser");
 			return false;

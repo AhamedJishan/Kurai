@@ -80,12 +80,13 @@ namespace Dawn
 			return false;
 
 		mPendingScene = loadedScene;
+		mPendingScenePath = scenePath;
 		return true;
 	}
 
 	bool Application::SaveScene()
 	{
-		return SceneSerializer::Save();
+		return SceneSerializer::Save(mScenePath);
 	}
 
 	void Application::Run()
@@ -131,7 +132,9 @@ namespace Dawn
 		{
 			delete mScene;
 			mScene = mPendingScene;
+			mScenePath = mPendingScenePath;
 			mPendingScene = nullptr;
+			mPendingScenePath = "";
 		}
 
 		mInputSystem->Update();

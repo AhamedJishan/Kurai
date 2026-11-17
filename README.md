@@ -2,6 +2,7 @@
 Project 2
 
 ## TODO:
+- Check the null scene case in game and engine.
 - Play game button
 - Fix, AddComponent component autofill.
 - Fix, drag n drop not working for skeleton and animation clip type.

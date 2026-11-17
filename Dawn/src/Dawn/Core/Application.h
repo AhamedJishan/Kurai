@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include <vector>
 #include <filesystem>
 #include <glm/vec2.hpp>
@@ -39,6 +38,7 @@ namespace Dawn
 
 		static Application* Get() { return sInstance; }
 
+		const std::filesystem::path& GetScenePath() const { return mScenePath; }
 		Scene* GetScene() const { return mScene; }
 		Window* GetWindow() const { return mWindow; }
 		Renderer* GetRenderer() const { return mRenderer; }
@@ -63,6 +63,8 @@ namespace Dawn
 		
 		Scene* mScene = nullptr;
 		Scene* mPendingScene = nullptr;
+		std::filesystem::path mScenePath;
+		std::filesystem::path mPendingScenePath;
 
 		std::vector<Layer*> mLayerStack;
 

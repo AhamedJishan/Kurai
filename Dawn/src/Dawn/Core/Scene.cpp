@@ -1,6 +1,5 @@
 #include "Scene.h"
 
-#include <glm/mat4x4.hpp>
 #include "Actor.h"
 #include "Application.h"
 #include <Dawn/Core/Components/Camera.h>
@@ -10,8 +9,7 @@
 
 namespace Dawn
 {
-	Scene::Scene(const std::filesystem::path& path)
-		:mPath(path)
+	Scene::Scene()
 	{
 	}
 
@@ -102,40 +100,5 @@ namespace Dawn
 		mMainCamera = camera;
 
 		if (mMainCamera) mMainCamera->mIsMainCamera = true;
-	}
-
-	bool Scene::SetPath(const std::filesystem::path& path)
-	{
-		if (std::filesystem::exists(path))
-		{
-			LOG_WARN("'%s' already exists", path.string().c_str());
-			return false;
-		}
-
-		mPath = path;
-		MarkDirty();
-		return true;
-	}
-
-	bool Scene::SetName(const std::string& name)
-	{
-		if (!FileSystem::IsValidFileName(name))
-			return false;
-
-		std::filesystem::path newPath = mPath;
-		newPath.replace_filename(name + mPath.extension().string());
-
-		if (newPath == mPath)
-			return true;
-
-		if (std::filesystem::exists(newPath))
-		{
-			LOG_WARN("'%s' already exists", name.c_str());
-			return false;
-		}
-		
-		mPath = newPath;
-		MarkDirty();
-		return true;
 	}
 }
