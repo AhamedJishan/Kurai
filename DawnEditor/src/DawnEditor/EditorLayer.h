@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <Dawn/Core/Layer.h>
 #include <Dawn/Core/Components/Camera.h>
+#include "EditorContext.h"
 #include "EditorCamera.h"
 #include "Viewport.h"
 #include "Hierarchy.h"
@@ -34,9 +35,9 @@ namespace Dawn
 	private:
 		std::filesystem::path mStartScenePath;
 
-		Actor* mSelectedActor = nullptr;
 		Camera* mMainCamera = nullptr;
-
+		
+		EditorContext mContext;
 		EditorCamera mEditorCamera;
 		ViewportNavigation mViewportNavigation;
 

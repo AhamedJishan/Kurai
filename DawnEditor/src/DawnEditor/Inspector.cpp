@@ -5,31 +5,34 @@
 #include <algorithm>
 #include <imgui/imgui.h>
 #include <imgui/imgui_stdlib.h>
+#include <glm/vec2.hpp>
+#include <glm/vec4.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <Dawn/Core/Application.h>
 #include <Dawn/Core/Scene.h>
 #include <Dawn/Core/ComponentFactory.h>
 #include <Dawn/Core/Actor.h>
 #include <Dawn/Core/Component.h>
+#include <Dawn/Core/Transform.h>
 
 namespace Dawn
 {
-	void Inspector::Draw(Actor* selectedActor)
+	void Inspector::Draw(EditorContext& ctx)
 	{
 		ImGui::Begin("Inspector");
 
-		if (!selectedActor)
+		if (!ctx.selectedActor)
 		{
 			ImGui::End();
 			return;
 		}
 
-		DrawTransform(selectedActor);
+		DrawTransform(ctx.selectedActor);
 
-		for (Component* component : selectedActor->GetComponents())
+		for (Component* component : ctx.selectedActor->GetComponents())
 			DrawComponent(component);
 
-		DrawAddComponent(selectedActor);
+		DrawAddComponent(ctx.selectedActor);
 
 		ImGui::End();
 	}

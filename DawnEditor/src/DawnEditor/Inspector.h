@@ -1,11 +1,9 @@
 #pragma once
 
-#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <Dawn/Core/Property.h>
-#include <Dawn/Core/Transform.h>
+#include "EditorContext.h"
 
 namespace Dawn
 {
@@ -16,7 +14,7 @@ namespace Dawn
 	class Inspector
 	{
 	public:
-		void Draw(Actor* selectedActor);
+		void Draw(EditorContext& ctx);
 
 	private:
 		void DrawComponent(Component* component);

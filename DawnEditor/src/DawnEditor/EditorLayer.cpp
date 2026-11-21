@@ -40,7 +40,7 @@ namespace Dawn
 			mMainCamera = nullptr;
 
 		mEditorCamera.Update();
-		mViewportNavigation.Update(deltaTime, mSceneViewport, mEditorCamera, mSelectedActor);
+		mViewportNavigation.Update(deltaTime, mSceneViewport, mEditorCamera, mContext.selectedActor);
 
 		if (Input::GetKey(Key::LeftControl) && Input::GetKeyDown(Key::S))
 			Application::Get()->SaveScene();
@@ -69,7 +69,7 @@ namespace Dawn
 	{
 		mWorkspace.Begin();
 
-		mHierarchy.Draw(mSelectedActor);
+		mHierarchy.Draw(mContext);
 		mSceneViewport.DrawTexture(mSceneViewportRV->GetOutputTexture());
 
 		if (mMainCamera)
@@ -77,7 +77,7 @@ namespace Dawn
 		else
 			mGameViewport.DrawText("No Main Camera");
 
-		mInspector.Draw(mSelectedActor);
+		mInspector.Draw(mContext);
 		mAssetBrowser.Draw();
 		mEnvironmentSettingsWindow.Draw();
 

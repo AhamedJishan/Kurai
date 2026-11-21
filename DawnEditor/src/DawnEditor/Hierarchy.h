@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EditorContext.h"
+
 namespace Dawn
 {
 	// Forward declarations
@@ -8,7 +10,7 @@ namespace Dawn
 	class Hierarchy
 	{
 	public:
-		void Draw(Actor*& selectedActor);
+		void Draw(EditorContext& ctx);
 
 	private:
 		Actor* mActorBeingRenamed = nullptr;

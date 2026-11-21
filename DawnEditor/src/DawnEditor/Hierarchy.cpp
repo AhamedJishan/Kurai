@@ -10,7 +10,7 @@
 
 namespace Dawn
 {
-	void Hierarchy::Draw(Actor*& selectedActor)
+	void Hierarchy::Draw(EditorContext& ctx)
 	{
 		ImGui::Begin("Hierarchy");
 
@@ -76,9 +76,9 @@ namespace Dawn
 
 			ImGui::PushID((void*)actor);
 
-			bool selected = actor == selectedActor;
+			bool selected = actor == ctx.selectedActor;
 			if (ImGui::Selectable(actor->GetName().c_str(), selected, ImGuiSelectableFlags_SpanAllColumns))
-				selectedActor = actor;
+				ctx.selectedActor = actor;
 
 			ImGui::PopID();
 
