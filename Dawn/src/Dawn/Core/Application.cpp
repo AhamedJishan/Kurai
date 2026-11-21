@@ -73,18 +73,30 @@ namespace Dawn
 	}
 
 	
+	bool Application::LoadScene(Scene* scene, const std::filesystem::path& scenePath)
+	{
+		if (!scene)
+		{
+			LOG_ERROR("Tried to load invalid scene");
+			return false;
+		}
+
+		mPendingScenePath = scenePath;
+
+		if (scene == mPendingScene)
+			return true;
+
+		delete mPendingScene;
+		mPendingScene = scene;
+
+		return true;
+	}
+
 	bool Application::LoadScene(const std::filesystem::path& scenePath)
 	{
-		Scene* loadedScene = SceneSerializer::Deserialize(scenePath);
-		if (!loadedScene)
-			return false;
+		Scene* deserializedScene = SceneSerializer::Deserialize(scenePath);
 
-		if (mPendingScene)
-			delete mPendingScene;
-
-		mPendingScene = loadedScene;
-		mPendingScenePath = scenePath;
-		return true;
+		return LoadScene(deserializedScene, scenePath);
 	}
 
 	bool Application::SaveScene()
