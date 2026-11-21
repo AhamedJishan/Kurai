@@ -56,7 +56,7 @@ Actors:
     State: Active
     Transform:
       Scale: [0.0002, 0.0002, 0.0002]
-      Position: [0, -2, -2]
+      Position: [0, -2, -3]
       Rotation: [1, 0, 0, 0]
     Components:
       - Id: 9

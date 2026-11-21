@@ -45,6 +45,7 @@ namespace Dawn
 		void DestroyActor(Actor* actor);
 
 		EnvironmentSettings& GetEnvironmentSettings() { return mEnvironmentSettings; }
+		const EnvironmentSettings& GetEnvironmentSettings() const { return mEnvironmentSettings; }
 
 		void SetMainCamera(Camera* camera);
 		Camera* GetMainCamera() const { return mMainCamera; }

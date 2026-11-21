@@ -75,9 +75,12 @@ namespace Dawn
 	
 	bool Application::LoadScene(const std::filesystem::path& scenePath)
 	{
-		Scene* loadedScene = SceneSerializer::Load(scenePath);
+		Scene* loadedScene = SceneSerializer::Deserialize(scenePath);
 		if (!loadedScene)
 			return false;
+
+		if (mPendingScene)
+			delete mPendingScene;
 
 		mPendingScene = loadedScene;
 		mPendingScenePath = scenePath;
@@ -86,7 +89,17 @@ namespace Dawn
 
 	bool Application::SaveScene()
 	{
-		return SceneSerializer::Save(mScenePath);
+		Scene* scene = GetScene();
+		if (!scene)
+		{
+			LOG_ERROR("No Active Scene to save.");
+			return false;
+		}
+
+		bool saveSceneSuccess = SceneSerializer::Serialize(scene, mScenePath);
+		if (saveSceneSuccess)
+			scene->ClearDirty();
+		return saveSceneSuccess;
 	}
 
 	void Application::Run()

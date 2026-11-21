@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <string>
 
 namespace Dawn
 {
@@ -9,7 +10,10 @@ namespace Dawn
 
 	namespace SceneSerializer
 	{
-		Scene* Load(const std::filesystem::path& scenePath);
-		bool Save(const std::filesystem::path& scenePath);
+		bool Serialize(const Scene* scene, const std::filesystem::path& scenePath);
+		Scene* Deserialize(const std::filesystem::path& scenePath);
+
+		bool Serialize(const Scene* scene, std::string& outSerializedScene);
+		Scene* Deserialize(const std::string& serializedScene);
 	}
 }

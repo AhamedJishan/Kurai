@@ -2,11 +2,12 @@
 
 #include <vector>
 #include <fstream>
+#include <sstream>
 #include <yaml-cpp/yaml.h>
-#include <Dawn/Utils/YamlGlm.h>
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <Dawn/Utils/Log.h>
+#include <Dawn/Utils/YamlGlm.h>
 #include <Dawn/Core/Property.h>
 #include "Application.h"
 #include "ComponentFactory.h"
@@ -20,11 +21,10 @@
 namespace Dawn
 {
 	// --- SCENE SERIALIZER Helper ---
-	YAML::Node SerializeEnvSettings()
+	YAML::Node SerializeEnvSettings(const EnvironmentSettings& env)
 	{
 		YAML::Node envSettingsNode;
-		EnvironmentSettings& env = Application::Get()->GetScene()->GetEnvironmentSettings();
-		EnvironmentSettings::DirectionalLight& dirLight = env.directionalLight;
+		const EnvironmentSettings::DirectionalLight& dirLight = env.directionalLight;
 
 		YAML::Node dirLightNode = envSettingsNode["DirectionalLight"];
 
@@ -56,10 +56,13 @@ namespace Dawn
 		dirLight.intensity = dirLightNode["Intensity"].as<float>();
 	}
 
-	void BuildSerializationContext(SceneSerializationContext& ctx)
+	void BuildSerializationContext(const Scene* scene, SceneSerializationContext& ctx)
 	{
+		if (!scene)
+			return;
+
 		ctx.Clear();
-		for (Actor* actor : Application::Get()->GetScene()->GetActors())
+		for (Actor* actor : scene->GetActors())
 		{
 			ctx.Register(actor);
 
@@ -68,10 +71,10 @@ namespace Dawn
 		}
 	}
 
-	YAML::Node SerializeActors(SceneSerializationContext& ctx)
+	YAML::Node SerializeActors(const Scene* scene, SceneSerializationContext& ctx)
 	{
 		YAML::Node actorsNode;
-		for (Actor* actor : Application::Get()->GetScene()->GetActors())
+		for (Actor* actor : scene->GetActors())
 		{
 			YAML::Node actorNode;
 			actorNode["Id"] = ctx.GetIdByActor(actor);
@@ -169,12 +172,73 @@ namespace Dawn
 	// -------------------------------
 
 	// --- SCENE SERIALIZER ---
-	Scene* SceneSerializer::Load(const std::filesystem::path& scenePath)
+	Scene* SceneSerializer::Deserialize(const std::filesystem::path& scenePath)
+	{
+		std::ifstream sceneFile(scenePath);
+		if (!sceneFile)
+		{
+			LOG_ERROR("Failed to open '%s' for deserializing scene!", scenePath.string().c_str());
+			return nullptr;
+		}
+		
+		std::stringstream buffer;
+		buffer << sceneFile.rdbuf();
+		std::string serializedScene = buffer.str();
+
+		return Deserialize(serializedScene);
+	}
+
+	bool SceneSerializer::Serialize(const Scene* scene, const std::filesystem::path& scenePath)
+	{
+		std::string serializedScene;
+
+		if (!Serialize(scene, serializedScene))
+			return false;
+
+		std::ofstream sceneFile(scenePath);
+		if (!sceneFile)
+		{
+			LOG_ERROR("Failed to open '%s' for serializing scene!", scenePath.string().c_str());
+			return false;
+		}
+
+		sceneFile << serializedScene;
+
+		return true;
+	}
+
+	bool SceneSerializer::Serialize(const Scene* scene, std::string& outSerializedScene)
+	{
+		if (!scene)
+		{
+			LOG_ERROR("Null scene provided to serialize");
+			return false;
+		}
+
+		YAML::Node sceneNode;
+
+		SceneSerializationContext ctx;
+		BuildSerializationContext(scene, ctx);
+
+		Camera* camera = scene->GetMainCamera();
+		unsigned int cameraId = 0;
+		if (camera) cameraId = ctx.GetIdByComponent(camera);
+
+		sceneNode["MainCamera"] = cameraId;
+		sceneNode["EnvironmentSettings"] = SerializeEnvSettings(scene->GetEnvironmentSettings());
+		sceneNode["Actors"] = SerializeActors(scene, ctx);
+
+		outSerializedScene = YAML::Dump(sceneNode);
+
+		return true;
+	}
+
+	Scene* SceneSerializer::Deserialize(const std::string& serializedScene)
 	{
 		Scene* scene = new Scene();
 		try
 		{
-			YAML::Node sceneNode = YAML::LoadFile(scenePath.string());
+			YAML::Node sceneNode = YAML::Load(serializedScene.c_str());
 
 			SceneSerializationContext ctx;
 			CreateActors(sceneNode["Actors"], ctx, scene);
@@ -190,14 +254,10 @@ namespace Dawn
 
 			return scene;
 		}
-		catch (const YAML::BadFile&)
-		{
-			LOG_ERROR("Scene file: '%s' cannot be loaded!", scenePath.string().c_str());
-		}
 		catch (const YAML::ParserException& e)
 		{
-			LOG_ERROR("Failed to parse scene file: '%s'. Line: '%d', Column: '%d', Msg: '%s'", 
-				scenePath.string().c_str(), e.mark.line, e.mark.column, e.msg.c_str());
+			LOG_ERROR("Failed to parse scene file. Line: '%d', Column: '%d', Msg: '%s'",
+				e.mark.line, e.mark.column, e.msg.c_str());
 		}
 		catch (const YAML::Exception& e)
 		{
@@ -206,40 +266,6 @@ namespace Dawn
 
 		delete scene;
 		return nullptr;
-	}
-
-	bool SceneSerializer::Save(const std::filesystem::path& scenePath)
-	{
-		Scene* scene = Application::Get()->GetScene();
-		if (!scene)
-		{
-			LOG_ERROR("No Active Scene to save!");
-			return false;
-		}
-
-		std::ofstream sceneFile(scenePath);
-		if (!sceneFile)
-		{
-			LOG_ERROR("Failed to open '%s' for saving scene!", scenePath.c_str());
-			return false;
-		}
-
-		YAML::Node sceneNode;
-
-		SceneSerializationContext ctx;
-		BuildSerializationContext(ctx);
-		
-		Camera* camera = scene->GetMainCamera();
-		unsigned int cameraId = 0;
-		if (camera) cameraId = ctx.GetIdByComponent(camera);
-
-		sceneNode["MainCamera"] = cameraId;
-		sceneNode["EnvironmentSettings"] = SerializeEnvSettings();
-		sceneNode["Actors"] = SerializeActors(ctx);
-
-		sceneFile << sceneNode;
-		scene->ClearDirty();
-		return true;
 	}
 	// -----------------------
 }
