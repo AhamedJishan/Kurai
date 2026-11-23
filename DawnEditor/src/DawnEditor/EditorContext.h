@@ -19,6 +19,7 @@ namespace Dawn
 
 	private:
 		friend class EditorLayer;
+		// EditorLayer should be the only one editing this.
 		EditorState mState = EditorState::Edit;
 	};
 }

@@ -1,18 +1,19 @@
 #pragma once
 
 #include <string>
+#include "EditorContext.h"
 
 namespace Dawn
 {
 	class EditorWorkspace
 	{
 	public:
-		void Begin();
+		void Begin(EditorContext& ctx);
 		void End();
 
 	private:
 		void DrawMainMenuBar();
-		void DrawToolbar();
+		void DrawToolbar(EditorContext& ctx);
 		void DrawMainWorkspaceWindow();
 
 	private:
@@ -21,8 +22,5 @@ namespace Dawn
 		const float mToolbarHeight = 32.0f;
 		const float mPlayStopButtonWidth = 30.0f;
 		const float mPlayStopButtonHeight = 24.0f;
-
-		std::string mPrePlaySceneSnapshot;
-		bool mPrePlaySceneWasDirty;
 	};
 }

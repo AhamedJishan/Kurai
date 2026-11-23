@@ -50,7 +50,7 @@ namespace Dawn
 		void SetMainCamera(Camera* camera);
 		Camera* GetMainCamera() const { return mMainCamera; }
 
-		void MarkDirty() { mIsDirty = true; }
+		void MarkDirty(bool dirty = true) { mIsDirty = dirty; }
 		void ClearDirty() { mIsDirty = false; }
 		bool IsDirty() { return mIsDirty; }
 

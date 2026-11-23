@@ -33,7 +33,14 @@ namespace Dawn
 		void OnImGuiRender() override;
 
 	private:
+		void OnPlay();
+		void OnStop();
+
+	private:
 		std::filesystem::path mStartScenePath;
+
+		std::string mPrePlaySceneSnapshot;
+		bool mPrePlaySceneWasDirty = false;
 
 		Camera* mMainCamera = nullptr;
 		

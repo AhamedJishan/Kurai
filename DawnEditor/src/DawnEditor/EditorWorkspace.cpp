@@ -10,10 +10,10 @@
 
 namespace Dawn
 {
-	void EditorWorkspace::Begin()
+	void EditorWorkspace::Begin(EditorContext& ctx)
 	{
 		DrawMainMenuBar();
-		DrawToolbar();
+		DrawToolbar(ctx);
 		DrawMainWorkspaceWindow();
 	}
 
@@ -41,7 +41,7 @@ namespace Dawn
 		ImGui::PopStyleVar();
 	}
 
-	void EditorWorkspace::DrawToolbar()
+	void EditorWorkspace::DrawToolbar(EditorContext& ctx)
 	{
 		ImGuiViewport* mainViewPort = ImGui::GetMainViewport();
 
@@ -56,7 +56,7 @@ namespace Dawn
 
 			ImGui::PushFont(NULL, 16.0f);
 
-			bool isPlaying = Application::Get()->simulateScene;
+			bool isPlaying = ctx.IsPlaying();
 			if (isPlaying)
 			{
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.90f, 0.55f, 0.24f, 1.0f));
@@ -65,20 +65,7 @@ namespace Dawn
 			ImGui::BeginDisabled(isPlaying);
 
 			if (ImGui::Button(ICON_PLAY, ImVec2(mPlayStopButtonWidth, mPlayStopButtonHeight)))
-			{
-				Scene* activeScene = Application::Get()->GetScene();
-				if (activeScene)
-				{
-					Application::Get()->simulateScene = true;
-					mPrePlaySceneWasDirty = activeScene->IsDirty();
-					SceneSerializer::Serialize(activeScene, mPrePlaySceneSnapshot);
-				}
-				else
-				{
-					LOG_WARN("No active Scene to play!");
-				}
-			}
-
+				ctx.requestAction = EditorAction::Play;
 			ImGui::EndDisabled();
 			if (isPlaying)
 			{
@@ -89,19 +76,7 @@ namespace Dawn
 			ImGui::SameLine();
 			ImGui::BeginDisabled(!isPlaying);
 			if (ImGui::Button(ICON_SQUARE, ImVec2(mPlayStopButtonWidth, mPlayStopButtonHeight)))
-			{
-				Application::Get()->simulateScene = false;
-				Scene* deserializedScene = SceneSerializer::Deserialize(mPrePlaySceneSnapshot);
-				if (deserializedScene)
-				{
-					if (mPrePlaySceneWasDirty)
-						deserializedScene->MarkDirty();
-					Application::Get()->LoadScene(deserializedScene, Application::Get()->GetScenePath());
-					mPrePlaySceneSnapshot.clear();
-				}
-				else
-					LOG_ERROR("Failed to restore scene after Editor Play");
-			}
+				ctx.requestAction = EditorAction::Stop;
 			ImGui::EndDisabled();
 
 			ImGui::PopFont();

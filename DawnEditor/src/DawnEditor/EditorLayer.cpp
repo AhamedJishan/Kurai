@@ -1,8 +1,10 @@
 #include "EditorLayer.h"
 
 #include <glm/vec2.hpp>
+#include <Dawn/Utils/Log.h>
 #include <Dawn/Core/Application.h>
 #include <Dawn/Core/Scene.h>
+#include <Dawn/Core/SceneSerializer.h>
 #include <Dawn/Rendering/Renderer.h>
 #include <Dawn/Rendering/RenderView.h>
 #include <Dawn/Input/Input.h>
@@ -42,8 +44,15 @@ namespace Dawn
 		mEditorCamera.Update();
 		mViewportNavigation.Update(deltaTime, mSceneViewport, mEditorCamera, mContext.selectedActor);
 
-		if (Input::GetKey(Key::LeftControl) && Input::GetKeyDown(Key::S))
+		if ( (mContext.mState == EditorState::Edit) && (Input::GetKey(Key::LeftControl) && Input::GetKeyDown(Key::S)) )
 			Application::Get()->SaveScene();
+
+		switch (mContext.requestAction)
+		{
+		case EditorAction::Play: OnPlay(); break;
+		case EditorAction::Stop: OnStop(); break;
+		default: break;
+		}
 	}
 
 	void EditorLayer::OnRender()
@@ -67,7 +76,7 @@ namespace Dawn
 
 	void EditorLayer::OnImGuiRender()
 	{
-		mWorkspace.Begin();
+		mWorkspace.Begin(mContext);
 
 		mHierarchy.Draw(mContext);
 		mSceneViewport.DrawTexture(mSceneViewportRV->GetOutputTexture());
@@ -82,5 +91,47 @@ namespace Dawn
 		mEnvironmentSettingsWindow.Draw();
 
 		mWorkspace.End();
+	}
+
+	void EditorLayer::OnPlay()
+	{
+		mContext.requestAction = EditorAction::None;
+
+		Scene* currentScene = Application::Get()->GetScene();
+		if (!currentScene || mContext.mState == EditorState::Play)
+			return;
+
+		if (!SceneSerializer::Serialize(currentScene, mPrePlaySceneSnapshot))
+		{
+			LOG_ERROR("Failed to serialize scene. Can not Play!");
+			mPrePlaySceneSnapshot.clear();
+			return;
+		}
+
+		mContext.mState = EditorState::Play;
+		Application::Get()->simulateScene = true;
+		mPrePlaySceneWasDirty = currentScene->IsDirty();
+	}
+
+	void EditorLayer::OnStop()
+	{
+		mContext.requestAction = EditorAction::None;
+
+		if (mContext.mState == EditorState::Edit) 
+			return;
+
+		Scene* restoredScene = SceneSerializer::Deserialize(mPrePlaySceneSnapshot);
+		if (!restoredScene)
+		{
+			LOG_ERROR("Failed to restore scene from snapshot");
+			return;
+		}
+		mPrePlaySceneSnapshot.clear();
+
+		mContext.selectedActor = nullptr;
+		mContext.mState = EditorState::Edit;
+		Application::Get()->simulateScene = false;
+		restoredScene->MarkDirty(mPrePlaySceneWasDirty);
+		Application::Get()->LoadScene(restoredScene, Application::Get()->GetScenePath());
 	}
 }
