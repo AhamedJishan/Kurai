@@ -29,7 +29,7 @@ namespace Dawn
 			ImGui::PopFont();
 			if (isFileMenuOpen)
 			{
-				ImGui::BeginDisabled(ctx.IsPlaying());
+				ImGui::BeginDisabled(ctx.IsPlaying() || Application::Get()->GetScene() == nullptr);
 				if (ImGui::MenuItem("Save Scene"))
 					Application::Get()->SaveScene();
 				ImGui::EndDisabled();
