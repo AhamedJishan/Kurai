@@ -2,17 +2,14 @@
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
-#include <Dawn/Utils/Log.h>
 #include <Dawn/ImGui/OpenFontIcons.h>
 #include <Dawn/Core/Application.h>
-#include <Dawn/Core/Scene.h>
-#include <Dawn/Core/SceneSerializer.h>
 
 namespace Dawn
 {
 	void EditorWorkspace::Begin(EditorContext& ctx)
 	{
-		DrawMainMenuBar();
+		DrawMainMenuBar(ctx);
 		DrawToolbar(ctx);
 		DrawMainWorkspaceWindow();
 	}
@@ -22,7 +19,7 @@ namespace Dawn
 		ImGui::End();
 	}
 
-	void EditorWorkspace::DrawMainMenuBar()
+	void EditorWorkspace::DrawMainMenuBar(EditorContext& ctx)
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(6.0f, 6.0f));
 		if (ImGui::BeginMainMenuBar())
@@ -32,8 +29,10 @@ namespace Dawn
 			ImGui::PopFont();
 			if (isFileMenuOpen)
 			{
+				ImGui::BeginDisabled(ctx.IsPlaying());
 				if (ImGui::MenuItem("Save Scene"))
 					Application::Get()->SaveScene();
+				ImGui::EndDisabled();
 				ImGui::EndMenu();
 			}
 			ImGui::EndMainMenuBar();

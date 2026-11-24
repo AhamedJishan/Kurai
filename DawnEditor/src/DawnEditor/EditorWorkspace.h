@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include "EditorContext.h"
 
 namespace Dawn
@@ -12,7 +11,7 @@ namespace Dawn
 		void End();
 
 	private:
-		void DrawMainMenuBar();
+		void DrawMainMenuBar(EditorContext& ctx);
 		void DrawToolbar(EditorContext& ctx);
 		void DrawMainWorkspaceWindow();
 

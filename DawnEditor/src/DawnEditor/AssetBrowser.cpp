@@ -8,12 +8,12 @@
 
 namespace Dawn
 {
-	void AssetBrowser::Draw()
+	void AssetBrowser::Draw(EditorContext& ctx)
 	{
 		if (ImGui::Begin("Asset Browser"))
 		{
 			DrawDirectoryNavigator();
-			DrawDirectoryContents(mActiveDirectoryPath);
+			DrawDirectoryContents(mActiveDirectoryPath, ctx);
 		}
 		ImGui::End();
 	}
@@ -52,7 +52,7 @@ namespace Dawn
 		}
 	}
 
-	void AssetBrowser::DrawDirectoryContents(const std::filesystem::path& currentPath)
+	void AssetBrowser::DrawDirectoryContents(const std::filesystem::path& currentPath, EditorContext& ctx)
 	{
 		std::vector<std::filesystem::directory_entry> directoryEntries;
 		for (auto& entry : std::filesystem::directory_iterator(currentPath))
@@ -80,7 +80,7 @@ namespace Dawn
 						{
 							if (directoryEntries[i].is_directory())
 								mActiveDirectoryPath = directoryEntries[i].path();
-							else if (directoryEntries[i].path().extension().string() == Scene::GetExtension())
+							else if (directoryEntries[i].path().extension().string() == Scene::GetExtension() && !ctx.IsPlaying())
 								Application::Get()->LoadScene(directoryEntries[i].path().string());
 						}
 						else

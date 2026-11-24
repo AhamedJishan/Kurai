@@ -39,7 +39,7 @@ namespace Dawn
 			float saveBtnWidth = ImGui::CalcTextSize(ICON_SAVE).x + style.FramePadding.x * 2.0f;
 			float availX = ImGui::GetContentRegionAvail().x;
 
-			ImGui::BeginDisabled(!scene->IsDirty());
+			ImGui::BeginDisabled(!scene->IsDirty() || ctx.IsPlaying());
 			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + availX - saveBtnWidth);
 			if (ImGui::Button(ICON_SAVE))
 				Application::Get()->SaveScene();

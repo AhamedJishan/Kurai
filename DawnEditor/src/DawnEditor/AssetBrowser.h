@@ -5,18 +5,19 @@
 #include <unordered_map>
 #include <imgui/imgui.h>
 #include <Dawn/ImGui/OpenFontIcons.h>
+#include "EditorContext.h"
 
 namespace Dawn
 {
 	class AssetBrowser
 	{
 	public:
-		void Draw();
+		void Draw(EditorContext& ctx);
 
 	private:
 		void DrawDirectoryNavigator();
 		void DrawDirBreadCrumbs();
-		void DrawDirectoryContents(const std::filesystem::path& currentPath);
+		void DrawDirectoryContents(const std::filesystem::path& currentPath, EditorContext& ctx);
 		const char* GetDirectoryEntryIcon(const std::filesystem::directory_entry& directoryEntry);
 		bool CommitFileRename(const std::filesystem::path& oldPath);
 

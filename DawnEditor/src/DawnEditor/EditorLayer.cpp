@@ -87,7 +87,7 @@ namespace Dawn
 			mGameViewport.DrawText("No Main Camera");
 
 		mInspector.Draw(mContext);
-		mAssetBrowser.Draw();
+		mAssetBrowser.Draw(mContext);
 		mEnvironmentSettingsWindow.Draw();
 
 		mWorkspace.End();
