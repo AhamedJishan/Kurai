@@ -174,6 +174,13 @@ namespace Dawn
 	// --- SCENE SERIALIZER ---
 	Scene* SceneSerializer::Deserialize(const std::filesystem::path& scenePath)
 	{
+		if (scenePath.extension().string() != Scene::GetExtension())
+		{
+			LOG_ERROR("Invalid Scene extension for '%s'. Expected '%s', got '%s'",
+				scenePath.string().c_str(), Scene::GetExtension().c_str(), scenePath.extension().string().c_str());
+			return false;
+		}
+
 		std::ifstream sceneFile(scenePath);
 		if (!sceneFile)
 		{
@@ -190,6 +197,13 @@ namespace Dawn
 
 	bool SceneSerializer::Serialize(const Scene* scene, const std::filesystem::path& scenePath)
 	{
+		if (scenePath.extension().string() != Scene::GetExtension())
+		{
+			LOG_ERROR("Invalid Scene extension for '%s'. Expected '%s', got '%s'", 
+				scenePath.string().c_str(), Scene::GetExtension().c_str(), scenePath.extension().string().c_str());
+			return false;
+		}
+
 		std::string serializedScene;
 
 		if (!Serialize(scene, serializedScene))
