@@ -8,28 +8,28 @@ namespace Dawn::FileSystem
 {
 	static const std::string UNTITLED = "untitled";
 
-	bool CreateEmpty(const std::filesystem::path& atPath, std::string stemName, std::string extension)
+	std::filesystem::path CreateUniqueFile(const std::filesystem::path& atPath, std::string stemName, std::string extension, const std::string& content)
 	{
 		int suffix = 0;
-		std::string filename = stemName.empty() ? UNTITLED : stemName + (extension.empty() ? "" : extension);
+		stemName = stemName.empty() ? UNTITLED : stemName;
+		std::string filename = stemName + (extension.empty() ? "" : extension);
 		std::filesystem::path filepath = atPath / filename;
 
 		while (std::filesystem::exists(filepath))
 		{
-			if (stemName.empty())
-				filepath = atPath / (UNTITLED + " (" + std::to_string(++suffix) + ")");
-			else
-				filepath = atPath / (stemName + " (" + std::to_string(++suffix) + ")" + (extension.empty() ? "" : extension));
+			filename = stemName + " (" + std::to_string(++suffix) + ")" + (extension.empty() ? "" : extension);
+			filepath = atPath / filename;
 		}
 
 		std::ofstream file(filepath);
 		if (!file.is_open())
 		{
 			LOG_ERROR("Failed to create file '%s'", filepath.string().c_str());
-			return false;
+			return {};
 		}
 
-		return true;
+		file << content;
+		return filepath;
 	}
 
 	bool RenameFile(const std::filesystem::path& filepath, const std::string& newName)

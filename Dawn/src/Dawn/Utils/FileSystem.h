@@ -4,7 +4,13 @@
 namespace Dawn::FileSystem
 {
 	// extension should include the dot '.'
-	bool CreateEmpty(const std::filesystem::path& atPath, std::string stemName = "", std::string extension = "");
+	std::filesystem::path CreateUniqueFile
+	(
+		const std::filesystem::path& atPath, 
+		std::string stemName = "", 
+		std::string extension = "", 
+		const std::string& content = ""
+	);
 	bool RenameFile(const std::filesystem::path& filepath, const std::string& newName);
 	bool IsValidFileName(const std::string& filename);
 }

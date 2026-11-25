@@ -3,6 +3,7 @@
 #include <vector>
 #include <Dawn/Core/Application.h>
 #include <Dawn/Core/Scene.h>
+#include <Dawn/Core/SceneSerializer.h>
 #include <Dawn/Utils/FileSystem.h>
 #include <Dawn/Utils/Log.h>
 
@@ -146,9 +147,8 @@ namespace Dawn
 			if (ImGui::BeginPopupContextWindow("AssetBrowser Context Window", ImGuiPopupFlags_NoOpenOverItems))
 			{
 				if (ImGui::MenuItem("Create Scene"))
-				{
-					FileSystem::CreateEmpty(mActiveDirectoryPath, "NewScene", Scene::GetExtension());
-				}
+					CreateSceneFile();
+
 				ImGui::EndPopup();
 			}
 		}
@@ -199,5 +199,15 @@ namespace Dawn
 			return true;
 
 		return false;
+	}
+
+	void AssetBrowser::CreateSceneFile()
+	{
+		std::string newSceneSerialized;
+		Scene* newScene = new Scene();
+		SceneSerializer::Serialize(newScene, newSceneSerialized);
+		delete newScene;
+
+		FileSystem::CreateUniqueFile(mActiveDirectoryPath, "NewScene", Scene::GetExtension(), newSceneSerialized);
 	}
 }

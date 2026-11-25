@@ -20,6 +20,7 @@ namespace Dawn
 		void DrawDirectoryContents(const std::filesystem::path& currentPath, EditorContext& ctx);
 		const char* GetDirectoryEntryIcon(const std::filesystem::directory_entry& directoryEntry);
 		bool CommitFileRename(const std::filesystem::path& oldPath);
+		void CreateSceneFile();
 
 	private:
 		std::string mSelectedEntryName = "";
