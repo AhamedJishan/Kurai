@@ -32,7 +32,7 @@ namespace Dawn
 
 		class Actor* GetOwner() const { return mOwner; }
 
-		virtual std::vector<Property> GetProperties() = 0;
+		virtual std::vector<Property> GetProperties() { return {}; }
 		virtual void OnPropertiesChanged() {}
 
 	protected:

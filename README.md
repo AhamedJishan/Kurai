@@ -2,7 +2,6 @@
 Project 2
 
 ## TODO:
-- Make GetProperies() normal virtual with default implementation.
 - Animator should show idle pose on edit mode.
 - Check the null scene case in game and engine.
 - Play game button
