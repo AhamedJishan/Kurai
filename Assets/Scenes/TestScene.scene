@@ -51,7 +51,9 @@ Actors:
         Type: MeshRenderer
         ModelPath: Assets/Models/archer/Hip Hop Dancing.dae
         IsSkinned: false
-  - Id: 8
+      - Id: 8
+        Type: Rotator
+  - Id: 9
     Name: AnimationTest
     State: Active
     Transform:
@@ -59,11 +61,11 @@ Actors:
       Position: [0, -2, -3]
       Rotation: [1, 0, 0, 0]
     Components:
-      - Id: 9
+      - Id: 10
         Type: MeshRenderer
         ModelPath: Assets\Models\archer\Hip Hop Dancing.dae
         IsSkinned: true
-      - Id: 10
+      - Id: 11
         Type: Animator
         Skeleton: Assets\Models\archer\Hip Hop Dancing.dae
         Clips:

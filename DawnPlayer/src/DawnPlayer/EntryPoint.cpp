@@ -5,6 +5,8 @@
 #include <Dawn/Core/ComponentFactory.h>
 #include <Dawn/Core/GameLayer.h>
 
+#include <KuraiCore/KuraiCore.h>
+
 int main(int argc, char** argv)
 {
 	Dawn::AppConfig config;
@@ -17,6 +19,7 @@ int main(int argc, char** argv)
 	Dawn::ComponentFactory* componentFactory = new Dawn::ComponentFactory();
 
 	Dawn::Application app(config, componentFactory);
+	Kurai::RegisterComponents();
 	app.PushLayer(new Dawn::GameLayer("Assets/Scenes/TestScene.scene"));
 	app.Run();
 

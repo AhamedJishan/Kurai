@@ -4,6 +4,8 @@
 #include <Dawn/Core/Window.h>
 #include <Dawn/Core/ComponentFactory.h>
 
+#include <KuraiCore/KuraiCore.h>
+
 #include "EditorLayer.h"
 
 int main(int argc, char** argv)
@@ -18,7 +20,8 @@ int main(int argc, char** argv)
 	Dawn::ComponentFactory* componentFactory = new Dawn::ComponentFactory();
 
 	Dawn::Application app(config, componentFactory);
-	app.PushLayer(new Dawn::EditorLayer());
+	Kurai::RegisterComponents();
+	app.PushLayer(new Dawn::EditorLayer("Assets/Scenes/TestScene.scene"));
 	app.Run();
 
 	return 0;
